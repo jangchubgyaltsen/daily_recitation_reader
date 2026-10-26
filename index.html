@@ -824,7 +824,7 @@ const YU={};
 function yuStep(R){const d=[];R.sections.forEach(s=>s.lines.forEach(ln=>{const v=ln['t.bo'];if(!v)return;const a=v.trim().split(/\s+/).map(Number);for(let i=1;i<a.length;i++)d.push(a[i]-a[i-1])}));
   if(!d.length)return 0.6;d.sort((x,y)=>x-y);return Math.min(1,Math.max(0.4,+d[d.length>>1].toFixed(2)))}
 function yu(R){const k=R.meta.id;if(YU[k])return YU[k];const T=yuStep(R);let n=1;const tm={};
-  R.sections.forEach(s=>s.lines.forEach(ln=>{if(!(ln.syllables||[]).length)return;const gs=ln.beat_groups&&ln.beat_groups.length?ln.beat_groups.length:1;
+  R.sections.forEach(s=>s.lines.forEach(ln=>{if(!(ln.syllables||[]).length)return;const gs=ln.beat_groups&&ln.beat_groups.length?ln.beat_groups.length:ln.syllables.length;  // 咒语没有分节：一个音节一拍
     tm[ln.id]=Array.from({length:gs},()=>+(T*n++).toFixed(3))}));
   return YU[k]={tm,T,dur:Math.ceil(T*(n+1))}}
 function refreshTiming(){A.tm=getTiming();A.order=A.tm?allLines().filter(ln=>A.tm[ln.id]&&A.tm[ln.id].length):[]}
