@@ -1,0 +1,34 @@
+# 加倍咒：校对源文件（规则见 eight-auspicious.txt 开头）
+@id: multiplying-mantra
+@title.bo: འགྱུར་སྔགས།
+@title.zh: 加倍咒
+@title.gloss: འགྱུར=加倍=multiplying; སྔགས=咒=mantra
+@title.zh_ph: 
+@title.en: Mantra for Multiplying the Power of Recitation
+@restriction: public
+@status: draft
+@kind: mantra
+@common: true
+@common.group: 咒语
+@show_sections: no
+@source.zh: 喇荣课诵 2024-05-02 版，第1页
+@source.en: Larung Daily Chant Book 2021, p. 1
+@audio.bo: audio/multiplying-mantra.bo.mp3
+@audio.bo.credit: 藏语念诵：堪姆
+# 录音 7.7 秒，念一遍（约 4.0 秒处换气）；起点按音量自动估，可在制作工具里微调
+@note.zh: 关于此咒功德，《噶当问答录》中云：“诵前加此咒，佛说千万倍。”
+# 咒语不做逐音节对齐，只整句高亮
+
+== mantra
+title.zh: 加倍咒
+title.en: Mantra
+repeat: 3
+
+-- 1
+mantra.zh: 加倍咒
+bo: ཨོཾ་སམྦྷ་ར་སམྦྷ་ར་བྷི་མ་ན་ས་ར་མ་ཧཱ་ཛམྦྷ་བ་ཧཱུྃ་ཕཊ་སྭཱ་ཧཱ།
+zh_ph: 嗡桑巴Ra桑巴Ra 波玛那萨Ra 玛哈藏巴巴吽啪的索哈
+en_ph: om sambhara sambhara vimana sara maha dzambha bha hung phat svaha!
+note: 嗡：读 Ong（书中脚注）
+variant: 英文版藏文作 ཛམ་བྷ
+t.bo: 0.35
