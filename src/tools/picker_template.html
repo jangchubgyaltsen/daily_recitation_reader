@@ -1,0 +1,89 @@
+<title>挑选词发音</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tibetan:wght@400;600&display=swap">
+<style>
+:root{--paper:#f6f5f1;--ink:#22252b;--muted:#6c7079;--rule:#dcdad3;--lapis:#2d4b8e;--hl:#e3e9f6;--ok:#2f7a5a;--warn:#a0402c;
+  --f-bo:"Noto Serif Tibetan","Jomolhari","Microsoft Himalaya",serif;--f-ui:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#16181d;--ink:#e7e5e0;--muted:#9a9ea8;--rule:#2c3038;--lapis:#93acea;--hl:#24304a;--ok:#79cfa6;--warn:#f0957f;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#16181d;--ink:#e7e5e0;--muted:#9a9ea8;--rule:#2c3038;--lapis:#93acea;--hl:#24304a;--ok:#79cfa6;--warn:#f0957f;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 var(--f-ui)}
+main{max-width:720px;margin:0 auto;padding:20px 16px 80px}
+h1{font-size:20px;margin:0 0 4px}
+.intro{color:var(--muted);margin:0 0 14px;font-size:14px}
+.bar{position:sticky;top:0;background:var(--paper);padding:10px 0;border-bottom:1px solid var(--rule);display:flex;gap:8px;align-items:center;flex-wrap:wrap;z-index:2}
+.bar .count{margin-left:auto;color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.chip{border:1px solid var(--rule);background:transparent;color:var(--ink);border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--lapis);color:var(--paper);border-color:var(--lapis)}
+.w{padding:14px 0;border-bottom:1px solid var(--rule)}
+.w .top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.w .bo{font:26px/1.5 var(--f-bo)}
+.w .ph{font-size:17px}.w .en{color:var(--muted);font-style:italic}.w .mean{color:var(--muted);font-size:13px}
+.w .where{color:var(--muted);font-size:12px}
+.w .state{margin-left:auto;font-size:12px;color:var(--muted)}
+.w .state.ok{color:var(--ok)}.w .state.none{color:var(--warn)}
+.vs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.v{display:flex;border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+.v button{border:0;background:transparent;color:var(--ink);font:inherit;padding:8px 12px;cursor:pointer;min-height:40px}
+.v .play{display:flex;align-items:center;gap:6px}
+.v .pick{border-left:1px solid var(--rule);font-size:13px;color:var(--muted)}
+.v.on{border-color:var(--ok);background:var(--hl)}.v.on .pick{color:var(--ok);font-weight:600}
+.v.playing{outline:2px solid var(--lapis);outline-offset:1px}
+.none{border:1px dashed var(--rule);border-radius:10px;background:transparent;color:var(--muted);font:inherit;font-size:13px;padding:8px 12px;cursor:pointer}
+.none.on{border-color:var(--warn);color:var(--warn);font-weight:600}
+.note{color:var(--muted);font-size:12px;margin-top:6px}
+.err{color:var(--warn);font-size:13px}
+</style>
+<main>
+<h1>挑选词发音</h1>
+<p class="intro">每个词有几个版本：甲乙丙丁戊是单独念的（甲是现在念诵页用的，丁戊更稳一些），「己·连读」是整句念出来再把这个词切出来的，带着前后连读的音；「庚·前连」只连前一个词念，词落在句尾，结尾念得更完整。最后几个很短的词另外有放慢的版本和「垫音」版（前面垫一个音一起念，再把词切出来，让开头的 ས 念得出来）。点「▶」听，点「选这个」定下来。选择会自动保存，可以分几次做。</p>
+<div class="bar">
+  <button class="chip" data-f="todo" aria-pressed="true">还没选</button>
+  <button class="chip" data-f="all" aria-pressed="false">全部</button>
+  <span class="count" id="count"></span>
+</div>
+<div id="msg" class="err" hidden></div>
+<div id="list"></div>
+</main>
+<script>
+const WORDS=/*WORDS*/null||[];
+const AUDIO=/*AUDIO*/null||{};
+const NAMES={a:'甲',b:'乙',c:'丙',d:'丁',e:'戊',f:'己·连读',g:'庚·前连',h:'慢1',i:'慢2',j:'慢3',k:'更慢1',l:'更慢2',m:'慢·稳',n:'前连·慢',o:'前连·更慢',p:'垫音·慢',q:'垫音·更慢',t:'垫音2·慢',u:'垫音2·更慢',v:'垫音3·慢',w:'垫音3·更慢'};
+const picks={};let filter='todo',db=null,saving={};
+const au=new Audio();let playingKey='';
+function blobURL(d){const i=d.indexOf(',');const s=atob(d.slice(i+1));const a=new Uint8Array(s.length);for(let k=0;k<s.length;k++)a[k]=s.charCodeAt(k);return URL.createObjectURL(new Blob([a],{type:'audio/mpeg'}))}
+const URLS={};function url(k){return URLS[k]||(URLS[k]=blobURL(AUDIO[k]))}
+function play(k){au.pause();au.src=url(k);au.currentTime=0;playingKey=k;au.play().catch(()=>{});mark()}
+au.onended=()=>{playingKey='';mark()};
+function mark(){document.querySelectorAll('.v').forEach(x=>x.classList.toggle('playing',x.dataset.k===playingKey))}
+function loadLocal(){try{Object.assign(picks,JSON.parse(localStorage.getItem('picks')||'{}'))}catch(e){}for(const k in picks)if(picks[k]==='none')delete picks[k]}
+function saveLocal(){try{localStorage.setItem('picks',JSON.stringify(picks))}catch(e){}}
+async function choose(id,v){picks[id]=v;saveLocal();render();
+  if(db){try{await db.collection('picks').doc(id).set({v,text:WORDS.find(w=>w.id===id).text,at:Date.now()});showErr('')}catch(e){showErr('保存到服务器失败，选择先存在这台设备上：'+(e.message||e.code||''))}}}
+function showErr(t){const m=document.getElementById('msg');m.textContent=t;m.hidden=!t}
+function render(){
+  const list=document.getElementById('list');list.textContent='';
+  const shown=WORDS.filter(w=>filter==='all'||(filter==='todo'&&(!picks[w.id]||picks[w.id]==='none'))||(filter==='none'&&picks[w.id]==='none'));
+  for(const w of shown){
+    const d=document.createElement('div');d.className='w';
+    const p=picks[w.id];
+    d.innerHTML=`<div class="top"><span class="bo"></span><span class="ph"></span><span class="en"></span><span class="mean"></span><span class="where"></span><span class="state ${p&&p!=='none'?'ok':''}">${p&&p!=='none'?'已选：'+(NAMES[p]||p):''}</span></div><div class="vs"></div>`;
+    d.querySelector('.bo').textContent=w.text;d.querySelector('.where').textContent=w.where.join('、');
+    const ph=w.ph||{};d.querySelector('.ph').textContent=ph.zh?(ph.zh+(ph.pieced?'（按正文音节拼）':'')):'书里没有音译';
+    d.querySelector('.en').textContent=ph.en||'';d.querySelector('.mean').textContent=ph.mean?'意思：'+ph.mean:'';
+    const vs=d.querySelector('.vs');
+    for(const v of w.v){const k=w.id+'-'+v;const box=document.createElement('div');box.className='v'+(p===v?' on':'');box.dataset.k=k;
+      box.innerHTML=`<button class="play" aria-label="听${NAMES[v]}">▶ ${NAMES[v]}</button><button class="pick">${p===v?'已选':'选这个'}</button>`;
+      box.querySelector('.play').onclick=()=>play(k);box.querySelector('.pick').onclick=()=>choose(w.id,v);vs.appendChild(box)}
+    list.appendChild(d)}
+  const done=WORDS.filter(w=>picks[w.id]&&picks[w.id]!=='none').length;
+  document.getElementById('count').textContent=`已选 ${done} / ${WORDS.length}`;
+  if(!shown.length)list.innerHTML='<p class="intro">这里没有词。</p>';mark()}
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{filter=c.dataset.f;document.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',String(x===c)));render()});
+loadLocal();render();
+(async()=>{try{db=await window.claude?.use?.('db')}catch(e){db=null}if(!db)return;
+  try{db.collection('picks').onSnapshot(s=>{for(const d of s.docs){const v=d.data()?.v;if(v&&v!=='none')picks[d.id]=v}saveLocal();render()},()=>{})}catch(e){}
+  // push choices made before the database was reachable
+  try{const s=await db.collection('picks').get();const have=new Set(s.docs.map(d=>d.id));for(const [id,v] of Object.entries(picks))if(!have.has(id)){const w=WORDS.find(x=>x.id===id);if(w)await db.collection('picks').doc(id).set({v,text:w.text,at:Date.now()})}}catch(e){}
+})();
+</script>

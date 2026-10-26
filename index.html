@@ -384,8 +384,21 @@ body.land #main .line.lpn :is(.r-ph,.r-zh,.c-ph,.c-gl){display:none}body.land #m
 body.land #lrep{display:flex;position:absolute;right:12px;bottom:8px;align-items:center;gap:5px;font:13px var(--f-ui);color:var(--lapis);background:var(--paper);padding:3px 8px;border-radius:999px;font-variant-numeric:tabular-nums;pointer-events:none}
 #lrep i{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--lapis);box-sizing:border-box}#lrep i.on{background:var(--lapis)}#lrep b{font:600 20px/1 var(--f-zh)}
 body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land .player-in .ptime{margin-left:auto}
+/* 打开时的上师法相（只在网页版有图；每次随机一张，点一下跳过） */
+#splash{position:fixed;inset:0;z-index:100;background:#1b1512;overflow:hidden;transition:opacity .45s ease;cursor:pointer}
+#splash.out{opacity:0;pointer-events:none}
+#splash img{position:absolute;inset:0;width:100%;height:100%}
+#splash .sp-bg{object-fit:cover;filter:blur(28px) brightness(.55);transform:scale(1.15)}
+#splash .sp-fg{object-fit:contain;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);box-sizing:border-box}
+@media (prefers-reduced-motion: reduce){#splash{transition:none}}
 </style>
 
+<div id="splash" aria-hidden="true"><img class="sp-bg" alt=""><img class="sp-fg" alt=""></div>
+<script>(function(){var L=["a/7e0c5524abb8.jpg", "a/6d9c6cc13b3b.jpg", "a/2cc41e269001.jpg", "a/b507ab712c77.jpg", "a/68dd628d14d1.jpg", "a/503f95bf8755.jpg", "a/74cad8ef55cf.jpg", "a/27c69b24a7c2.jpg", "a/a987c324eedf.jpg", "a/6622b48c7a36.jpg", "a/0f08f1d42c81.jpg", "a/a4015cb43569.jpg", "a/7a865ba73d81.jpg", "a/23e41301a097.jpg", "a/62c1d88229ce.jpg", "a/501bd5a1c279.jpg"],e=document.getElementById('splash');if(!L.length){e.remove();window.splashDone=function(){};return}
+  var last=-1;try{last=+localStorage.getItem('splashLast')}catch(x){}var i=Math.floor(Math.random()*L.length);if(L.length>1&&i===last)i=(i+1+Math.floor(Math.random()*(L.length-1)))%L.length;
+  try{localStorage.setItem('splashLast',i)}catch(x){}var im=e.querySelectorAll('img');im[0].src=im[1].src=L[i];
+  var t0=Date.now(),gone=false;function hide(){if(gone)return;gone=true;e.classList.add('out');setTimeout(function(){e.remove()},500)}
+  e.addEventListener('click',hide);window.splashDone=function(){setTimeout(hide,Math.max(0,1200-(Date.now()-t0)))};setTimeout(hide,6000)})()</script>
 <div class="top"><div class="top-in">
   <button class="iconbtn back" id="back" aria-label="返回">‹</button>
   <select id="pick" aria-label="选择仪轨"></select>
@@ -964,20 +977,21 @@ function syncMarkRates(){const r=+S.markRate||0.75;$('mrates').innerHTML=MRATES.
 document.addEventListener('click',e=>{const c=e.target.closest('[data-mr]');if(!c)return;S.markRate=+c.dataset.mr;save();A.el.playbackRate=S.markRate;syncMarkRates()});
 function startMark(opt){opt=opt||{};if(!A.has||A.track==='tune'){$('fstatus').textContent='先选择录音（藏文念诵或中文念诵）。';return}
   const L=allLines(),ex=getTiming()||{};let from=opt.from;if(from==null){from=L.findIndex(l=>!ex[l.id]||ex[l.id].length<nBeats(l));if(from<0)from=0}
-  A.el.pause();A.marking={i:from,b:0,tm:{},started:false,only:!!opt.only,back:!!opt.back};
+  A.el.pause();A.marking={i:from,from,b:0,tm:{},started:false,only:!!opt.only,back:!!opt.back};
   $('mfrom').innerHTML=L.map((l,i)=>`<option value="${i}">${esc(l.id)}${ex[l.id]?'':'（未标）'}</option>`).join('');$('mfrom').value=from;
   $('mstartrow').hidden=!!opt.only;$('settings').hidden=true;$('tools').hidden=true;$('word').hidden=true;$('edit').hidden=true;$('mark').hidden=false;
   $('mtap').textContent='开始播放';syncMarkRates();paintMark()}
 function beginMark(){const m=A.marking,L=allLines(),ex=getTiming()||{};snapshot('重新标注前');
   let t0=0;const prev=L[m.i-1],cur=ex[L[m.i].id];if(cur)t0=cur[0]-1.5;else if(prev&&ex[prev.id])t0=ex[prev.id].slice(-1)[0];t0=Math.max(0,t0);
   m.started=true;$('mstartrow').hidden=true;$('mtap').textContent='点这里（或按空格）';A.stopAt=null;A.el.currentTime=t0;A.el.playbackRate=+S.markRate||0.75;A.el.play().catch(()=>{});paintMark()}
-$('mfrom').onchange=e=>{A.marking.i=+e.target.value;A.marking.b=0;paintMark()};
+$('mfrom').onchange=e=>{A.marking.i=A.marking.from=+e.target.value;A.marking.b=0;paintMark()};
 function tap(){const m=A.marking;if(!m)return;if(!m.started){beginMark();return}const p=markPos();if(!p)return;let t=Math.max(0,A.el.currentTime-LAG*A.el.playbackRate);
   {const L=allLines(),cur=m.tm[p.ln.id],prevId=p.b>0?p.ln.id:(L[m.i-1]&&L[m.i-1].id),pt=p.b>0?cur[p.b-1]:(prevId&&(m.tm[prevId]||(getTiming()||{})[prevId]||[]).slice(-1)[0]);if(pt!=null)t=Math.max(t,pt+0.05)}
   (m.tm[p.ln.id]=m.tm[p.ln.id]||[])[p.b]=+t.toFixed(2);m.b++;if(m.b>=nBeats(p.ln)){m.i++;m.b=0;if(m.only){finishMark();return}}paintMark()}
-function undo(){const m=A.marking;if(!m)return;const L=allLines();if(m.b>0)m.b--;else if(m.i>0){m.i--;m.b=nBeats(L[m.i])-1}else return;
+// 只撤销这次标的：退到起始句就停；上一句的时间这次没标就用已保存的
+function undo(){const m=A.marking;if(!m||!m.started)return;const L=allLines();if(m.b>0)m.b--;else if(m.i>m.from){m.i--;m.b=nBeats(L[m.i])-1}else return;
   const id=L[m.i].id;if(m.tm[id]){m.tm[id].length=m.b;if(!m.tm[id].length)delete m.tm[id]}
-  const st=m.tm[id]&&m.tm[id][m.b-1];A.el.currentTime=Math.max(0,(m.b>0?m.tm[id][m.b-1]:(m.i>0?Math.max(...m.tm[L[m.i-1].id]):0))-0.5);paintMark()}
+  const pid=m.i>0&&L[m.i-1].id,prev=m.b>0?m.tm[id][m.b-1]:pid?(m.tm[pid]||(getTiming()||{})[pid]||[]).slice(-1)[0]:null;A.el.currentTime=Math.max(0,(prev??0)-0.5);paintMark()}
 function finishMark(){const m=A.marking;if(!m)return;A.el.pause();
   if(Object.keys(m.tm).length){const merged=Object.assign({},getTiming()||{},m.tm);setTiming(merged)}
   A.marking=null;$('mark').hidden=true;document.querySelectorAll('.target').forEach(x=>x.classList.remove('target'));refreshTiming();syncPlayer();
@@ -1564,5 +1578,6 @@ $('cxOk').onclick=()=>{const name=$('cxName').value.trim();if(!name){$('cxName')
 render();
 loadTrack();
 route();
+requestAnimationFrame(()=>window.splashDone&&splashDone());
 </script>
 <script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js'))</script></body></html>
