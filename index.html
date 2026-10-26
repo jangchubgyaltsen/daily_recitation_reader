@@ -554,7 +554,7 @@ const ONE={bo:'藏',ph:'音',zh:'汉',gl:'意'};
 const DEF={bo:1,ph:1,zh:1,gl:0,color:1,size:1,mpad:0,rit:0,split:'beat',s_bo:1,s_ph:1,s_zh:1,s_gl:1,lgap:22};
 let S=Object.assign({},DEF);
 try{Object.assign(S,JSON.parse(localStorage.getItem('reader')||'{}'))}catch(e){}
-if(!S.yuDefault){S.track='tune';S.yuDefault=1}
+if(S.trackV!==2){delete S.track;S.trackV=2}
 // 整体字号已拆成藏文、汉字两根滑条：旧的整体倍数并进各行
 if(S.size&&S.size!==1){['s_bo','s_ph','s_zh','s_gl'].forEach(k=>S[k]=+((S[k]||1)*S.size).toFixed(2));S.size=1}
 const save=()=>{try{localStorage.setItem('reader',JSON.stringify(S))}catch(e){}};
@@ -750,8 +750,35 @@ $('pick').innerHTML=RITUALS.map((r,i)=>`<option value="${i}">${esc(r.meta['title
 $('pick').value=S.rit;
 
 /* ---------- audio ---------- */
-const TRACKS=[['tune','字鱼相随'],['bo','藏文念诵'],['zh','中文念诵']];
-const A={el:Object.assign(new Audio(),{preload:'auto'}),track:S.track||'tune',urls:{},stopAt:null,has:false,tm:null,order:[],marking:null};
+const TRACKS=[['bo','藏文念诵'],['zh','中文念诵'],['tune','字鱼相随']];
+// one player for both real recordings and 字鱼相随: in 'tune' mode a virtual clock stands in for the audio element
+class Player extends EventTarget{
+  constructor(){super();const a=this.au=new Audio();a.preload='auto';this.v=false;this.vt=0;this.vd=0;this.vp=true;this.vr=1;this.t0=0;this.iv=null;
+    ['play','pause','ended','timeupdate','loadedmetadata','seeking','error','ratechange'].forEach(ev=>a.addEventListener(ev,()=>{if(!this.v)this.emit(ev)}))}
+  emit(ev){this.dispatchEvent(new Event(ev))}
+  real(url){if(this.v){this.vpause(true);this.v=false}if(url){if(this.au.src!==url)this.au.src=url}else this.au.removeAttribute('src')}
+  virt(dur){this.au.pause();const was=this.v;this.v=true;this.vp=true;clearInterval(this.iv);if(!was||this.vd!==dur){this.vd=dur;this.vt=0}this.emit('loadedmetadata')}
+  now(){return this.vp?this.vt:Math.min(this.vd,this.vt+(performance.now()-this.t0)/1000*this.vr)}
+  vpause(quiet){if(this.vp)return;this.vt=this.now();this.vp=true;clearInterval(this.iv);if(!quiet)this.emit('pause')}
+  play(){if(!this.v)return this.au.play();ac();if(!this.vp)return Promise.resolve();if(this.vt>=this.vd)this.vt=0;this.t0=performance.now();this.vp=false;
+    this.iv=setInterval(()=>{if(this.now()>=this.vd){this.vt=this.vd;this.vp=true;clearInterval(this.iv);this.emit('pause');this.emit('ended')}else this.emit('timeupdate')},250);this.emit('play');return Promise.resolve()}
+  pause(){if(!this.v)return this.au.pause();this.vpause()}
+  get currentTime(){return this.v?this.now():this.au.currentTime}
+  set currentTime(t){if(!this.v){this.au.currentTime=t;return}this.vt=Math.max(0,Math.min(this.vd,+t||0));this.t0=performance.now();this.emit('seeking');this.emit('timeupdate')}
+  get duration(){return this.v?this.vd:this.au.duration}
+  get paused(){return this.v?this.vp:this.au.paused}
+  get ended(){return this.v?this.vp&&this.vt>=this.vd:this.au.ended}
+  get readyState(){return this.v?4:this.au.readyState}
+  get playbackRate(){return this.v?this.vr:this.au.playbackRate}
+  set playbackRate(r){if(!this.v){this.au.playbackRate=r;return}if(!this.vp){this.vt=this.now();this.t0=performance.now()}this.vr=+r||1}
+  get preservesPitch(){return this.au.preservesPitch}set preservesPitch(x){this.au.preservesPitch=x}
+  get muted(){return this.au.muted}set muted(x){this.au.muted=x}
+  get preload(){return this.au.preload}set preload(x){this.au.preload=x}
+  get src(){return this.v?'':this.au.src}
+  getAttribute(k){return this.v?(k==='src'?null:null):this.au.getAttribute(k)}
+  removeAttribute(k){this.au.removeAttribute(k)}
+}
+const A={el:new Player(),track:S.track||'bo',urls:{},stopAt:null,has:false,tm:null,order:[],marking:null};
 A.el.preload='auto'; try{A.el.preservesPitch=true}catch(e){}
 let lastKey='',lastLine='';
 const rid=()=>(RITUALS[S.rit]||RITUALS[0]).meta.id;
@@ -777,11 +804,6 @@ function yu(R){const k=R.meta.id;if(YU[k])return YU[k];const T=yuStep(R);let n=1
   R.sections.forEach(s=>s.lines.forEach(ln=>{if(!(ln.syllables||[]).length)return;const gs=ln.beat_groups&&ln.beat_groups.length?ln.beat_groups.length:1;
     tm[ln.id]=Array.from({length:gs},()=>+(T*n++).toFixed(3))}));
   return YU[k]={tm,T,dur:Math.ceil(T*(n+1))}}
-const SILENT={};
-function silentURL(sec){if(SILENT[sec])return SILENT[sec];const sr=8000,n=sec*sr,b=new ArrayBuffer(44+n),v=new DataView(b);
-  const w=(o,x)=>{for(let i=0;i<x.length;i++)v.setUint8(o+i,x.charCodeAt(i))};w(0,'RIFF');v.setUint32(4,36+n,true);w(8,'WAVEfmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
-  v.setUint32(24,sr,true);v.setUint32(28,sr,true);v.setUint16(32,1,true);v.setUint16(34,8,true);w(36,'data');v.setUint32(40,n,true);new Uint8Array(b,44).fill(128);
-  return SILENT[sec]=URL.createObjectURL(new Blob([b],{type:'audio/wav'}))}
 function refreshTiming(){A.tm=getTiming();A.order=A.tm?allLines().filter(ln=>A.tm[ln.id]&&A.tm[ln.id].length):[]}
 function idb(){return new Promise((res,rej)=>{try{const r=indexedDB.open('reader-audio',1);r.onupgradeneeded=()=>r.result.createObjectStore('f');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}})}
 async function putFile(k,b){try{const d=await idb();d.transaction('f','readwrite').objectStore('f').put(b,k)}catch(e){}}
@@ -791,10 +813,13 @@ const AUDIO={"audio/eight-auspicious.bo.mp3": "data:audio/mpeg;base64,SUQzBAAAAA
 // embedded audio: decode base64 ourselves (some hosts block fetch() of data: URLs)
 function dataBlob(d){const i=d.indexOf(',');const bin=atob(d.slice(i+1));const a=new Uint8Array(bin.length);for(let k=0;k<bin.length;k++)a[k]=bin.charCodeAt(k);return new Blob([a],{type:d.slice(5,d.indexOf(';'))})}
 function fetchBlobURL(u){if(!(u in FETCHED))FETCHED[u]=AUDIO[u]?Promise.resolve().then(()=>URL.createObjectURL(dataBlob(AUDIO[u]))).catch(()=>null):fetch(u).then(r=>{if(!r.ok)throw 0;return r.blob()}).then(b=>URL.createObjectURL(b)).catch(()=>null);return FETCHED[u]}
-async function trackURL(t){if(t==='tune')return silentURL(yu(RITUALS[S.rit]||RITUALS[0]).dur);
+async function trackURL(t){if(t==='tune')return 'tune:';
   const k=rid()+':'+t;if(A.urls[k])return A.urls[k];const b=await getFile(k);if(b)return A.urls[k]=URL.createObjectURL(b);
   const u=(RITUALS[S.rit]||RITUALS[0]).meta['audio.'+t];return u?await fetchBlobURL(u):null}
-async function loadTrack(){A.el.pause();A.el.muted=A.track==='tune';if(typeof E!=='undefined')E.peaks=null;A.track=S.track||'tune';let url=await trackURL(A.track);if(!url){A.track='tune';url=await trackURL('tune')}A.has=!!url;if(url){if(A.el.src!==url)A.el.src=url}else{A.el.removeAttribute('src')}
+// track choice: what the user picked if this ritual has it, else 藏文念诵, then 中文念诵, 字鱼相随 last
+async function pickTrack(){for(const t of [...new Set([S.track,'bo','zh','tune'].filter(Boolean))]){const u=await trackURL(t);if(u)return [t,u]}return ['tune','tune:']}
+async function loadTrack(){A.el.pause();if(typeof E!=='undefined')E.peaks=null;const [t,url]=await pickTrack();A.track=t;A.has=true;
+  if(t==='tune')A.el.virt(yu(RITUALS[S.rit]||RITUALS[0]).dur);else A.el.real(url);
   refreshTiming();await syncPlayer()}
 async function syncPlayer(){
   const avail=[];for(const [k,n] of TRACKS){if(await trackURL(k))avail.push([k,n])}
@@ -838,6 +863,8 @@ function paint(pos){
   document.querySelectorAll('.line.playing').forEach(x=>{if(x!==el)x.classList.remove('playing')});
   if(!el)return;if(!el.classList.contains('playing'))el.classList.add('playing');updKp();
   if(pos.id!==lastLine){lastLine=pos.id;const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-160)el.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}}
+try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
+addEventListener('pointerdown',()=>{if(AC&&AC.state!=='running')AC.resume()},true);
 let AC=null;function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
 function woodblock(when,accent){const c=ac();if(!c)return;const f=accent?700:760;
   const o=c.createOscillator(),g=c.createGain(),bp=c.createBiquadFilter();o.type='triangle';o.frequency.setValueAtTime(f*1.5,when);o.frequency.exponentialRampToValueAtTime(f,when+0.015);
@@ -921,7 +948,7 @@ $('exportMark').onclick=()=>{refreshTiming();if(!A.tm){$('fstatus').textContent=
   navigator.clipboard&&navigator.clipboard.writeText(txt).then(()=>{$('fstatus').textContent='已复制，发给我就能写进数据文件。'}).catch(()=>{box.select();$('fstatus').textContent='请手动全选复制下面的内容。'})};
 /* visual editor: waveform + draggable beat markers, one line at a time */
 const E={li:0,sel:0,peaks:null,pps:100,drag:null,raf:0};
-async function loadPeaks(){E.peaks=null;try{const url=await trackURL(A.track);if(!url)return;const buf=await (await fetch(url)).arrayBuffer();
+async function loadPeaks(){E.peaks=null;try{const url=A.track==='tune'?null:await trackURL(A.track);if(!url)return;const buf=await (await fetch(url)).arrayBuffer();
   const ctx=new (window.AudioContext||window.webkitAudioContext)();const ab=await ctx.decodeAudioData(buf);ctx.close&&ctx.close();
   const ch=ab.getChannelData(0),step=Math.max(1,Math.floor(ab.sampleRate/E.pps)),n=Math.ceil(ch.length/step),pk=new Float32Array(n);
   for(let i=0;i<n;i++){let m=0;for(let j=i*step,e=Math.min(ch.length,j+step);j<e;j++){const v=Math.abs(ch[j]);if(v>m)m=v}pk[i]=m}
@@ -1059,7 +1086,7 @@ function sortCombos(){return S.combos.filter(c=>!c.hidden).sort((a,b)=>(b.pin||0
 function sortRits(){return RITUALS.slice().sort((a,b)=>score('r:'+b.meta.id)-score('r:'+a.meta.id)||lastUse('r:'+b.meta.id)-lastUse('r:'+a.meta.id)||RITUALS.indexOf(a)-RITUALS.indexOf(b))}
 // 时长：读录音的长度，算一次存起来
 const DURQ={};
-function ritDur(R){const id=R.meta.id,k=id+'|'+(R.meta['audio.bo']||'');if(S.dur[k]!=null)return S.dur[k];if((S.track||'tune')==='tune'||!R.meta['audio.bo'])return yu(R).dur;
+function ritDur(R){const id=R.meta.id,k=id+'|'+(R.meta['audio.bo']||'');if(S.track==='tune'||!R.meta['audio.bo'])return yu(R).dur;if(S.dur[k]!=null)return S.dur[k];
   if(!DURQ[k]){DURQ[k]=(async()=>{let u=null;const b=await getFile(id+':bo');if(b)u=URL.createObjectURL(b);else if(R.meta['audio.bo'])u=await fetchBlobURL(R.meta['audio.bo']);if(!u)return;
     const a=new Audio();a.preload='metadata';a.src=u;await new Promise(r=>{a.onloadedmetadata=r;a.onerror=r;setTimeout(r,8000)});
     if(isFinite(a.duration)&&a.duration>0){S.dur[k]=a.duration;save();redraw()}})()}
