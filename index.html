@@ -384,8 +384,21 @@ body.land #main .line.lpn :is(.r-ph,.r-zh,.c-ph,.c-gl){display:none}body.land #m
 body.land #lrep{display:flex;position:absolute;right:12px;bottom:8px;align-items:center;gap:5px;font:13px var(--f-ui);color:var(--lapis);background:var(--paper);padding:3px 8px;border-radius:999px;font-variant-numeric:tabular-nums;pointer-events:none}
 #lrep i{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--lapis);box-sizing:border-box}#lrep i.on{background:var(--lapis)}#lrep b{font:600 20px/1 var(--f-zh)}
 body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land .player-in .ptime{margin-left:auto}
+/* 打开时的上师法相（只在网页版有图；每次随机一张，点一下跳过） */
+#splash{position:fixed;inset:0;z-index:100;background:var(--paper);overflow:hidden;transition:opacity .45s ease;cursor:pointer}
+#splash.out{opacity:0;pointer-events:none}
+#splash img{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .3s ease}#splash.ld img{opacity:1}
+#splash .sp-bg{object-fit:cover;filter:blur(28px) brightness(.55);transform:scale(1.15)}
+#splash .sp-fg{object-fit:contain;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);box-sizing:border-box}
+@media (prefers-reduced-motion: reduce){#splash{transition:none}}
 </style>
 
+<div id="splash" aria-hidden="true"><img class="sp-bg" alt=""><img class="sp-fg" alt=""></div>
+<script>(function(){var L=["a/7e0c5524abb8.jpg", "a/6d9c6cc13b3b.jpg", "a/2cc41e269001.jpg", "a/b507ab712c77.jpg", "a/68dd628d14d1.jpg", "a/503f95bf8755.jpg", "a/74cad8ef55cf.jpg", "a/27c69b24a7c2.jpg", "a/a987c324eedf.jpg", "a/6622b48c7a36.jpg", "a/0f08f1d42c81.jpg", "a/a4015cb43569.jpg", "a/7a865ba73d81.jpg", "a/23e41301a097.jpg", "a/62c1d88229ce.jpg", "a/501bd5a1c279.jpg"],e=document.getElementById('splash');if(!L.length){e.remove();window.splashDone=function(){};return}
+  var last=-1;try{last=+localStorage.getItem('splashLast')}catch(x){}var i=Math.floor(Math.random()*L.length);if(L.length>1&&i===last)i=(i+1+Math.floor(Math.random()*(L.length-1)))%L.length;
+  try{localStorage.setItem('splashLast',i)}catch(x){}var im=e.querySelectorAll('img');im[1].onload=function(){e.classList.add('ld')};im[0].src=im[1].src=L[i];if(im[1].complete&&im[1].naturalWidth)e.classList.add('ld');
+  var t0=Date.now(),gone=false;function hide(){if(gone)return;gone=true;e.classList.add('out');setTimeout(function(){e.remove()},500)}
+  e.addEventListener('click',hide);window.splashDone=function(){setTimeout(hide,Math.max(0,1200-(Date.now()-t0)))};setTimeout(hide,6000)})()</script>
 <div class="top"><div class="top-in">
   <button class="iconbtn back" id="back" aria-label="返回">‹</button>
   <select id="pick" aria-label="选择仪轨"></select>
@@ -1565,5 +1578,6 @@ $('cxOk').onclick=()=>{const name=$('cxName').value.trim();if(!name){$('cxName')
 render();
 loadTrack();
 route();
+requestAnimationFrame(()=>window.splashDone&&splashDone());
 </script>
 <script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js'))</script></body></html>

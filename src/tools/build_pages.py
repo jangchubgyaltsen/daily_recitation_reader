@@ -11,6 +11,17 @@ subprocess.run([sys.executable, f'{root}/tools/build_app.py', '--pages', out], c
 subprocess.run([sys.executable, f'{root}/tools/sync_src.py', out], check=True)  # 源文件一起进仓库，每次发布都有记录
 t = open(f'{out}/index.html', encoding='utf-8').read()
 audio = json.load(open(f'{out}/audio-files.json'))
+# 打开时的上师法相：pages/splash/*.jpg，按内容哈希放进 a/，和音频一样存在手机上
+splash = []
+for f in sorted(os.listdir(f'{root}/pages/splash')):
+    if not f.endswith('.jpg'): continue
+    b = open(f'{root}/pages/splash/{f}', 'rb').read()
+    n = f'a/{hashlib.sha1(b).hexdigest()[:12]}.jpg'
+    open(f'{out}/{n}', 'wb').write(b)
+    splash.append(n)
+assert t.count('/*SPLASH*/[]') == 1
+t = t.replace('/*SPLASH*/[]', json.dumps(splash))
+audio += splash
 os.makedirs(f'{out}/fonts', exist_ok=True)
 shutil.copy(f'{root}/app/fonts/NotoSerifTibetan.woff2', f'{out}/fonts/NotoSerifTibetan.woff2')
 face = ("<style>@font-face{font-family:'Noto Serif Tibetan';font-style:normal;font-weight:400 700;font-display:swap;"
@@ -48,7 +59,10 @@ const base=f=>f.split('/').pop();
 async function fillAudio(){{const c=await caches.open(A),keys=await c.keys(),have=new Set(keys.map(r=>base(new URL(r.url).pathname))),want=new Set(AUDIO.map(base));
   for(const r of keys)if(!want.has(base(new URL(r.url).pathname)))await c.delete(r);
   for(const f of AUDIO)if(!have.has(base(f)))try{{await c.add(f)}}catch(e){{}}}}
-self.addEventListener('install',e=>{{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>c.addAll(FILES)))}});
+const SPLASH={json.dumps(splash)};
+// 法相图片安装时就一次存好（放在长期缓存里，已有的不重下）
+async function fillSplash(){{const c=await caches.open(A);for(const f of SPLASH)if(!(await c.match(f,{{ignoreSearch:true}})))try{{await c.add(f)}}catch(e){{}}}}
+self.addEventListener('install',e=>{{self.skipWaiting();e.waitUntil(Promise.all([caches.open(C).then(c=>c.addAll(FILES)),fillSplash()]))}});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!==A).map(k=>caches.delete(k)))).then(()=>self.clients.claim()).then(()=>{{fillAudio()}})));
 self.addEventListener('fetch',e=>{{
   if(e.request.method!=='GET'||new URL(e.request.url).origin!==location.origin)return;
