@@ -359,7 +359,7 @@ body.land #main::-webkit-scrollbar{display:none}
 body.land #main{display:flex;flex-direction:column}body.land #main .lines{margin-block:auto;width:100%}
 body.land #main>:not(.lines),body.land #main .lines>section>:not(.line),body.land #main .line:not(.lv),body.land #main section:not(:has(.lv)){display:none}
 body.land #main .line{border-bottom:0;padding-block:6px;border-radius:10px;padding-inline:4px 8px;scroll-margin:8px}
-body.land #main .line.lfut{opacity:.45}
+body.land .lines{--size:1.3}
 body.land .lside{display:flex;position:fixed;top:var(--ltop,52px);bottom:var(--lbot,60px);right:0;width:min(200px,24vw);flex-direction:column;justify-content:center;gap:10px;
   padding:0 max(16px,env(safe-area-inset-right,0px)) 0 18px;border-left:1px solid var(--rule);margin-block:12px;font-size:13px;color:var(--muted);box-sizing:border-box}
 .lside .lsec{font:15px/1.5 var(--f-zh);color:var(--ink)}.lside .ldots{display:flex;flex-wrap:wrap;align-items:center;gap:6px;color:var(--lapis);font-size:14px}
@@ -671,11 +671,10 @@ function render(){
   R.sections.forEach((s,si)=>{
     h+=`<section id="${esc(R.meta.id)}-${esc(s.id)}" class="${showSec?'':'flat'}">`+(showSec?`<h2>${esc(s['title.zh'])}${+s.repeat>1?`<span class="rep">念 ${esc(s.repeat)} 遍</span>`:''}</h2>`:'');
     h+=rubricHTML(s,'note','');
-    const vg=Math.ceil(s.lines.length/4),vs=Math.ceil(s.lines.length/vg);
     s.lines.forEach((ln,li)=>{
       const ws=words(ln);
       h+=rubricHTML(ln,'rubric','ln');
-      h+=`<div class="line${ln.kind==='mantra'?' mantra':''}" data-s="${si}" data-l="${li}" data-v="${si}-${Math.floor(li/vs)}" data-id="${esc(ln.id)}"><div class="num" title="播放这一句">${esc(ln.id)}</div><div class="body">`;
+      h+=`<div class="line${ln.kind==='mantra'?' mantra':''}" data-s="${si}" data-l="${li}" data-id="${esc(ln.id)}"><div class="num" title="播放这一句">${esc(ln.id)}</div><div class="body">`;
       if(S.gl && (ln.words||ln.beat_groups)){ h+=ilHTML(ln,ws); if(S.zh) h+=`<div class="r-zh">${zhHTML(ln,ws)}</div>`; }
       else{
         if(S.bo) h+=`<div class="r-bo">${boHTML(ln,ws)}</div>`;
@@ -696,7 +695,7 @@ function render(){
   $('main').innerHTML=h;
   syncControls(); lastKey=''; if(typeof paintMark==='function'&&A.marking) paintMark();
   if(typeof updKp==='function') updKp();
-  if(typeof landSync==='function') {LAND.v=null;landSync()}
+  if(typeof landSync==='function') {LAND.k=null;landSync()}
 }
 function syncControls(){
   const vs=versions(RITUALS[S.rit]||RITUALS[0]),cur=zk(),ci=Math.max(0,vs.findIndex(v=>v[0]===cur)),vn=n=>/新/.test(n)?'新':/旧/.test(n)?'旧':n.slice(0,1);
@@ -886,7 +885,7 @@ function paint(pos){
   want.forEach(x=>{if(!x.classList.contains('cur'))x.classList.add('cur')});
   document.querySelectorAll('.line.playing').forEach(x=>{if(x!==el)x.classList.remove('playing')});
   if(!el)return;if(!el.classList.contains('playing'))el.classList.add('playing');updKp();
-  if(LAND.on){if(pos.id!==lastLine){lastLine=pos.id;landShow(el.dataset.v,el)}return}
+  if(LAND.on){lastLine=pos.id;landShow(el);return}
   if(pos.id!==lastLine){lastLine=pos.id;const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-160)el.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}}
 try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
 addEventListener('pointerdown',()=>{if(AC&&AC.state!=='running')AC.resume()},true);
@@ -906,10 +905,10 @@ function skipGap(t){if(A.track!=='tune'||A.marking||A.el.paused)return false;for
 function showProgress(){const d=A.el.duration,t=A.el.currentTime||0,r=A.el.playbackRate||+S.rate||1;
   if(!isFinite(d)||!d){$('pbar').style.transform='scaleX(0)';return}
   $('pbar').style.transform=`scaleX(${Math.min(1,t/d)})`;$('ptime').textContent=fmt(t/r)+' / '+fmt(d/r)}
-function tick(){const t=A.el.currentTime;if(skipGap(t))return;scheduleClicks(t);
+function tick(){const t=A.el.currentTime,stop=A.stopAt;if(skipGap(t))return;scheduleClicks(t);
   if(A.stopAt!=null&&t>=A.stopAt-0.02){A.el.pause();A.stopAt=null;if(E.loop&&!$('edit').hidden){clearTimeout(E.lt);E.lt=setTimeout(()=>{if(E.loop&&!$('edit').hidden)ePlay(E.loop)},450)}}
   if(typeof checkRest==='function')checkRest(t);
-  if(!A.marking){const tt=t+(A.track==='tune'?0.03:(S.hlOffset??0.15))*A.el.playbackRate;
+  if(!A.marking){let tt=t+(A.track==='tune'?0.03:(S.hlOffset??0.15))*A.el.playbackRate;if(stop!=null)tt=Math.min(tt,stop-0.05);
     // ignore tiny backward jitter of currentTime (some phones), but follow real seeks
     if(A.lastT!=null&&tt<A.lastT&&A.lastT-tt<0.25){}else{A.lastT=tt;const pos=locate(tt);const key=pos?pos.id+'/'+pos.b:'';if(key!==lastKey){lastKey=key;paint(pos)}}}
   showProgress()}
@@ -1152,33 +1151,31 @@ function drawCombo(){const c=comboById(S.ed);if(!c)return;CUR_C=c;
 }
 let VIEW='';
 
-// ---- 横屏跟读 ----
+// ---- 横屏跟读：一屏只放当前这一句；换句（包括重复念的下一遍）都从下面接上来，不跳回去 ----
 function landSync(){const on=LQ.matches&&VIEW==='reader'&&!LAND.off;if(!LQ.matches)LAND.off=false;
-  if(on!==LAND.on){LAND.on=on;document.body.classList.toggle('land',on);LAND.v=null;if(!on){const el=document.querySelector('.line.playing')||document.querySelector('.line.lv');document.querySelectorAll('.lv,.lfut').forEach(x=>x.classList.remove('lv','lfut'));if(el)el.scrollIntoView({block:'center'});return}}
+  if(on!==LAND.on){LAND.on=on;document.body.classList.toggle('land',on);LAND.k=null;if(!on){const el=document.querySelector('.line.playing')||document.querySelector('.line.lv');document.querySelectorAll('.lv').forEach(x=>x.classList.remove('lv'));if(el)el.scrollIntoView({block:'center'});return}}
   if(!on)return;const st=document.body.style;st.setProperty('--ltop',document.querySelector('.top').offsetHeight+'px');st.setProperty('--lbot',$('player').hidden?'0px':$('player').offsetHeight+'px');
-  const el=document.querySelector('.line.playing')||LAND.at||[...document.querySelectorAll('#main .line')].find(x=>x.getBoundingClientRect().bottom>80)||document.querySelector('#main .line');
-  if(el)landShow(el.dataset.v,el)}
-function landShow(v,cur){const ls=[...document.querySelectorAll('#main .line')];const changed=v!==LAND.v;LAND.v=v;LAND.at=cur||null;
-  let after=false;for(const x of ls){const inV=x.dataset.v===v;x.classList.toggle('lv',inV);x.classList.toggle('lfut',inV&&after&&!!cur&&!A.el.paused);if(x===cur)after=true}
-  const m=$('main');if(changed)m.scrollTop=0;if(cur){const r=cur.getBoundingClientRect(),b=m.getBoundingClientRect();if(r.bottom>b.bottom-8||r.top<b.top+4)m.scrollTo({top:m.scrollTop+r.top-b.top-Math.max(8,(b.height-r.height)/2),behavior:changed?'auto':'smooth'})}
+  const el=document.querySelector('.line.playing')||(LAND.at&&LAND.at.isConnected&&LAND.at)||[...document.querySelectorAll('#main .line')].find(x=>x.getBoundingClientRect().bottom>80)||document.querySelector('#main .line');
+  if(el)landShow(el)}
+function landShow(el,dir){if(!el)return;LAND.at=el;const key=el.dataset.id+'|'+(S.q?S.q.cid+'/'+S.q.i+'/'+S.q.r:'');
+  document.querySelectorAll('#main .line.lv').forEach(x=>{if(x!==el)x.classList.remove('lv')});el.classList.add('lv');
+  if(key!==LAND.k){const first=LAND.k==null;LAND.k=key;$('main').scrollTop=0;
+    if(!first&&el.animate&&!matchMedia('(prefers-reduced-motion: reduce)').matches)el.animate([{transform:`translateY(${dir<0?-36:36}px)`,opacity:0},{transform:'none',opacity:1}],{duration:280,easing:'ease-out'})}
   landSide()}
-function landSide(){if(!LAND.on||!LAND.v)return;const R=RITUALS[S.rit]||RITUALS[0];const [si]=LAND.v.split('-').map(Number);const s=R.sections[si];if(!s)return;
-  const vl=[...document.querySelectorAll('#main .line.lv')],a=vl[0]&&vl[0].dataset.id,b=vl.length&&vl[vl.length-1].dataset.id;
+function landSide(){if(!LAND.on||!LAND.at)return;const R=RITUALS[S.rit]||RITUALS[0];const s=R.sections[+LAND.at.dataset.s];if(!s)return;
   let h='';const t=shortSec(s['title.zh']||'');if(t&&R.meta.show_sections!=='no')h+=`<div class="lsec">${esc(t)}</div>`;
-  if(s.lines.length>1)h+=`<div>第 ${esc(a)}${a!==b?'–'+esc(b):''} 句 · 本段 ${s.lines.length} 句</div>`;
+  if(s.lines.length>1)h+=`<div>第 ${+LAND.at.dataset.l+1} / ${s.lines.length} 句</div>`;
   const x=qItem(),tot=x?itemTotal(x.it):1;
   if(tot>1){const r=Math.min(S.q.r||1,tot);h+=tot<=9?`<div class="ldots">${Array.from({length:tot},(_,i)=>`<i class="${i<r?'on':''}"></i>`).join('')}<span>第 ${r} / ${tot} 遍</span></div>`
     :`<div>已念</div><div class="lbig">${r}<small>/ ${tot} 遍</small></div>`}
   else if(+s.repeat>1)h+=`<div class="ldots"><span>念 ${esc(s.repeat)} 遍</span></div>`;
   if($('lside').innerHTML!==h)$('lside').innerHTML=h}
-// 暂停时左右滑动翻到上一偈 / 下一偈
+// 暂停时左右滑动：上一句 / 下一句
 {let x0=null,y0=0;$('main').addEventListener('touchstart',e=>{if(!LAND.on)return;x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
- $('main').addEventListener('touchend',e=>{if(!LAND.on||x0==null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.5)return;
-   const vs=[...new Set([...document.querySelectorAll('#main .line')].map(l=>l.dataset.v))];const i=vs.indexOf(LAND.v)+(dx<0?1:-1);if(i<0||i>=vs.length)return;
-   if(!A.el.paused)return;landShow(vs[i],null)},{passive:true})}
+ $('main').addEventListener('touchend',e=>{if(!LAND.on||x0==null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.5||!A.el.paused)return;
+   const ls=[...document.querySelectorAll('#main .line')],i=ls.indexOf(LAND.at)+(dx<0?1:-1);if(i>=0&&i<ls.length)landShow(ls[i],dx<0?1:-1)},{passive:true})}
 $('pfull').onclick=()=>{LAND.off=true;landSync()};
 (LQ.addEventListener?LQ.addEventListener('change',landSync):LQ.addListener(landSync));addEventListener('resize',()=>{if(LAND.on)landSync()});
-['play','pause'].forEach(ev=>A.el.addEventListener(ev,()=>{if(LAND.on){const c=document.querySelector('.line.playing');landShow(LAND.v,c&&c.dataset.v===LAND.v?c:null)}}));
 function show(v){VIEW=v;setTimeout(()=>typeof landSync==='function'&&landSync());document.body.classList.toggle('v-home',v==='home');document.body.classList.toggle('v-reader',v==='reader');document.body.classList.toggle('v-combo',v==='combo');document.body.classList.toggle('v-calset',v==='calset'||v==='prefs');
   $('home').hidden=v!=='home';$('combo').hidden=v!=='combo';$('calset').hidden=v!=='calset';$('prefs').hidden=v!=='prefs';
   ['settings','tools','word','mark','edit','align','addsheet','tocombo','speedpop','qsheet','tsheet','rpick','cxsheet'].forEach(id=>$(id).hidden=true);
