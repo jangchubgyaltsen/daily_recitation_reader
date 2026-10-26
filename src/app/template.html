@@ -810,10 +810,19 @@ const LAND={on:false,off:false,v:null},LQ=matchMedia('(orientation: landscape) a
 const TRACKS=[['bo','藏文念诵'],['zh','中文念诵'],['tune','字鱼相随']];
 // one player for both real recordings and 字鱼相随: in 'tune' mode a virtual clock stands in for the audio element
 class Player extends EventTarget{
-  constructor(){super();const a=this.au=new Audio();a.preload='auto';this.v=false;this.vt=0;this.vd=0;this.vp=true;this.vr=1;this.t0=0;this.iv=null;
-    ['play','pause','ended','timeupdate','loadedmetadata','seeking','error','ratechange'].forEach(ev=>a.addEventListener(ev,()=>{if(!this.v)this.emit(ev)}))}
+  // 两个 audio 轮流用：一个在念，另一个提前载好下一部，念完直接换过去，不等加载（自动衔接）
+  constructor(){super();this.els=[0,1].map(()=>{const a=new Audio();a.preload='auto';try{a.preservesPitch=true}catch(e){}
+    ['play','pause','ended','timeupdate','loadedmetadata','seeking','error','ratechange'].forEach(ev=>a.addEventListener(ev,()=>{if(!this.v&&a===this.au)this.emit(ev)}));return a});
+    this.au=this.els[0];this.v=false;this.vt=0;this.vd=0;this.vp=true;this.vr=1;this.t0=0;this.iv=null}
+  spare(){return this.els[this.els[0]===this.au?1:0]}
+  prep(url){const b=this.spare();if(url&&b.src!==url){b.src=url;b.load()}}
+  ready(url){const b=this.spare();return !!url&&b.src===url&&b.readyState>=3}
+  // iOS 要在点按时 play 过一次的 audio 才能之后自动播放：第一次点按时把备用的那个静音播一下
+  unlock(){const b=this.spare();if(this.ul||!b.paused)return;this.ul=1;const own=!b.getAttribute('src');b.muted=true;if(own)b.src=silWav();
+    const p=b.play();Promise.resolve(p).then(()=>{b.pause();b.muted=false;if(own&&b.src.startsWith('data:')){b.removeAttribute('src');b.load()}}).catch(()=>{b.muted=false;this.ul=0})}
   emit(ev){this.dispatchEvent(new Event(ev))}
-  real(url){if(this.v){this.vpause(true);this.v=false}if(url){if(this.au.src!==url)this.au.src=url}else this.au.removeAttribute('src')}
+  real(url){if(this.v){this.vpause(true);this.v=false}if(!url){this.au.removeAttribute('src');return}if(this.au.src===url)return;
+    const b=this.spare();if(b.src===url&&b.readyState>=2){const o=this.au;o.pause();b.playbackRate=o.playbackRate;b.muted=o.muted;this.au=b;this.emit('loadedmetadata')}else this.au.src=url}
   virt(dur){this.au.pause();const was=this.v;this.v=true;this.vp=true;clearInterval(this.iv);if(!was||this.vd!==dur){this.vd=dur;this.vt=0}this.emit('loadedmetadata')}
   now(){return this.vp?this.vt:Math.min(this.vd,this.vt+(performance.now()-this.t0)/1000*this.vr)}
   vpause(quiet){if(this.vp)return;this.vt=this.now();this.vp=true;clearInterval(this.iv);if(!quiet)this.emit('pause')}
@@ -835,6 +844,9 @@ class Player extends EventTarget{
   getAttribute(k){return this.v?(k==='src'?null:null):this.au.getAttribute(k)}
   removeAttribute(k){this.au.removeAttribute(k)}
 }
+function silWav(){const n=400,b=new Uint8Array(44+n),v=new DataView(b.buffer),w=(o,t)=>[...t].forEach((c,i)=>b[o+i]=c.charCodeAt(0));
+  w(0,'RIFF');v.setUint32(4,36+n,true);w(8,'WAVEfmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,8000,true);v.setUint32(28,8000,true);v.setUint16(32,1,true);v.setUint16(34,8,true);w(36,'data');v.setUint32(40,n,true);b.fill(128,44);
+  let s='';b.forEach(x=>s+=String.fromCharCode(x));return 'data:audio/wav;base64,'+btoa(s)}
 const A={el:new Player(),track:S.track||'bo',urls:{},stopAt:null,has:false,tm:null,order:[],marking:null};
 A.el.preload='auto'; try{A.el.preservesPitch=true}catch(e){}
 let lastKey='',lastLine='';
@@ -870,12 +882,12 @@ const AUDIO=/*AUDIO*/null||{};
 // embedded audio: decode base64 ourselves (some hosts block fetch() of data: URLs)
 function dataBlob(d){const i=d.indexOf(',');const bin=atob(d.slice(i+1));const a=new Uint8Array(bin.length);for(let k=0;k<bin.length;k++)a[k]=bin.charCodeAt(k);return new Blob([a],{type:d.slice(5,d.indexOf(';'))})}
 function fetchBlobURL(u){if(!(u in FETCHED))FETCHED[u]=AUDIO[u]?Promise.resolve().then(()=>URL.createObjectURL(dataBlob(AUDIO[u]))).catch(()=>null):fetch(u).then(r=>{if(!r.ok)throw 0;return r.blob()}).then(b=>URL.createObjectURL(b)).catch(()=>null);return FETCHED[u]}
-async function trackURL(t){if(t==='tune')return 'tune:';
-  const k=rid()+':'+t;if(A.urls[k])return A.urls[k];const b=await getFile(k);if(b)return A.urls[k]=URL.createObjectURL(b);
-  const u=(RITUALS[S.rit]||RITUALS[0]).meta['audio.'+t];return u?await fetchBlobURL(u):null}
+async function trackURL(t,R){R=R||RITUALS[S.rit]||RITUALS[0];if(t==='tune')return 'tune:';
+  const k=R.meta.id+':'+t;if(A.urls[k])return A.urls[k];const b=await getFile(k);if(b)return A.urls[k]=URL.createObjectURL(b);
+  const u=R.meta['audio.'+t];return u?await fetchBlobURL(u):null}
 // track choice: what the user picked if this ritual has it, else 藏文念诵, then 中文念诵, 字鱼相随 last
-async function pickTrack(){for(const t of [...new Set([S.track,'bo','zh','tune'].filter(Boolean))]){const u=await trackURL(t);if(u)return [t,u]}return ['tune','tune:']}
-async function loadTrack(){A.el.pause();A.sr={};A.solo=1;if(typeof E!=='undefined')E.peaks=null;const [t,url]=await pickTrack();A.track=t;A.has=true;
+async function pickTrack(R){for(const t of [...new Set([S.track,'bo','zh','tune'].filter(Boolean))]){const u=await trackURL(t,R);if(u)return [t,u]}return ['tune','tune:']}
+async function loadTrack(keep){if(!keep)A.el.pause();A.sr={};A.solo=1;if(typeof E!=='undefined')E.peaks=null;const [t,url]=await pickTrack();A.track=t;A.has=true;
   if(t==='tune')A.el.virt(yu(RITUALS[S.rit]||RITUALS[0]).dur);else A.el.real(url);
   refreshTiming();await syncPlayer()}
 async function syncPlayer(){
@@ -922,7 +934,7 @@ function paint(pos){
   if(LAND.on){lastLine=pos.id;landShow(el);return}
   if(pos.id!==lastLine){lastLine=pos.id;const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-160)el.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}}
 try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
-addEventListener('pointerdown',()=>{if(AC&&AC.state!=='running')AC.resume()},true);
+addEventListener('pointerdown',()=>{if(AC&&AC.state!=='running')AC.resume();A.el.unlock()},true);
 let AC=null;function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
 function woodblock(when,accent){const c=ac();if(!c)return;const f=accent?700:760;
   const o=c.createOscillator(),g=c.createGain(),bp=c.createBiquadFilter();o.type='triangle';o.frequency.setValueAtTime(f*1.5,when);o.frequency.exponentialRampToValueAtTime(f,when+0.015);
@@ -939,7 +951,7 @@ function skipGap(t){if(A.track!=='tune'||A.marking||A.el.paused)return false;for
 function showProgress(){const d=A.el.duration,t=A.el.currentTime||0,r=A.el.playbackRate||+S.rate||1;
   if(!isFinite(d)||!d){$('pbar').style.transform='scaleX(0)';return}
   $('pbar').style.transform=`scaleX(${Math.min(1,t/d)})`;$('ptime').textContent=fmt(t/r)+' / '+fmt(d/r)}
-function tick(){const t=A.el.currentTime,stop=A.stopAt;if(checkSecRep(t)||skipGap(t))return;scheduleClicks(t);
+function tick(){const t=A.el.currentTime,stop=A.stopAt;if(checkSecRep(t)||skipGap(t)||earlyEnd(t))return;scheduleClicks(t);
   if(A.stopAt!=null&&t>=A.stopAt-0.02){A.el.pause();A.stopAt=null;if(E.loop&&!$('edit').hidden){clearTimeout(E.lt);E.lt=setTimeout(()=>{if(E.loop&&!$('edit').hidden)ePlay(E.loop)},450)}}
   if(typeof checkRest==='function')checkRest(t);
   if(!A.marking){let tt=t+(A.track==='tune'?0.03:(S.hlOffset??0.15))*A.el.playbackRate;if(stop!=null)tt=Math.min(tt,stop-0.05);
@@ -1348,21 +1360,36 @@ async function gotoItem(i,auto){const x=qItem();if(!x)return;const it=x.c.items[
   const R=ritById(it.rid);S.q.i=i;S.q.r=1;S.q.done=[];save();if(!R)return gotoItem(i+1,auto);
   const idx=RITUALS.indexOf(R),h='#/r/'+encodeURIComponent(R.meta.id);
   if(VIEW==='reader'){CUR=h;setURL(h,false);if(S.rit!==idx){S.rit=idx;save();render()}scrollTo(0,0)}
+  // 下一部的录音已经在后台载好：先接着念，再换页面，听起来不断
+  const fast=auto&&A.pre&&A.pre.rid===it.rid&&A.el.ready(A.pre.url);
+  if(fast){S.rit=idx;A.track=A.pre.t;A.el.real(A.pre.url);A.sr={};A.solo=1;refreshTiming();A.stopAt=null;A.el.currentTime=0;play()}
   // 常用页、藏历里单独播一部（临时组合）：留在原页，只出迷你播放条（w）
   else if(x.c.hidden){S.rit=idx;save();render()}
   else{if(h!==CUR)STACK.push(CUR);CUR=h;setURL(h,true);S.rit=idx;save();show('reader');render();scrollTo(0,0)}
-  $('pick').value=S.rit;await loadTrack();drawQ();if(auto&&A.has){A.stopAt=null;A.el.currentTime=0;play()}}
+  $('pick').value=S.rit;await loadTrack(fast);drawQ();if(auto&&A.has&&!fast){A.stopAt=null;A.el.currentTime=0;play()}prepNext()}
 function finishCombo(){const x=qItem();S.q=null;save();drawQ();drawMini();if(!x)return;if(x.c.hidden)toast('念完了');else $('fin').hidden=false}
 $('finBack').onclick=()=>{$('fin').hidden=true;STACK.length=0;go('#/',true)};
 // 一部念完：还有遍数就从头再念，否则接下一部
-A.el.addEventListener('ended',()=>{if(A.marking)return drawMini();if(A.stopAt!=null){A.stopAt=null;return drawMini()}
+A.el.addEventListener('ended',()=>{if(performance.now()-(A.endT||0)<1500)return;onEnd()});
+// 自动衔接：念完后还要接着念（下一遍、下一部、段落重复）时，在录音最后几十毫秒就接上，不等浏览器慢半拍的 ended
+function willGoOn(){const sp=secRepPoints().find(p=>p.end);if(sp&&(A.sr[sp.s.id]||1)<sp.k)return true;
+  const x=qItem();if(!x)return (A.solo||1)<ritReps(RITUALS[S.rit]||RITUALS[0]);
+  if(restPoints().some(p=>p.end&&!(S.q.done||[]).includes(p.r.after)))return false;
+  return S.q.r<itemTotal(x.it)||S.q.i+1<x.c.items.length}
+function earlyEnd(t){if(A.track==='tune'||A.marking||A.stopAt!=null||REST.on||A.el.paused)return false;const d=A.el.duration;
+  if(!isFinite(d)||t<0.5||d-t>0.1*(A.el.playbackRate||1)||performance.now()-(A.endT||0)<1500||!willGoOn())return false;A.endT=performance.now();onEnd();return true}
+// 组合里提前载好下一部的录音
+async function prepNext(){const x=qItem();if(!x||S.q.r<itemTotal(x.it))return;const it=x.c.items[S.q.i+1];if(!it)return;const R=ritById(it.rid);if(!R||R===RITUALS[S.rit])return;
+  const key=it.rid+'@'+S.q.i;if(A.preK===key)return;A.preK=key;const [t,url]=await pickTrack(R);if(t==='tune'){A.pre=null;return}A.pre={rid:it.rid,t,url};A.el.prep(url)}
+A.el.addEventListener('play',()=>{prepNext()});
+function onEnd(){if(A.marking)return drawMini();if(A.stopAt!=null){A.stopAt=null;return drawMini()}
   {const sp=secRepPoints().find(p=>p.end);if(sp&&secRepeat(sp)){play();return}}
   const x=qItem();if(!x){if(soloRepeat())return;return drawMini()}
   const p=restPoints().find(p=>p.end&&!(S.q.done||[]).includes(p.r.after));
   if(p){S.q.done=(S.q.done||[]).concat(p.r.after);save();startRest(p.r,qAdvance);return}
-  qAdvance()});
+  qAdvance()}
 function qAdvance(){const x=qItem();if(!x)return;
-  if(S.q.r<itemTotal(x.it)){S.q.r++;S.q.done=[];A.sr={};save();drawQ();A.el.currentTime=0;play();return}
+  if(S.q.r<itemTotal(x.it)){S.q.r++;S.q.done=[];A.sr={};save();drawQ();A.el.currentTime=0;play();prepNext();return}
   if(S.q.i+1<x.c.items.length)gotoItem(S.q.i+1,true);else finishCombo()}
 function drawQ(){const x=qItem();const on=!!x&&RITUALS[S.rit]&&x.it&&ritById(x.it.rid)===RITUALS[S.rit];
   $('chead').hidden=!on;$('pick').hidden=on;$('cbar').hidden=!on;if(!on){document.querySelectorAll('.restmark').forEach(x=>x.remove());return}

@@ -1,6 +1,7 @@
 # 藏文发音词库。note 一栏写已知问题，例如「缺尾音」。改这一栏不需要改代码。
 word	file	seconds	source	note
 ཀ་མ་ལ	13fe3d765a78.mp3	1.353	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
+ཀུན་གྱི	38dd8ea509ac.mp3	0.770	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཀུན་གྱིས	618ecea85eb1.mp3	0.887	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཀུན་ཏུ	f2ce6fac2798.mp3	0.991	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཀུན་ཏུ་བཟང	283fd5848811.mp3	1.270	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
@@ -27,6 +28,7 @@ word	file	seconds	source	note
 གནང་བ་བྱིན་ནས	8f390217a4ca.mp3	1.209	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 གནས་གསུམ	16a9917252ae.mp3	1.036	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 གནས་པ	bb2bdbd803c5.mp3	1.169	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+གནས་འདིར	f32629d1ef7e.mp3	0.963	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 གནས་སུ	6b0142935a13.mp3	0.832	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 གཙོ་བོ	1ea5be12c7cb.mp3	0.970	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 གཙོ་ལ	6e590f9eb2ca.mp3	0.880	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -47,6 +49,7 @@ word	file	seconds	source	note
 གསང་བ	1b6b7cc9b5cb.mp3	0.873	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 གསུང་གི	53cfb61c4c8a.mp3	0.930	mms-tts-adx（安多），w 挑选的候选 a：单独念 语速0.8 seed0	
 གསུང་རབ	905aa666953e.mp3	0.839	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+གསུམ་ལ	0de9fe4f8702.mp3	1.035	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 གསེར་གྱི་ཉ	d81e4620f791.mp3	1.368	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 གསོལ་བ	7d5a111592d4.mp3	0.957	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 གསོལ་བ་བཏབ་པས	8a471ad1062d.mp3	1.349	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -96,6 +99,7 @@ word	file	seconds	source	note
 ཆོས་སྐུ	4ef3f6faabcc.mp3	1.110	mms-tts-adx（安多），w 挑选的候选 p：前面垫 ཨ་ 语速0.65	
 ཆོས་སྐུའི	e5d3f8706fc7.mp3	0.988	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཆོས་སྐྱོང	ada52e82d003.mp3	0.959	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+ཇི་བཞིན	49832140180c.mp3	1.068	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཇི་ལྟར	0f05ad4b8192.mp3	0.897	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཇི་སྲིད	7ae7a3b7a06f.mp3	0.812	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཉན་རང	d7c58163e708.mp3	1.274	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -104,6 +108,7 @@ word	file	seconds	source	note
 ཉི་མ	4d6b3aec3be5.mp3	0.977	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 ཉི་མ་ཡི	81a8c3fcfaa6.mp3	1.082	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཉི་ཟླའི་སྟེང	87e739f53ebd.mp3	1.260	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+ཉིད་ཀྱི	7a0134dd7353.mp3	0.858	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཉེ་བར	880a5c77d671.mp3	1.017	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 ཉེ་སྲས	0d6192a6717d.mp3	1.038	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཉེས་ལྟུང	c1ef393823a2.mp3	1.099	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -121,6 +126,7 @@ word	file	seconds	source	note
 ཐུགས་ཀྱིས་ནི	dbc7349581ce.mp3	1.277	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཐུགས་དང	2c973df789d8.mp3	1.145	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཐུགས་ནི	dce6e6583844.mp3	0.884	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+ཐུགས་བརྩེའི་ཕྱིར	ba5e99f74a1c.mp3	1.336	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཐུགས་རྗེ	74f2e873461d.mp3	1.119	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཐུགས་རྗེའི	c56f7f6f2781.mp3	1.075	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 ཐུགས་རྗེས་གཟིགས	df6227fd7930.mp3	1.329	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -153,6 +159,7 @@ word	file	seconds	source	note
 དངོས་གྲུབ	af09fa56c054.mp3	0.984	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 དངོས་གྲུབ་བརྙེས	ec069bc0a42f.mp3	1.319	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 དངོས་གྲུབ་སྩོལ	04dabab59ec3.mp3	1.426	mms-tts-adx（安多），w 挑选的候选 a：单独念 语速0.8 seed0	
+དངོས་རྣམས	64feadc2bd71.mp3	1.270	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 དཔག་བསམ	dfe93e93ea3f.mp3	1.027	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 དཔའ་བོ	2e5f906ca55c.mp3	1.082	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 དཔལ་གྱི་མཆོག	cb015f654a4f.mp3	1.462	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -165,6 +172,7 @@ word	file	seconds	source	note
 དཔལ་ལ	c280aca77ea9.mp3	0.900	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 དཔལ་ལྡན	18c72cf99677.mp3	1.235	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 དཔལ་སྤེལ་བའི	b74abb384106.mp3	1.374	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+དཔུང་བཅས	92c7931f265c.mp3	1.087	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 དབང་གི	94bd8a527872.mp3	0.913	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 དབང་ཆེན	df4c27f9cf1f.mp3	1.224	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 དབང་དུ	018961114385.mp3	1.074	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -187,6 +195,7 @@ word	file	seconds	source	note
 དེ་འདྲའི	41cc487b2d15.mp3	1.057	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 དེ་ཡི	e1cb0dc935e9.mp3	0.986	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 དེ་ལྟར	d07ae6805662.mp3	1.104	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+དེ་སྲིད	da428468f8f0.mp3	1.042	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 དེང་འདིར	f32c5d9ac4b2.mp3	1.120	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 དོན་གྲུབ་དགོངས	31d5eee60931.mp3	1.484	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 དོན་ཆེན	31213884aa8d.mp3	1.023	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -201,6 +210,7 @@ word	file	seconds	source	note
 དྲིལ་འཛིན	a4216c295bb1.mp3	0.838	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 དྲེགས་པའི	f6dbfcb6d3d4.mp3	0.938	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 དྲྭ་བའི	370e5c9cd418.mp3	0.771	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+ན་བཟའ་སོགས	1e0cf3283d06.mp3	1.592	mms-tts-adx（安多），w 挑选的候选 p：前面垫 ཨ་ 语速0.65	
 ནམ་མཁའ	0be979b3a2af.mp3	1.321	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ནམ་མཁའི	66f6f0ec840c.mp3	1.040	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 ནམ་འཆི	269202c92ade.mp3	1.053	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -230,6 +240,7 @@ word	file	seconds	source	note
 ཕྱག་འཚལ	18082b27ef52.mp3	1.172	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཕྱག་འཚལ་ལོ	ba581504962c.mp3	1.532	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཕྱག་རྒྱའི	657435a1eee5.mp3	1.193	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+ཕྱི་ནང	9f2424c9160c.mp3	1.134	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཕྱེ་བ	1740109fde92.mp3	0.878	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཕྱོགས་དུས	448e8ccbab8d.mp3	1.143	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 ཕྱོགས་བཅུ	91f74f0fc1e4.mp3	0.997	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -241,6 +252,7 @@ word	file	seconds	source	note
 བག་མེད	c801bee8f7b3.mp3	1.080	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བགེགས་དང	0a95dba347d2.mp3	1.042	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བགྱིད་པར	a0c9c05b6461.mp3	1.108	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+བཅོམ་ལྡན	4a9a83934a1d.mp3	0.878	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བདག་ཀྱང	e3f752bf59ee.mp3	1.288	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བདག་གི	bf6788ca1d7f.mp3	0.900	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བདག་ཅག	abd1450e0e34.mp3	1.042	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
@@ -250,11 +262,13 @@ word	file	seconds	source	note
 བདག་དང	010c19f34b27.mp3	1.351	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བདག་དང་སེམས་ཅན་ཐམས་ཅད་ཀྱི	13962585f948.mp3	2.918	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བདག་ནི	52f918e02b57.mp3	0.996	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+བདག་བགྱིད་པ	3a02192a2413.mp3	1.475	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བདག་བསྒྲུབ་ཀྱིས	e254a2e34cb6.mp3	1.211	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བདག་ལ	e558a6fb7e98.mp3	1.227	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བདག་སྐྱབས་མཆི	3db49d4098b0.mp3	1.488	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བདུད་ནག	be49c43519bc.mp3	1.165	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བདུད་རྩིའི	844df31c0576.mp3	1.236	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+བདུད་སྡེ	bbb570e85f30.mp3	1.152	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བདེ་གཤེགས	7f86204503d2.mp3	1.093	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བདེ་ཆེན	e115f35de2b8.mp3	1.162	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བདེ་ཆེན་གཏེར	e5f4e0107275.mp3	1.687	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -273,6 +287,7 @@ word	file	seconds	source	note
 བཞིན་དུ་བཞུགས	fa7820c6faab.mp3	1.349	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བཞིན་བཞུགས་པའི	dd89aba949ad.mp3	1.502	mms-tts-adx（安多），w 挑选的候选 b：单独念 seed1	
 བཞུགས་པ་ཡི	359d0f46a0d8.mp3	1.146	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+བཞུགས་སུ་གསོལ	6647b16f403e.mp3	1.372	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བཟོད་པར	eaea762ba159.mp3	1.228	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བརྒྱད་ཀྱི	e3f911a6d8ae.mp3	1.010	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 བརྒྱད་པའི	0132179e310b.mp3	1.204	mms-tts-adx（安多），w 挑选的候选 c：单独念 seed2	
@@ -292,6 +307,7 @@ word	file	seconds	source	note
 བསླུ་བ	066b7d213b9d.mp3	0.771	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བུམ་བཟང	ad097dad9b63.mp3	1.003	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 བྱ་བ	c3b9fbf52173.mp3	1.090	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+བྱ་བའི་གཟུངས	fcbb9f64037c.mp3	1.256	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བྱང་ཆུབ	0c2b837b410c.mp3	1.064	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བྱང་ཞིང་དག་པར	fd69303c9157.mp3	1.940	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 བྱམས་པའི	866ed2faf5bb.mp3	1.232	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -320,6 +336,8 @@ word	file	seconds	source	note
 མཁའ་འགྲོའི	ac093c6a90ef.mp3	1.011	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མཁའ་འགྲོས་བསྐོར	44183e9923a6.mp3	1.429	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མཁྱེན	6579d3096434.mp3	0.916	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+མཁྱེན་གྱུར་པའི	acac8e2cbe87.mp3	1.348	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+མགོན་གྱུར་ཅིང	f85b5336cc1d.mp3	1.179	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མགོན་པོ	a5a8dfd53944.mp3	1.030	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 མགོན་པོས	7eab174208d2.mp3	0.939	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མང་དང་ལྡན	e93900e3804c.mp3	1.731	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -334,6 +352,7 @@ word	file	seconds	source	note
 མཆོག་བརྒྱད	0077dcf92ffb.mp3	1.301	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མཆོག་སྩོལ་ཞིང	0c2cd713b26d.mp3	1.216	mms-tts-adx（安多），w 挑选的候选 a：单独念 语速0.8 seed0	
 མཆོད་ཅིང	621041fdc84c.mp3	0.921	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+མཆོད་པ	7717c6f34eac.mp3	1.134	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མཆོད་པའི	c5e31fa41d05.mp3	1.096	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མཆོད་པས་མཆོད	09214e02122d.mp3	1.758	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མཆོད་རྟེན	4c0a4645fef9.mp3	1.073	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
@@ -344,6 +363,7 @@ word	file	seconds	source	note
 མཐའ་སྐོར	f0fe96faced0.mp3	0.910	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མཐིང་གསུམ	de7c58f2f3ad.mp3	0.943	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མཐིང་ནག	06d5302c641c.mp3	1.043	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+མཐུ་ཡིས་ནི	834eab40ac93.mp3	1.535	mms-tts-adx（安多），w 挑选的候选 p：前面垫 ཨ་ 语速0.65	
 མཐོལ་ལོ་བཤགས་སོ	7f9d216a8d71.mp3	1.509	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མདུང་ཐུང	c618b5185686.mp3	0.933	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མདུན་དུ	03927b38d77d.mp3	1.084	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -351,9 +371,11 @@ word	file	seconds	source	note
 མཚོ་རྒྱལ	7af1674d2ef8.mp3	0.916	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མཛད་དུ་གསོལ	e4a33c11ac40.mp3	1.296	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མཛད་པ	2e3c44a7da1a.mp3	1.028	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+མཛེས་གྱུར་ཅིག	852805f08345.mp3	1.518	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མར་གསལ་བའི	4c4e4a4b5c5b.mp3	1.388	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མི་ནུབ	c76e55021aa4.mp3	0.778	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 མི་ནུས	75ece613c969.mp3	0.911	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+མི་བཟད	982c7e642b0b.mp3	0.877	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མི་རྟག	de708fab860e.mp3	1.100	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མི་ཤེས	1c994c04038f.mp3	1.012	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 མི་སྒྲུབ་པར	6d3ed59c630e.mp3	1.185	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -378,6 +400,7 @@ word	file	seconds	source	note
 ཝཱ་ར་ཧི	db60f2f3ed09.mp3	1.141	mms-tts-adx（安多），w 挑选的候选 b：单独念 seed1	
 ཞགས་པ	4cdfdc04fdf5.mp3	1.031	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཞལ་ནས	17b328cf2984.mp3	0.966	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+ཞལ་ཟས	13d1233a49ce.mp3	1.059	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཞི་འཛུམ	8bbd37f2c654.mp3	0.901	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཞིང་ཁམས་སུ	6b70968cceb1.mp3	1.257	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཞིང་གི	39e6059a0acf.mp3	0.823	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -411,6 +434,7 @@ word	file	seconds	source	note
 འགྲོ་བ	6ae2438674cd.mp3	0.989	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 འགྲོ་བའི	279e4dcd89ec.mp3	0.952	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 འགྲོ་བར་བསམ	f80c05a45dc2.mp3	1.388	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+འགྲོ་ལ	6538c3f92da2.mp3	1.073	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 འཆང་གི	eb6d29989c18.mp3	0.844	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 འཆི་བ	a88273b22e73.mp3	0.923	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 འཆི་བར	f5d4ebd4478d.mp3	0.998	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -418,6 +442,7 @@ word	file	seconds	source	note
 འཇིག་པའི་ཆོས	f8a12ab64f29.mp3	1.782	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 འཇིག་རྟེན	6cc43c3090bc.mp3	1.250	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 འཇུག་ལྡོག	92fb71d9e7ed.mp3	1.296	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+འཇོམས་མཛད་ལྷ	5a9d983cc1f4.mp3	1.383	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 འདབ་སྟོང	038de8acaeb0.mp3	1.236	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 འདས་པའི	3eb808ac72ee.mp3	0.963	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 འདི་ནས	27ea7e4707e9.mp3	0.976	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -471,6 +496,7 @@ word	file	seconds	source	note
 ཡེ་ཤེས་ཐོབ	8bbd14d30463.mp3	1.533	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཡེ་ཤེས་པ	bcc41668ddbb.mp3	1.485	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ཡེ་ཤེས་སྐུ	df377899a4eb.mp3	1.257	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
+ཡོ་བྱད་མཆོག	ec8749c43035.mp3	1.666	mms-tts-adx（安多），w 挑选的候选 p：前面垫 ཨ་ 语速0.65	
 ཡོངས་ལ་ཁྱབ	12d2f231cc59.mp3	1.326	mms-tts-adx（安多），w 挑选的候选 a：单独念 语速0.8 seed0	
 ཡོན་ཏན	b6531cfca4c6.mp3	1.086	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 རང་གི	16c7b451a490.mp3	1.123	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -494,11 +520,14 @@ word	file	seconds	source	note
 རིགས་ལྔའི་ཞིང	fc2ff369ff3f.mp3	1.145	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 རིན་ཆེན	3f11ea512670.mp3	0.948	mms-tts-adx（安多），w 挑选的候选 a：单独念 语速0.8 seed0	
 རོལ་གར་ཅན	8ffba8ea1234.mp3	1.227	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
+རོལ་མོ	39cdacdb3cba.mp3	0.827	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 རྒྱ་ཆེར	05373ec4164e.mp3	1.166	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 རྒྱན་དཔལ	9e1b100cc56a.mp3	0.958	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
+རྒྱན་ཕྲེང	dc1999118554.mp3	0.983	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 རྒྱབ་ཏུ	6141c1158091.mp3	1.095	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 རྒྱལ་པོ	c1724fea7991.mp3	0.881	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 རྒྱལ་བ	eec47b722cc1.mp3	0.829	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+རྒྱལ་བའི	5d44f852123f.mp3	1.035	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 རྒྱལ་མཚན	d22c81bc40fb.mp3	0.873	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 རྒྱལ་མཚན་འཛིན	1553f2baf937.mp3	1.369	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 རྒྱུ་འབྲས	ab71502ba1a2.mp3	0.913	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -541,6 +570,7 @@ word	file	seconds	source	note
 རྩལ་བརྟན	72032ab5c359.mp3	1.423	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 རྩལ་རབ	89a3907a6138.mp3	0.920	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 རྩོམ་པ་ལ	06e3d5e169df.mp3	1.263	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
+རྫུ་འཕྲུལ	c655ebe4803a.mp3	1.183	mms-tts-adx（安多），w 挑选的候选 p：前面垫 ཨ་ 语速0.65	
 ལ་གསོལ་བ་འདེབས	6214dd7fe9ea.mp3	2.113	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ལ་དགོངས	4784788b36e6.mp3	1.131	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 ལ་དང	ed1ddcd21468.mp3	0.890	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -549,6 +579,7 @@ word	file	seconds	source	note
 ལམ་བཞི	f9eae942f476.mp3	0.901	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ལམ་འདི་ལས	c9126188d42c.mp3	1.218	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ལས་ནི	2bf531540017.mp3	0.906	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+ལས་བྱུང་བའི	68d477311611.mp3	1.387	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ལས་འབྲས	ff4dbf11e2b4.mp3	1.037	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ལུས་བཏུད	f1ba4c4aec22.mp3	0.890	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ལེགས་བསྣམས	db0304a054fe.mp3	1.063	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
@@ -560,6 +591,7 @@ word	file	seconds	source	note
 ལྟར་འཕགས	2337dc678b5a.mp3	0.943	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ལྟོས་བཅས་དང	912aa9291cf7.mp3	1.030	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ལྡན་དང	fff05effcbd8.mp3	0.986	mms-tts-adx（安多），w 挑选的候选 a：单独念 语速0.8 seed0	
+ལྷ་མིའི	54ea5814f0fa.mp3	1.109	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ལྷ་མོ	6b7a5b6a2d64.mp3	0.841	mms-tts-adx（安多），w 挑选的候选 g：和前一个词连念（前连）	
 ལྷ་ཚོགས་ལ	725e4718b749.mp3	1.416	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 ལྷ་རྫས	5b00ffe80428.mp3	0.949	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
@@ -623,12 +655,16 @@ word	file	seconds	source	note
 སྤྱན་རས	07be5882c856.mp3	1.191	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 སྤྱི་གཙུག	3e25176a22c7.mp3	1.164	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 སྤྱི་བོར	6de93497efff.mp3	0.834	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+སྤྲིན་གྱིས	1c0301af4b38.mp3	1.233	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 སྤྲིན་ཆེན	87327d97bf52.mp3	1.073	mms-tts-adx（安多），w 挑选的候选 a：单独念 语速0.8 seed0	
 སྤྲིན་དུ་འབུལ	52c528a41b10.mp3	1.530	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+སྤྲིན་ཞེས	fb4275139efe.mp3	1.125	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 སྤྲུལ་པ་སྟེ	d05869113baa.mp3	1.223	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 སྤྲུལ་སྐུའི	8b9c2a5bcf97.mp3	1.016	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 སྨིན་པར	cedf820d92a7.mp3	0.928	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
+སྨོན་ལམ	b38b961fecbb.mp3	1.073	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 སྲས་ཏེ	e947e9d05253.mp3	0.790	mms-tts-adx（安多），w 挑选的候选 a：单独念 语速0.8 seed0	
+སྲས་བཅས	397723f9b886.mp3	1.198	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 སྲས་བཅས་ཀྱིས	1bb5ba004b9a.mp3	1.295	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 སྲིད་གསུམ་གཡོ	ae9ad1b9b440.mp3	1.254	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	
 སྲིད་ཞིའི	96f985a920bc.mp3	0.935	mms-tts-adx（安多），w 挑选的候选 f：整句念后切出（连读）	

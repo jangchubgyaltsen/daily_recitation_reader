@@ -3,7 +3,7 @@ python3 tools/build_app.py --pages <目录>：给 GitHub Pages 用，音频不�
 每个文件按内容哈希另存成 <目录>/a/<哈希>.mp3（原音质），网页用到时再下载。"""
 import json, os, hashlib, shutil
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-order = ['eight-auspicious', 'multiplying-mantra', 'wangdu-prayer', 'ngondro']
+order = ['eight-auspicious', 'multiplying-mantra', 'wangdu-prayer', 'ngondro', 'offering']
 data = [json.load(open(f'{root}/rituals/{n}.json', encoding='utf-8')) for n in order]
 data = [r for r in data if r['meta'].get('restriction') == 'public']  # 需灌顶的内容不进公开版本
 import sys; sys.path.insert(0, f'{root}/tools'); import lexicon
