@@ -349,23 +349,22 @@ body:not(.v-reader).has-audio .sheet{bottom:0}
 .mini-in .mt small{font-size:12px;color:var(--muted)}
 body.has-mini .view{padding-bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 
-/* 横屏跟读：手机横过来时一屏只放当前这一偈，右侧遍数，底部简化播放条 */
-.lside,#pfull{display:none}
+/* 跟读版式（手机横屏时自动进入，也可以点播放条上的按钮切换）：当前一句大字，上一句、下一句只显示藏文并淡显；遍数浮在当前句右下角 */
+#pfull{display:inline-grid;place-items:center;width:40px;padding:0}#pfull svg{transition:transform .2s}body.land #pfull{color:var(--lapis);border-color:var(--lapis)}body.land #pfull svg{transform:rotate(90deg)}
+#lrep{display:none}
 body.land .top{padding-block:4px}body.land .top .iconbtn{width:34px;height:34px}body.land .kpwrap,body.land #ptrack{display:none}
 body.land .cbar{margin-top:4px}
-body.land #main{position:fixed;top:var(--ltop,52px);bottom:var(--lbot,60px);left:0;right:min(200px,24vw);margin:0;max-width:none;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;
-  padding:6px 20px 24px max(20px,env(safe-area-inset-left,0px))}
-body.land #main::-webkit-scrollbar{display:none}
-body.land #main{display:flex;flex-direction:column;overflow:hidden}body.land #main .lines{margin-block:auto;width:100%}
-body.land #main>:not(.lines),body.land #main .lines>section>:not(.line),body.land #main .line:not(.lv),body.land #main section:not(:has(.lv)){display:none}
-body.land #main .line{border-bottom:0;padding-block:6px;border-radius:10px;padding-inline:4px 8px;scroll-margin:8px}
+body.land #main{position:fixed;top:var(--ltop,52px);bottom:var(--lbot,60px);left:0;right:0;margin:0;max-width:none;overflow:hidden;display:flex;flex-direction:column;
+  padding:6px max(20px,env(safe-area-inset-right,0px)) 18px max(20px,env(safe-area-inset-left,0px))}
+body.land #main .lines{margin-block:auto;width:100%}
+body.land #main>:not(.lines),body.land #main .lines>section>:not(.line),body.land #main .line:not(.lv):not(.lpn),body.land #main section:not(:has(.lv,.lpn)){display:none}
+body.land #main section{margin:0;padding:0;border:0}
+body.land #main .line{border-bottom:0;padding-block:6px;border-radius:10px;padding-inline:4px 8px;position:relative}
 body.land .lines{--size:1.3}
-body.land .lside{display:flex;position:fixed;top:var(--ltop,52px);bottom:var(--lbot,60px);right:0;width:min(200px,24vw);flex-direction:column;justify-content:center;gap:10px;
-  padding:0 max(16px,env(safe-area-inset-right,0px)) 0 18px;border-left:1px solid var(--rule);margin-block:12px;font-size:13px;color:var(--muted);box-sizing:border-box}
-.lside .lsec{font:15px/1.5 var(--f-zh);color:var(--ink)}.lside .ldots{display:flex;flex-wrap:wrap;align-items:center;gap:6px;color:var(--lapis);font-size:14px}
-.lside .ldots i{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--lapis);box-sizing:border-box}.lside .ldots i.on{background:var(--lapis)}
-.lside .lbig{font:600 44px/1 var(--f-zh);color:var(--lapis);font-variant-numeric:tabular-nums}.lside .lbig small{font:14px var(--f-ui);color:var(--muted);margin-left:4px}
-body.land #pfull{display:inline-block}
+body.land #main .line.lpn{--size:.8;opacity:.38;background:none;padding-block:2px}
+body.land #main .line.lpn :is(.r-ph,.r-zh,.c-ph,.c-gl){display:none}body.land #main .line.lpn .num{visibility:hidden}#lrep[hidden]{display:none!important}body.land #main .line.lpn .cur{background:none}
+body.land #lrep{display:flex;position:absolute;right:12px;bottom:8px;align-items:center;gap:5px;font:13px var(--f-ui);color:var(--lapis);background:var(--paper);padding:3px 8px;border-radius:999px;font-variant-numeric:tabular-nums;pointer-events:none}
+#lrep i{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--lapis);box-sizing:border-box}#lrep i.on{background:var(--lapis)}#lrep b{font:600 20px/1 var(--f-zh)}
 body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land .player-in .ptime{margin-left:auto}
 </style>
 
@@ -380,7 +379,7 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
 </div>
 
 <main id="main"></main>
-<aside class="lside" id="lside" aria-live="polite"></aside>
+<div id="lrep" aria-live="polite"></div>
 
 <div class="view" id="home" hidden>
   <div class="hpane" id="pane-lib">
@@ -513,7 +512,7 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
   <select id="ptrack" aria-label="音轨"></select>
   <span class="ptime" id="ptime">0:00</span>
   <button class="pbtn small" id="prest" hidden>结束安住</button>
-  <button class="pbtn small" id="pfull" aria-label="回到竖屏全文">全文</button>
+  <button class="pbtn small" id="pfull" aria-label="切换横屏跟读 / 竖屏全文" title="切换横屏跟读 / 竖屏全文"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg></button>
   <button class="pbtn small" id="pspeed" aria-label="播放速度" aria-expanded="false">1.0×</button>
   <div class="speedpop" id="speedpop" hidden>
     <div class="row" id="speeds" role="group" aria-label="播放速度"></div>
@@ -692,6 +691,7 @@ function render(){
   if(m['colophon.bo']) h+=`<p class="aside colo colo-bo" lang="bo">${esc(m['colophon.bo'])}</p>`;
   if(m['colophon.zh']) h+=`<p class="aside colo">${esc(m['colophon.zh'])}</p>`;
   h+=`<p class="draft">原型版本。文字以喇荣课诵（中文版）为准。逐词对应为草稿，待校对。点任意一节可查看意思并听它的发音；点一句的空白处或句号，播放这一句的念诵。${m['audio.bo.credit']?'<br>'+esc(m['audio.bo.credit']):''}</p>`;
+  {const lr=$('lrep');if(lr)document.body.appendChild(lr)}
   $('main').innerHTML=h;
   syncControls(); lastKey=''; if(typeof paintMark==='function'&&A.marking) paintMark();
   if(typeof updKp==='function') updKp();
@@ -1152,32 +1152,35 @@ function drawCombo(){const c=comboById(S.ed);if(!c)return;CUR_C=c;
 let VIEW='';
 
 // ---- 横屏跟读：一屏只放当前这一句；换句（包括重复念的下一遍）都从下面接上来，不跳回去 ----
-function landSync(){const on=LQ.matches&&VIEW==='reader'&&!LAND.off;if(!LQ.matches)LAND.off=false;
-  if(on!==LAND.on){LAND.on=on;document.body.classList.toggle('land',on);LAND.k=null;if(!on){const el=document.querySelector('.line.playing')||document.querySelector('.line.lv');document.querySelectorAll('.lv').forEach(x=>{x.classList.remove('lv');x.style.removeProperty('--size')});if(el)el.scrollIntoView({block:'center'});return}}
+function landSync(){const auto=LQ.matches;if(auto!==LAND.lastAuto){LAND.lastAuto=auto;LAND.force=null}
+  const on=VIEW==='reader'&&(LAND.force!=null?LAND.force:auto);
+  if(on!==LAND.on){LAND.on=on;document.body.classList.toggle('land',on);LAND.k=null;$('pfull').setAttribute('aria-pressed',on);
+    if(!on){const el=document.querySelector('.line.playing')||document.querySelector('.line.lv');landClear();if(el)el.scrollIntoView({block:'center'});return}}
   if(!on)return;const st=document.body.style;st.setProperty('--ltop',document.querySelector('.top').offsetHeight+'px');st.setProperty('--lbot',$('player').hidden?'0px':$('player').offsetHeight+'px');
   const el=document.querySelector('.line.playing')||(LAND.at&&LAND.at.isConnected&&LAND.at)||[...document.querySelectorAll('#main .line')].find(x=>x.getBoundingClientRect().bottom>80)||document.querySelector('#main .line');
-  if(el)landShow(el)}
+  if(el){LAND.k=null;landShow(el)}}
+function landClear(){document.querySelectorAll('#main .lv,#main .lpn').forEach(x=>{x.classList.remove('lv','lpn');x.style.removeProperty('--size')});const r=$('lrep');if(r.parentNode!==document.body)document.body.appendChild(r)}
 function landShow(el,dir){if(!el)return;LAND.at=el;const key=el.dataset.id+'|'+(S.q?S.q.cid+'/'+S.q.i+'/'+S.q.r:'');
-  document.querySelectorAll('#main .line.lv').forEach(x=>{if(x!==el){x.classList.remove('lv');x.style.removeProperty('--size')}});el.classList.add('lv');landFit(el);
-  if(key!==LAND.k){const first=LAND.k==null;LAND.k=key;$('main').scrollTop=0;
-    if(!first&&el.animate&&!matchMedia('(prefers-reduced-motion: reduce)').matches)el.animate([{transform:`translateY(${dir<0?-36:36}px)`,opacity:0},{transform:'none',opacity:1}],{duration:280,easing:'ease-out'})}
-  landSide()}
-// 一句（包括百字明这样的长咒）整句放进一屏，不滚动：放不下就把字缩小
-function landFit(el){const m=$('main'),room=m.clientHeight-30;if(room<=0)return;let lo=0.4,hi=1.3;el.style.setProperty('--size',hi);if(el.offsetHeight<=room)return;
-  for(let k=0;k<7;k++){const mid=(lo+hi)/2;el.style.setProperty('--size',mid.toFixed(3));if(el.offsetHeight<=room)lo=mid;else hi=mid}el.style.setProperty('--size',lo.toFixed(3))}
-function landSide(){if(!LAND.on||!LAND.at)return;const R=RITUALS[S.rit]||RITUALS[0];const s=R.sections[+LAND.at.dataset.s];if(!s)return;
-  let h='';const t=shortSec(s['title.zh']||'');if(t&&R.meta.show_sections!=='no')h+=`<div class="lsec">${esc(t)}</div>`;
-  if(s.lines.length>1)h+=`<div>第 ${+LAND.at.dataset.l+1} / ${s.lines.length} 句</div>`;
-  const x=qItem(),tot=x?itemTotal(x.it):1;
-  if(tot>1){const r=Math.min(S.q.r||1,tot);h+=tot<=9?`<div class="ldots">${Array.from({length:tot},(_,i)=>`<i class="${i<r?'on':''}"></i>`).join('')}<span>第 ${r} / ${tot} 遍</span></div>`
-    :`<div>已念</div><div class="lbig">${r}<small>/ ${tot} 遍</small></div>`}
-  else if(+s.repeat>1)h+=`<div class="ldots"><span>念 ${esc(s.repeat)} 遍</span></div>`;
-  if($('lside').innerHTML!==h)$('lside').innerHTML=h}
+  if(key!==LAND.k){const first=LAND.k==null;LAND.k=key;
+    const ls=[...document.querySelectorAll('#main .line')],i=ls.indexOf(el);landClear();el.classList.add('lv');
+    if(ls[i-1])ls[i-1].classList.add('lpn');if(ls[i+1])ls[i+1].classList.add('lpn');el.appendChild($('lrep'));landRep();landFit(el);
+    if(!first&&!matchMedia('(prefers-reduced-motion: reduce)').matches){const g=document.querySelector('#main .lines');if(g&&g.animate)g.animate([{transform:`translateY(${dir<0?-28:28}px)`,opacity:.3},{transform:'none',opacity:1}],{duration:260,easing:'ease-out'})}}
+  else landRep()}
+// 当前句整句放进一屏：放不下先缩小字，还太小就不显示上下句
+function landFit(el){const m=$('main'),pn=[...document.querySelectorAll('#main .line.lpn')];
+  const fit=()=>{const room=m.clientHeight-24-pn.reduce((a,x)=>a+(x.classList.contains('lpn')?x.offsetHeight:0),0);let lo=0.4,hi=1.3;el.style.setProperty('--size',hi);if(el.offsetHeight<=room)return hi;
+    for(let k=0;k<7;k++){const mid=(lo+hi)/2;el.style.setProperty('--size',mid.toFixed(3));if(el.offsetHeight<=room)lo=mid;else hi=mid}el.style.setProperty('--size',lo.toFixed(3));return lo};
+  if(fit()<0.85&&pn.length){pn.forEach(x=>x.classList.remove('lpn'));fit()}}
+// 遍数：组合里这部要念几遍时，浮在当前句右下角
+function landRep(){const x=qItem(),tot=x?itemTotal(x.it):1,R=RITUALS[S.rit]||RITUALS[0];let h='';
+  if(tot>1){const r=Math.min(S.q.r||1,tot);h=tot<=9?Array.from({length:tot},(_,i)=>`<i class="${i<r?'on':''}"></i>`).join('')+`<span>${r} / ${tot}</span>`:`<b>${r}</b><span>/ ${tot} 遍</span>`}
+  else if(LAND.at){const s=R.sections[+LAND.at.dataset.s];if(s&&+s.repeat>1)h=`<span>念 ${esc(s.repeat)} 遍</span>`}
+  const e=$('lrep');if(e.innerHTML!==h)e.innerHTML=h;e.hidden=!h}
 // 暂停时左右滑动：上一句 / 下一句
 {let x0=null,y0=0;$('main').addEventListener('touchstart',e=>{if(!LAND.on)return;x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
  $('main').addEventListener('touchend',e=>{if(!LAND.on||x0==null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.5||!A.el.paused)return;
    const ls=[...document.querySelectorAll('#main .line')],i=ls.indexOf(LAND.at)+(dx<0?1:-1);if(i>=0&&i<ls.length)landShow(ls[i],dx<0?1:-1)},{passive:true})}
-$('pfull').onclick=()=>{LAND.off=true;landSync()};
+$('pfull').onclick=()=>{LAND.force=!LAND.on;landSync()};
 (LQ.addEventListener?LQ.addEventListener('change',landSync):LQ.addListener(landSync));addEventListener('resize',()=>{if(LAND.on)landSync()});
 function show(v){VIEW=v;setTimeout(()=>typeof landSync==='function'&&landSync());document.body.classList.toggle('v-home',v==='home');document.body.classList.toggle('v-reader',v==='reader');document.body.classList.toggle('v-combo',v==='combo');document.body.classList.toggle('v-calset',v==='calset'||v==='prefs');
   $('home').hidden=v!=='home';$('combo').hidden=v!=='combo';$('calset').hidden=v!=='calset';$('prefs').hidden=v!=='prefs';
@@ -1308,7 +1311,7 @@ function drawQ(){const x=qItem();const on=!!x&&RITUALS[S.rit]&&x.it&&ritById(x.i
   (it.rests||[]).forEach(r=>{const el=document.getElementById(R.meta.id+'-'+r.after);if(el)el.insertAdjacentHTML('beforeend',`<div class="restmark">安住 ${fmtLen(restSec(c,r))}${r.sound!=='none'?' · 结束时'+(r.sound==='bowl'?'钵':'磬')+'声':''}</div>`)});
   $('cbar').innerHTML=c.items.map((it2,k)=>{const R2=ritById(it2.rid),d=R2&&ritDur(R2);const w=d?d*itemTotal(it2):60;return `<i style="flex:${w}"><b data-k="${k}" style="transform:scaleX(${k<q.i?1:0})"></b></i>`}).join('');
   updQBar()}
-function updQBar(){if(LAND.on)landSide();const x=qItem();if(!x||$('cbar').hidden)return;const b=$('cbar').querySelector(`[data-k="${x.q.i}"]`);if(!b)return;
+function updQBar(){if(LAND.on)landRep();const x=qItem();if(!x||$('cbar').hidden)return;const b=$('cbar').querySelector(`[data-k="${x.q.i}"]`);if(!b)return;
   const d=A.el.duration,t=A.el.currentTime||0,tot=itemTotal(x.it);const f=d&&isFinite(d)?((x.q.r-1)+t/d)/tot:(x.q.r-1)/tot;b.style.transform=`scaleX(${Math.min(1,f)})`}
 $('cnext').onclick=()=>{const x=qItem();if(x)gotoItem(x.q.i+1,!A.el.paused)};
 $('ctitle').onclick=()=>{const x=qItem();if(!x)return;$('qTitle').textContent=x.c.name;
