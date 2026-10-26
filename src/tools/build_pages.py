@@ -59,7 +59,10 @@ const base=f=>f.split('/').pop();
 async function fillAudio(){{const c=await caches.open(A),keys=await c.keys(),have=new Set(keys.map(r=>base(new URL(r.url).pathname))),want=new Set(AUDIO.map(base));
   for(const r of keys)if(!want.has(base(new URL(r.url).pathname)))await c.delete(r);
   for(const f of AUDIO)if(!have.has(base(f)))try{{await c.add(f)}}catch(e){{}}}}
-self.addEventListener('install',e=>{{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>c.addAll(FILES)))}});
+const SPLASH={json.dumps(splash)};
+// 法相图片安装时就一次存好（放在长期缓存里，已有的不重下）
+async function fillSplash(){{const c=await caches.open(A);for(const f of SPLASH)if(!(await c.match(f,{{ignoreSearch:true}})))try{{await c.add(f)}}catch(e){{}}}}
+self.addEventListener('install',e=>{{self.skipWaiting();e.waitUntil(Promise.all([caches.open(C).then(c=>c.addAll(FILES)),fillSplash()]))}});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!==A).map(k=>caches.delete(k)))).then(()=>self.clients.claim()).then(()=>{{fillAudio()}})));
 self.addEventListener('fetch',e=>{{
   if(e.request.method!=='GET'||new URL(e.request.url).origin!==location.origin)return;
