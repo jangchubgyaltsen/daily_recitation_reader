@@ -313,6 +313,18 @@ body:not(.v-reader).has-audio .sheet{bottom:0}
 .psl:focus-visible{outline:2px solid var(--lapis);outline-offset:2px}
 .srow2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.srow3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.srow3 .pl,.srow3 .pr{font-size:13px}.srow3 .pl{left:12px}.srow3 .pr{right:12px}
 .sfoot{display:flex;align-items:center;gap:14px;font-size:14px}.sfoot .link{font-size:14px;color:var(--muted)}.sfoot .link[aria-expanded=true]{color:var(--lapis)}
+/* 手机横屏：设置改成右侧一列 */
+@media (orientation:landscape) and (max-height:540px){
+  #settings{left:auto;right:0;top:0;bottom:0!important;width:290px;max-height:none;border-radius:16px 0 0 16px;overflow-y:auto;scrollbar-width:none;
+    padding:12px max(14px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) 14px}
+  #settings::-webkit-scrollbar{display:none}
+  #settings .sheet-in{gap:10px;max-width:none;min-height:100%;box-sizing:border-box}
+  #settings .srow1{flex-direction:column;align-items:stretch;gap:10px}#settings .srow1>span{display:none}
+  #settings .ones{gap:5px}#settings .ones button{width:38px;height:38px;font-size:15px}#settings .crect{height:38px}
+  #settings .srow2,#settings .srow3{grid-template-columns:1fr;gap:10px}#settings .psl{height:40px}
+  #settings .sfoot{flex-wrap:wrap;gap:6px 14px;margin-top:auto}
+  body.land:has(#settings:not([hidden])) #main{right:290px}
+}
 #settings .stitle{font:600 16px var(--f-ui);letter-spacing:0;color:var(--ink)}
 .swrow{display:flex;align-items:center;gap:12px;justify-content:space-between;cursor:pointer}.swrow span{display:flex;flex-direction:column;font-size:15px}.swrow small{font-size:12px;color:var(--muted)}
 .sw{appearance:none;-webkit-appearance:none;width:46px;height:28px;border-radius:14px;background:var(--rule);position:relative;flex:none;cursor:pointer;transition:background .2s}
@@ -1180,6 +1192,7 @@ function landRep(){const x=qItem(),tot=x?itemTotal(x.it):1,R=RITUALS[S.rit]||RIT
 {let x0=null,y0=0;$('main').addEventListener('touchstart',e=>{if(!LAND.on)return;x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
  $('main').addEventListener('touchend',e=>{if(!LAND.on||x0==null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.5||!A.el.paused)return;
    const ls=[...document.querySelectorAll('#main .line')],i=ls.indexOf(LAND.at)+(dx<0?1:-1);if(i>=0&&i<ls.length)landShow(ls[i],dx<0?1:-1)},{passive:true})}
+new MutationObserver(()=>{if(LAND.on){LAND.k=null;landSync()}}).observe($('settings'),{attributes:true,attributeFilter:['hidden']});
 $('pfull').onclick=()=>{LAND.force=!LAND.on;landSync()};
 (LQ.addEventListener?LQ.addEventListener('change',landSync):LQ.addListener(landSync));addEventListener('resize',()=>{if(LAND.on)landSync()});
 function show(v){VIEW=v;setTimeout(()=>typeof landSync==='function'&&landSync());document.body.classList.toggle('v-home',v==='home');document.body.classList.toggle('v-reader',v==='reader');document.body.classList.toggle('v-combo',v==='combo');document.body.classList.toggle('v-calset',v==='calset'||v==='prefs');
