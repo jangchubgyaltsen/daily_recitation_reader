@@ -22,6 +22,9 @@ for f in sorted(os.listdir(f'{root}/pages/splash')):
 assert t.count('/*SPLASH*/[]') == 1
 t = t.replace('/*SPLASH*/[]', json.dumps(splash))
 audio += splash
+# 主页的离线音频包：要下载的文件和大小
+assert t.count('/*APACK*/[]') == 1
+t = t.replace('/*APACK*/[]', json.dumps([[f, os.path.getsize(f'{out}/{f}')] for f in audio]))
 os.makedirs(f'{out}/fonts', exist_ok=True)
 shutil.copy(f'{root}/app/fonts/NotoSerifTibetan.woff2', f'{out}/fonts/NotoSerifTibetan.woff2')
 face = ("<style>@font-face{font-family:'Noto Serif Tibetan';font-style:normal;font-weight:400 700;font-display:swap;"

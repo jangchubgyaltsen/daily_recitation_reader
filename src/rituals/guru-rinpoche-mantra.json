@@ -1,0 +1,53 @@
+{
+ "meta": {
+  "id": "guru-rinpoche-mantra",
+  "title.bo": "སློབ་དཔོན་པདྨའི་བསྙེན་པ།",
+  "title.zh": "莲师心咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "status": "draft",
+  "source.zh": "喇荣课诵 2024-05-02 版，第75页",
+  "gloss.status": "draft（节拍释义和颜色对应由 Claude 起草，待校对）"
+ },
+ "sections": [
+  {
+   "id": "mantra",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "莲师心咒",
+     "bo": "ཨོཾ་ཨཱཿཧཱུྃ་བཛྲ་གུ་རུ་པདྨ་སིདྡྷི་ཧཱུྃ༔",
+     "zh_ph": "嗡啊吽班匝儿格热巴玛色德吽",
+     "syllables": [
+      {
+       "bo": "ཨོཾ"
+      },
+      {
+       "bo": "ཨཱཿཧཱུྃ"
+      },
+      {
+       "bo": "བཛྲ"
+      },
+      {
+       "bo": "གུ"
+      },
+      {
+       "bo": "རུ"
+      },
+      {
+       "bo": "པདྨ"
+      },
+      {
+       "bo": "སིདྡྷི"
+      },
+      {
+       "bo": "ཧཱུྃ"
+      }
+     ]
+    }
+   ],
+   "title.zh": "莲师心咒"
+  }
+ ]
+}

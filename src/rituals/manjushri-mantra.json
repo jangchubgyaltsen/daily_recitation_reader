@@ -1,0 +1,52 @@
+{
+ "meta": {
+  "id": "manjushri-mantra",
+  "title.bo": "འཇམ་དཔལ་གྱི་བསྙེན་པ།",
+  "title.zh": "文殊心咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "status": "draft",
+  "source.zh": "喇荣课诵 2024-05-02 版，第51页",
+  "gloss.status": "draft（节拍释义和颜色对应由 Claude 起草，待校对）"
+ },
+ "sections": [
+  {
+   "id": "mantra",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "文殊心咒",
+     "bo": "ཨོཾ་ཨ་ར་པ་ཙ་ན་དྷཱིཿ",
+     "zh_ph": "嗡阿Ra巴匝那德",
+     "syllables": [
+      {
+       "bo": "ཨོཾ"
+      },
+      {
+       "bo": "ཨ"
+      },
+      {
+       "bo": "ར"
+      },
+      {
+       "bo": "པ"
+      },
+      {
+       "bo": "ཙ"
+      },
+      {
+       "bo": "ན"
+      },
+      {
+       "bo": "དྷཱིཿ"
+      }
+     ]
+    }
+   ],
+   "title.zh": "文殊心咒",
+   "end.bo": "ཅི་ནུས་བསགས།",
+   "end.zh": "随力念诵"
+  }
+ ]
+}

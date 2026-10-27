@@ -195,6 +195,11 @@ body:not(.v-reader) .top,body:not(.v-reader) #main,body:not(.v-reader) .player{d
 .ibtn.on{color:var(--lapis)}
 .ibtn.play{background:var(--lapis);color:var(--paper)}
 .ibtn.ring{border:1px solid var(--rule);color:var(--lapis);font-size:22px}
+#apack{display:flex;align-items:center;gap:12px;margin:24px 0 8px;padding:12px 14px;border:1px solid var(--rule);border-radius:12px}
+#apack[hidden]{display:none}
+#apack .apinfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+#apack .apinfo b{font:600 15px var(--f-ui)}
+#apack.done #apbtn{display:none}
 .rrow{display:flex;align-items:center;gap:10px;border-bottom:1px dashed var(--rule)}
 .rrow .rbody{flex:1;min-width:0;border:0;background:transparent;text-align:left;padding:12px 0;cursor:pointer;display:flex;flex-direction:column;gap:2px}
 .rrow .rbo{font:18px/1.6 var(--f-bo);color:var(--lapis);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -421,6 +426,7 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
     <div id="combos"></div>
     <div class="hsec"><h2>全部仪轨</h2><span class="lbl" id="ritCount"></span></div>
     <div id="rits"></div>
+    <div id="apack" hidden><div class="apinfo"><b>离线音频包</b><span class="lbl" id="apsub"></span></div><button class="chip" id="apbtn">下载</button></div>
   </div>
   <div class="hpane" id="pane-common" hidden><header class="htop"><h1>常用念诵</h1></header><div id="cgroups"></div><div id="clist"></div></div>
   <div class="hpane" id="pane-cal" hidden><header class="htop"><h1>藏历</h1><button class="link" id="calSetBtn">殊胜日设置</button></header>
@@ -550,7 +556,6 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
   <div class="speedpop" id="speedpop" hidden>
     <div class="row" id="speeds" role="group" aria-label="播放速度"></div>
     <div class="row" id="tgaprow"><span class="lbl">木鱼句间</span><input type="range" id="tgap" min="0.5" max="2.5" step="0.1" aria-label="只有调子时，句与句之间停几拍"><span id="tgapval" class="lbl"></span></div>
-    <div class="row" id="xfrow"><span class="lbl">段间过渡</span><input type="range" id="xfade" min="0" max="3" step="0.5" aria-label="一遍念完接下一遍、下一部时，前后两段叠着渐弱渐入的秒数"><span id="xfval" class="lbl"></span></div>
   </div>
 </div></div>
 
@@ -856,7 +861,7 @@ class Player extends EventTarget{
 }
 // iPhone 上网页不能调 audio 音量：那里用 Web Audio 把上一段结尾解出来渐弱地叠着放，下一段照常开始
 const VOLOK=(()=>{try{const a=new Audio();a.volume=0.5;return a.volume===0.5}catch(e){return false}})();
-const xfSec=()=>S.xfade??1.5;
+const xfSec=()=>0;  // w 试过叠着过渡：音叠在一起不好听，改回直接衔接（代码留着，改这里就能再打开）
 const TAILS={};
 // iPhone：解码一次录音，只留每个固定交接点（段落重复处、结尾）前 4 秒的余音
 function loadTail(url){if(VOLOK||!url||!url.startsWith('blob:')||url in TAILS||!A.tm)return;TAILS[url]=null;const c=ac();if(!c)return;
@@ -929,8 +934,7 @@ async function syncPlayer(){
   syncHist();
   $('hloff').value=S.hlOffset??0.15;$('hloffval').textContent=(S.hlOffset??0.15).toFixed(2)+' 秒';
   $('tgap').value=S.tgap??1.5;$('tgapval').textContent=(S.tgap??1.5).toFixed(1)+' 拍';
-  $('xfade').value=xfSec();$('xfval').textContent=xfSec()?xfSec().toFixed(1)+' 秒':'不过渡';
-  syncSpeeds();$('tgaprow').hidden=A.track!=='tune';$('xfrow').hidden=A.track==='tune';showProgress();
+  syncSpeeds();$('tgaprow').hidden=A.track!=='tune';showProgress();
 }
 const fmt=t=>{t=Math.max(0,t||0);return Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0')};
 function lineEnd(i){return i+1<A.order.length?A.tm[A.order[i+1].id][0]:(A.el.duration||Infinity)}
@@ -1002,7 +1006,6 @@ $('pspeed').onclick=e=>{e.stopPropagation();syncSpeeds();speedPop($('speedpop').
 $('speedpop').onclick=e=>{e.stopPropagation();const c=e.target.closest('[data-rate]');if(!c)return;S.rate=+c.dataset.rate;A.qRate=null;save();A.el.playbackRate=S.rate;syncPlayer();speedPop(false)};
 document.addEventListener('click',()=>{if(!$('speedpop').hidden)speedPop(false)});
 $('tgap').oninput=e=>{S.tgap=+e.target.value;save();syncPlayer()};
-$('xfade').oninput=e=>{S.xfade=+e.target.value;save();syncPlayer()};
 $('ftrack').onchange=e=>{A.track=e.target.value;S.track=A.track;save();loadTrack()};
 $('ffile').onchange=async e=>{const f=e.target.files[0];if(!f)return;const k=rid()+':'+A.track;if(A.urls[k])URL.revokeObjectURL(A.urls[k]);A.urls[k]=URL.createObjectURL(f);await putFile(k,f);await loadTrack()};
 /* marking: tap at the start of each beat, in order */
@@ -1206,7 +1209,22 @@ const norm=t=>String(t||'').toLowerCase().replace(/[་།༔\s·・]/g,'');
 function matchR(R,q){return [R.meta['title.zh'],R.meta['title.bo'],R.meta['subtitle.zh']].some(t=>norm(t).includes(q))}
 let redrawT=0;function redraw(){clearTimeout(redrawT);redrawT=setTimeout(()=>{if(VIEW==='home')drawHome();if(VIEW==='calset')drawCalSet();if(VIEW==='combo')drawCombo()},50)}
 function ritSub(R){const d=ritDur(R),n=ritReps(R);return [d!=null?fmt(d*n):'',n>1?n+' 遍':''].filter(Boolean).join(' · ')}
-function drawHome(){
+// 离线音频包（w）：Pages 版把全部录音、词库发音按原样一次存进手机，存好后不联网也能播。网页版音频已在页面里，不显示
+const APACK=/*APACK*/[];
+const APK=APACK.reduce((a,[,n])=>a+n,0),apMB=b=>(b/1048576).toFixed(b<1048576*10?1:0)+' MB';
+async function apHave(){const c=await caches.open('recite-audio');let n=0,b=0;for(const [f,sz] of APACK)if(await c.match(f,{ignoreSearch:true})){n++;b+=sz}return {c,n,b}}
+async function apDraw(){if(!APACK.length||!('caches' in window))return;const el=$('apack');el.hidden=false;if(A.apBusy)return;
+  try{const {n}=await apHave();const done=n>=APACK.length;el.classList.toggle('done',done);
+    $('apsub').textContent=done?`已下载 ${APACK.length} 个文件，可离线使用`:n?`已存 ${n} / ${APACK.length} 个 · 共 ${apMB(APK)}`:`${APACK.length} 个文件 · ${apMB(APK)} · 原始音质`;
+    $('apbtn').textContent=n?'继续下载':'下载'}catch(e){el.hidden=true}}
+$('apbtn').onclick=async()=>{if(A.apBusy)return;A.apBusy=true;const b=$('apbtn');b.disabled=true;let fail=0;
+  try{const {c,n,b:got}=await apHave();let k=n,bytes=got;
+    for(const [f,sz] of APACK){if(await c.match(f,{ignoreSearch:true}))continue;
+      try{const r=await fetch(f,{cache:'no-store'});if(!r.ok)throw 0;await c.put(f,r);k++;bytes+=sz}catch(e){fail++}
+      $('apsub').textContent=`下载中 ${k} / ${APACK.length} · ${apMB(bytes)} / ${apMB(APK)}`}
+    try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}}catch(e){fail++}
+  A.apBusy=false;b.disabled=false;await apDraw();if(fail)toast(`有 ${fail} 个文件没下载成功，联网后点“继续下载”`)};
+function drawHome(){apDraw();
   const q=norm($('q').value);
   const cs=sortCombos().filter(c=>!q||norm(c.name).includes(q)||c.items.some(it=>{const R=ritById(it.rid);return R&&matchR(R,q)}));
   $('combos').innerHTML=cs.length?cs.map(c=>{const L=comboLen(c);const n=c.items.length;

@@ -1,0 +1,24 @@
+# 莲师心咒：校对源文件（规则见 eight-auspicious.txt 开头）
+# 藏文：中文版 PDF 抽出的文字有系统性乱码，按规律还原，并用书中汉文音译核对音节数，待 w 对书校对。
+#   另外：སིདྡི→སིདྡྷི。
+# 汉文音译、汉文：喇荣课诵 2024-05-02 版，第75页（原样照录）。
+# 节拍释义、颜色对应由 Claude 起草，待校对。
+
+@id: guru-rinpoche-mantra
+@title.bo: སློབ་དཔོན་པདྨའི་བསྙེན་པ།
+@title.zh: 莲师心咒
+@title.zh_ph:
+@restriction: public
+# w 2026-10-27 按序列加入
+@status: draft
+@source.zh: 喇荣课诵 2024-05-02 版，第75页
+@gloss.status: draft（节拍释义和颜色对应由 Claude 起草，待校对）
+
+== mantra
+title.zh: 莲师心咒
+
+-- 1
+kind: mantra
+mantra.zh: 莲师心咒
+bo: ཨོཾ་ཨཱཿཧཱུྃ་བཛྲ་གུ་རུ་པདྨ་སིདྡྷི་ཧཱུྃ༔
+zh_ph: 嗡啊吽班匝儿格热巴玛色德吽

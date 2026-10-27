@@ -1,0 +1,26 @@
+# 文殊心咒：校对源文件（规则见 eight-auspicious.txt 开头）
+# 藏文：中文版 PDF 抽出的文字有系统性乱码，按规律还原，并用书中汉文音译核对音节数，待 w 对书校对。
+#   另外：PDF 作 ཨོཾ་ཨོཾ་ར，按音译「嗡阿Ra」还原为 ཨོཾ་ཨ་ར。
+# 汉文音译、汉文：喇荣课诵 2024-05-02 版，第51页（原样照录）。
+# 节拍释义、颜色对应由 Claude 起草，待校对。
+
+@id: manjushri-mantra
+@title.bo: འཇམ་དཔལ་གྱི་བསྙེན་པ།
+@title.zh: 文殊心咒
+@title.zh_ph:
+@restriction: public
+# w 2026-10-27 按序列加入
+@status: draft
+@source.zh: 喇荣课诵 2024-05-02 版，第51页
+@gloss.status: draft（节拍释义和颜色对应由 Claude 起草，待校对）
+
+== mantra
+title.zh: 文殊心咒
+end.bo: ཅི་ནུས་བསགས།
+end.zh: 随力念诵
+
+-- 1
+kind: mantra
+mantra.zh: 文殊心咒
+bo: ཨོཾ་ཨ་ར་པ་ཙ་ན་དྷཱིཿ
+zh_ph: 嗡阿Ra巴匝那德
