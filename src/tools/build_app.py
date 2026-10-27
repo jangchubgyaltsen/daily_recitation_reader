@@ -55,7 +55,27 @@ else:
         open(f'{root}/app/a/p{i}.js', 'w').write('(function(w){' + ''.join(p) + '})(window.__AUD=window.__AUD||{});')
     audio = None
 t = open(f'{root}/app/template.html', encoding='utf-8').read()
-t = t.replace('/*DATA*/', json.dumps(data, ensure_ascii=False)).replace('/*LEX*/null', json.dumps(used, ensure_ascii=False))
+# 音译用楷体（w）：霞鹜文楷（OFL，原文件在 app/fonts/src/）按仪轨里出现的音译字裁出子集，内嵌进网页。
+# 有新字才重裁；这台机器没装 fontTools（pip install fonttools brotli）就先用已有的子集，新字退回系统楷体
+kai, stamp = f'{root}/app/fonts/kai-ph.woff2', f'{root}/app/fonts/kai-ph.chars'
+need = {c for r in data for s in r['sections'] for l in s['lines'] for c in l.get('zh_ph', '') + ''.join(y.get('zh_ph', '') for y in l.get('syllables', [])) if not c.isspace()}
+need |= {c for c in '·（）' }
+if not os.path.exists(stamp) or need - set(open(stamp, encoding='utf-8').read()):
+    try:
+        from fontTools import subset
+        o = subset.Options(); o.flavor = 'woff2'
+        from fontTools.ttLib import newTable; import struct
+        fnt = subset.load_font(f'{root}/app/fonts/src/LXGWWenKai-Regular.ttf', o, lazy=True)
+        # 这个字体的 format 4 cmap 子表 fontTools 读不了，只留 format 12（偏移按删掉的表头记录前移）
+        d = fnt.reader['cmap']; n = struct.unpack('>H', d[2:4])[0]
+        recs = [struct.unpack('>HHI', d[4 + 8 * i:12 + 8 * i]) for i in range(n)]
+        keep = [r for r in recs if struct.unpack('>H', d[r[2]:r[2] + 2])[0] == 12]; sh = 8 * (n - len(keep))
+        cm = newTable('cmap'); cm.decompile(struct.pack('>HH', 0, len(keep)) + b''.join(struct.pack('>HHI', a, b, c - sh) for a, b, c in keep) + d[4 + 8 * n:], fnt); fnt['cmap'] = cm
+        sb = subset.Subsetter(o); sb.populate(text=''.join(sorted(need))); sb.subset(fnt); subset.save_font(fnt, kai, o)
+        open(stamp, 'w', encoding='utf-8').write(''.join(sorted(need)))
+    except ImportError: print('提示：没装 fontTools，音译楷体用旧子集')
+kai_css = "@font-face{font-family:'PhKai';font-display:swap;src:url(data:font/woff2;base64,%s) format('woff2')}" % base64.b64encode(open(kai, 'rb').read()).decode() if os.path.exists(kai) else ''
+t = t.replace('/*DATA*/', json.dumps(data, ensure_ascii=False)).replace('/*KAIFONT*/', kai_css).replace('/*LEX*/null', json.dumps(used, ensure_ascii=False))
 if audio is None:
     assert t.count('/*AUDIO*/null') == 1
     t = t.replace('/*AUDIO*/null', '(window.__AUD=window.__AUD||{})')
