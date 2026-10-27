@@ -40,10 +40,31 @@ if pages:
     audio, out = {}, f'{pages}/index.html'
     open(f'{pages}/audio-files.json', 'w').write(json.dumps(sorted(moved.values())))
 else:
-    audio = {f: 'data:audio/mpeg;base64,' + base64.b64encode(open(small(f), 'rb').read()).decode() for f in files}
+    # claude.ai 预览版：音频不放进网页，分成几个 a/p<n>.js 包（每个不到 12 MB），和网页一起发布；
+    # 包里的脚本把音频加进 window.__AUD，网页里的 AUDIO 就是这个对象，所以不用改模板
     out = f'{root}/app/index.html'
+    os.makedirs(f'{root}/app/a', exist_ok=True)
+    for old_f in os.listdir(f'{root}/app/a'): os.remove(f'{root}/app/a/{old_f}')
+    packs, cur = [], []
+    for f in files:
+        u = 'data:audio/mpeg;base64,' + base64.b64encode(open(small(f), 'rb').read()).decode()
+        if cur and sum(len(x) for x in cur) + len(u) > 12e6: packs.append(cur); cur = []
+        cur.append(f'w[{json.dumps(f)}]={json.dumps(u)};')
+    if cur: packs.append(cur)
+    for i, p in enumerate(packs):
+        open(f'{root}/app/a/p{i}.js', 'w').write('(function(w){' + ''.join(p) + '})(window.__AUD=window.__AUD||{});')
+    audio = None
 t = open(f'{root}/app/template.html', encoding='utf-8').read()
-open(out, 'w', encoding='utf-8').write(t.replace('/*DATA*/', json.dumps(data, ensure_ascii=False)).replace('/*LEX*/null', json.dumps(used, ensure_ascii=False)).replace('/*AUDIO*/null', json.dumps(audio)))
-print('ok', len(data), '词库发音', len(used), '打包音频' if not pages else '单独音频文件', len(files), f'{os.path.getsize(out)/1e6:.1f} MB')
+t = t.replace('/*DATA*/', json.dumps(data, ensure_ascii=False)).replace('/*LEX*/null', json.dumps(used, ensure_ascii=False))
+if audio is None:
+    assert t.count('/*AUDIO*/null') == 1
+    t = t.replace('/*AUDIO*/null', '(window.__AUD=window.__AUD||{})')
+    tags = ''.join(f'<script src="a/p{i}.js"></script>' for i in range(len(packs)))
+    i = t.index('<script')  # 放在网页自己的脚本前面：启动时载入的录音要已经在 AUDIO 里
+    t = t[:i] + tags + t[i:]
+else:
+    t = t.replace('/*AUDIO*/null', json.dumps(audio))
+open(out, 'w', encoding='utf-8').write(t)
+print('ok', len(data), '词库发音', len(used), '打包音频' if not pages else '单独音频文件', len(files), f'{os.path.getsize(out)/1e6:.1f} MB', '' if pages else f'音频包 {len(packs)} 个')
 if pages: sys.exit()
 open(f'{root}/app/lexicon-files.txt', 'w').write('\n'.join(sorted(set(used.values()))))  # 发布时要一起带上的文件
