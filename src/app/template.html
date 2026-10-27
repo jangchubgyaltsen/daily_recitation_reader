@@ -53,7 +53,7 @@ main{max-width:760px;margin:0 auto;padding-inline:var(--mpadp,0px)}
 .toc-d summary{cursor:pointer;font-size:14px;color:var(--lapis);padding:8px 0;min-height:28px}
 .toc-d .toc{margin-top:4px}
 .rubric{margin:4px 0 2px;color:var(--muted);font:13px/1.7 var(--f-zh)}
-.rubric .rb{font:calc(16px * var(--size) * var(--s-bo)) / 1.8 var(--f-bo)}
+.rubric .rb{font:15px/1.8 var(--f-bo)}  /* 说明里的藏文和汉文说明一样大（w），不跟正文字号走；藏文字形偏小，15px 看起来和 13px 汉字相当 */
 .rubric.ln{padding-left:calc(2.2rem + 8px);margin-top:10px}
 .rubric.end{padding-left:calc(2.2rem + 8px);margin-top:10px}
 .toc a{font-size:13px;color:var(--lapis);text-decoration:none;border:1px solid var(--rule);border-radius:999px;padding:3px 10px}
@@ -735,6 +735,7 @@ function render(){
   syncControls(); lastKey=''; if(typeof paintMark==='function'&&A.marking) paintMark();
   if(typeof updKp==='function') updKp();
   if(typeof landSync==='function') {LAND.k=null;landSync()}
+  if(typeof restMarks==='function') restMarks();
 }
 function syncControls(){
   const vs=versions(RITUALS[S.rit]||RITUALS[0]),cur=zk(),ci=Math.max(0,vs.findIndex(v=>v[0]===cur)),vn=n=>/新/.test(n)?'新':/旧/.test(n)?'旧':n.slice(0,1);
@@ -920,7 +921,7 @@ async function trackURL(t,R){R=R||RITUALS[S.rit]||RITUALS[0];if(t==='tune')retur
   const u=R.meta['audio.'+t];return u?await fetchBlobURL(u):null}
 // track choice: what the user picked if this ritual has it, else 藏文念诵, then 中文念诵, 字鱼相随 last
 async function pickTrack(R){for(const t of [...new Set([S.track,'bo','zh','tune'].filter(Boolean))]){const u=await trackURL(t,R);if(u)return [t,u]}return ['tune','tune:']}
-async function loadTrack(keep){if(!keep)A.el.pause();A.sr={};A.solo=1;if(typeof E!=='undefined')E.peaks=null;const [t,url]=await pickTrack();A.track=t;A.has=true;
+async function loadTrack(keep){if(!keep)A.el.pause();A.rdone=[];A.sr={};A.solo=1;if(typeof E!=='undefined')E.peaks=null;const [t,url]=await pickTrack();A.track=t;A.has=true;
   if(t==='tune')A.el.virt(yu(RITUALS[S.rit]||RITUALS[0]).dur);else A.el.real(url);
   refreshTiming();await syncPlayer()}
 async function syncPlayer(){
@@ -992,7 +993,9 @@ function tick(){const t=A.el.currentTime,stop=A.stopAt;if(checkSecRep(t)||skipGa
     if(A.lastT!=null&&tt<A.lastT&&A.lastT-tt<0.25){}else{A.lastT=tt;const pos=locate(tt);const key=pos?pos.id+'/'+pos.b:'';if(key!==lastKey){lastKey=key;paint(pos)}}}
   showProgress()}
 A.el.addEventListener('play',()=>{syncPlayer();if(!A.loop){A.loop=1;requestAnimationFrame(function L(){tick();if(!A.el.paused)requestAnimationFrame(L);else A.loop=0})}});
-A.el.addEventListener('seeking',()=>{A.lastT=null;A.prevT=null;SCHED.clear()});
+A.el.addEventListener('seeking',()=>{A.lastT=null;A.prevT=null;SCHED.clear();
+  // 单独念时往回跳：跳过的安住重新算
+  if(!Q()&&A.rdone&&A.rdone.length){const t=A.el.currentTime;A.rdone=A.rdone.filter(id=>{const p=restPoints().find(p=>p.r.after===id);return p&&p.t<=t})}});
 A.el.addEventListener('error',()=>{if(A.el.getAttribute('src'))$('ptime').textContent='录音加载失败'});
 A.el.addEventListener('pause',()=>{SCHED.clear();syncPlayer()});
 A.el.addEventListener('loadedmetadata',()=>syncPlayer());
@@ -1421,8 +1424,8 @@ $('finBack').onclick=()=>{$('fin').hidden=true;STACK.length=0;go('#/',true)};
 A.el.addEventListener('ended',()=>{if(performance.now()-(A.endT||0)<1500)return;onEnd()});
 // 自动衔接：念完后还要接着念（下一遍、下一部、段落重复）时，在录音最后几十毫秒就接上，不等浏览器慢半拍的 ended
 function willGoOn(xf){const sp=secRepPoints().find(p=>p.end);if(sp&&(A.sr[sp.s.id]||1)<sp.k)return true;
+  if(restPoints().some(p=>p.end&&!rDone().includes(p.r.after)))return false;
   const x=qItem();if(!x)return (A.solo||1)<ritReps(RITUALS[S.rit]||RITUALS[0]);
-  if(restPoints().some(p=>p.end&&!(S.q.done||[]).includes(p.r.after)))return false;
   if(S.q.r<itemTotal(x.it))return true;const it=x.c.items[S.q.i+1];if(!it)return false;
   // 提前过渡要下一部已经载好，否则等这一部念完再换
   return !xf||!!(A.pre&&A.pre.rid===it.rid&&A.el.ready(A.pre.url)&&ritById(it.rid)!==RITUALS[S.rit])}
@@ -1435,22 +1438,22 @@ async function prepNext(){const x=qItem();if(!x||S.q.r<itemTotal(x.it))return;co
 A.el.addEventListener('play',()=>{prepNext();loadTail(A.el.src)});
 function onEnd(){if(A.marking)return drawMini();if(A.stopAt!=null){A.stopAt=null;return drawMini()}
   {const sp=secRepPoints().find(p=>p.end);if(sp&&secRepeat(sp)){play();return}}
-  const x=qItem();if(!x){if(soloRepeat())return;return drawMini()}
-  const p=restPoints().find(p=>p.end&&!(S.q.done||[]).includes(p.r.after));
-  if(p){S.q.done=(S.q.done||[]).concat(p.r.after);save();startRest(p.r,qAdvance);return}
+  const x=qItem(),solo=()=>{A.rdone=[];if(soloRepeat())return;drawMini()};
+  const p=restPoints().find(p=>p.end&&!rDone().includes(p.r.after));
+  if(p){rDone().push(p.r.after);save();startRest(p.r,x?qAdvance:solo);return}
+  if(!x)return solo();
   qAdvance()}
 function qAdvance(){const x=qItem();if(!x)return;
   if(S.q.r<itemTotal(x.it)){S.q.r++;S.q.done=[];A.sr={};save();drawQ();A.el.currentTime=0;play();prepNext();return}
   if(S.q.i+1<x.c.items.length)gotoItem(S.q.i+1,true);else finishCombo()}
 function drawQ(){const x=qItem();const on=!!x&&RITUALS[S.rit]&&x.it&&ritById(x.it.rid)===RITUALS[S.rit];
-  $('chead').hidden=!on;$('pick').hidden=on;$('cbar').hidden=!on;if(!on){document.querySelectorAll('.restmark').forEach(x=>x.remove());return}
+  $('chead').hidden=!on;$('pick').hidden=on;$('cbar').hidden=!on;if(!on){restMarks();return}
   const {q,c,it}=x,tot=itemTotal(it),R=RITUALS[S.rit];
   $('ctT').textContent=R.meta['title.zh']+' ▾';
   $('ctS').textContent=c.hidden?(tot>1?'第 '+q.r+' / '+tot+' 遍':''):c.name+' · '+(q.i+1)+' / '+c.items.length+(tot>1?' · 第 '+q.r+' / '+tot+' 遍':'');
   const nx=c.items[q.i+1],NR=nx&&ritById(nx.rid);
   $('cnext').hidden=!NR;if(NR){const nt=itemTotal(nx);$('cnN').textContent=NR.meta['title.zh']+(nt>1?' · '+nt+' 遍':'')}
-  document.querySelectorAll('.restmark').forEach(x=>x.remove());
-  (it.rests||[]).forEach(r=>{const el=document.getElementById(R.meta.id+'-'+r.after);if(el)el.insertAdjacentHTML('beforeend',`<div class="restmark">安住 ${fmtLen(restSec(c,r))}${r.sound!=='none'?' · 结束时'+(r.sound==='bowl'?'钵':'磬')+'声':''}</div>`)});
+  restMarks();
   $('cbar').innerHTML=c.items.map((it2,k)=>{const R2=ritById(it2.rid),d=R2&&ritDur(R2);const w=d?d*itemTotal(it2):60;return `<i style="flex:${w}"><b data-k="${k}" style="transform:scaleX(${k<q.i?1:0})"></b></i>`}).join('');
   updQBar()}
 function updQBar(){if(LAND.on)landRep();const x=qItem();if(!x||$('cbar').hidden)return;const b=$('cbar').querySelector(`[data-k="${x.q.i}"]`);if(!b)return;
@@ -1479,11 +1482,20 @@ $('miniStop').onclick=()=>{cancelRest();A.el.pause();A.el.currentTime=0;S.q=null
 const SOUNDS=[['bowl','钵'],['chime','磬'],['none','不响']];
 const isPractice=R=>R&&R.meta.kind==='practice';
 function comboParts(c){let chant=0,rest=0,miss=0;c.items.forEach(it=>{const R=ritById(it.rid);if(!R)return;const tot=itemTotal(it);const d=ritDur(R);
-  if(d==null)miss++;else chant+=d*tot;(it.rests||[]).forEach(r=>rest+=r.sec*tot)});return {chant:Math.round(chant),rest,miss}}
+  if(d==null)miss++;else chant+=d*tot;itemRests(it).forEach(r=>rest+=r.sec*tot)});return {chant:Math.round(chant),rest,miss}}
 // c.fill：'speed'（默认，念诵变速）或 'rest'（念诵保持原速，安住按比例拉长或缩短，填满总时长）
 const fillRest=c=>!!(c&&c.total&&c.fill==='rest');
 function restScale(c){if(!fillRest(c))return 1;const p=comboParts(c);return p.rest>0&&c.total>p.chant?(c.total-p.chant)/p.rest:1}
 const restSec=(c,r)=>Math.round(r.sec*restScale(c));
+// 仪轨自带的安住（w：上师瑜伽是修法，中间要安住）：段落里写 "rest": 秒数（可选 "rest.sound": bowl|chime|none）。
+// 单独念和放进组合都生效；组合里改过某部的安住，就以组合里的为准
+const defRests=R=>R?R.sections.filter(s=>s.rest>0).map(s=>({after:s.id,sec:s.rest,sound:s['rest.sound']||S.restSound||'bowl'})):[];
+const itemRests=it=>it.rests||defRests(ritById(it.rid));
+const canRest=R=>isPractice(R)||defRests(R).length>0;
+// 已经安住过的段落：组合里记在 S.q.done，单独念记在 A.rdone（从头再念时清空）
+const rDone=()=>Q()?(S.q.done=S.q.done||[]):(A.rdone=A.rdone||[]);
+function restMarks(){document.querySelectorAll('.restmark').forEach(x=>x.remove());const R=RITUALS[S.rit];if(!R)return;const x=qItem(),inQ=x&&ritById(x.it.rid)===R;
+  (inQ?itemRests(x.it):defRests(R)).forEach(r=>{const el=document.getElementById(R.meta.id+'-'+r.after);if(el)el.insertAdjacentHTML('beforeend',`<div class="restmark">安住 ${fmtLen(restSec(inQ?x.c:null,r))}${r.sound!=='none'?' · 结束时'+(r.sound==='bowl'?'钵':'磬')+'声':''}</div>`)})}
 function comboSpeed(c){if(!c.total||fillRest(c))return 1;const p=comboParts(c);const left=c.total-p.rest;return left>0&&p.chant>0?p.chant/left:Infinity}
 const curRate=()=>(Q()&&A.qRate)||+S.rate||1;
 const fmtRate2=r=>isFinite(r)?(Math.round(r*100)/100).toFixed(2).replace(/0$/,'').replace(/\.0$/,'.0')+'×':'—';
@@ -1500,7 +1512,7 @@ function totalCard(c){const p=comboParts(c);if(!c.items.length)return '';
     <div class="tleg"><span><i class="k1"></i>念诵 ${fmtLen(chantShown)} · <b>${auto?'1.0×':fmtRate2(sp)}</b></span><span><i class="k2"></i>安住 ${fmtLen(restShown)}</span></div>${auto?'':`<div class="lbl">${fr?'念诵保持原速，安住自动拉长填满':'安住保持设定，念诵自动变速填满'}</div>`}
     ${p.miss?`<div class="lbl">有 ${p.miss} 部没有录音，念诵时间没算进去。</div>`:''}${warn?`<div class="twarn">${warn}</div>`:''}</div>`}
 let CUR_C=null;
-function restsHTML(it,i){const R=ritById(it.rid);if(!isPractice(R)||!it.open)return '';const rs=it.rests||[];
+function restsHTML(it,i){const R=ritById(it.rid);if(!canRest(R)||!it.open)return '';const rs=itemRests(it);
   return '<div class="secs">'+R.sections.map(s=>{const r=rs.find(x=>x.after===s.id);
     return `<div class="secrow"><span>${esc(shortSec(s['title.zh']))}</span>${r?'':`<button class="link small" data-radd="${i}" data-sec="${esc(s.id)}">＋ 安住</button>`}</div>`+(r?`<div class="restblk"><span class="rt">安住 ${fmtLen(r.sec)}${fillRest(CUR_C)&&restScale(CUR_C)!==1?` <small class="lbl">→ ${fmtLen(restSec(CUR_C,r))}</small>`:''}</span>
       <button class="sound" data-rsnd="${i}" data-sec="${esc(s.id)}">${SOUNDS.find(x=>x[0]===r.sound)[1]}</button>
@@ -1508,7 +1520,7 @@ function restsHTML(it,i){const R=ritById(it.rid);if(!isPractice(R)||!it.open)ret
       <button class="ibtn" data-rdel="${i}" data-sec="${esc(s.id)}" aria-label="删除这段安住">✕</button></div>`:'')}).join('')+'</div>'}
 // 编辑页里安住和总时长的点击
 $('combo').addEventListener('click',async e=>{const c=comboById(S.ed);if(!c)return;let b;
-  const rest=b=>{const it=c.items[+(b.dataset.radd||b.dataset.rsnd||b.dataset.rdec||b.dataset.rinc||b.dataset.rdel)];it.rests=it.rests||[];return [it,it.rests.find(x=>x.after===b.dataset.sec)]};
+  const rest=b=>{const it=c.items[+(b.dataset.radd||b.dataset.rsnd||b.dataset.rdec||b.dataset.rinc||b.dataset.rdel)];it.rests=it.rests||defRests(ritById(it.rid));return [it,it.rests.find(x=>x.after===b.dataset.sec)]};
   if(b=e.target.closest('[data-open-i]')){const it=c.items[+b.dataset.openI];it.open=!it.open;save();drawCombo();return}
   if(b=e.target.closest('[data-radd]')){const [it]=rest(b);it.rests.push({after:b.dataset.sec,sec:180,sound:S.restSound||'bowl'});const R=ritById(it.rid);const ord=R.sections.map(s=>s.id);it.rests.sort((x,y)=>ord.indexOf(x.after)-ord.indexOf(y.after));save();drawCombo();return}
   if(b=e.target.closest('[data-rsnd]')){const [,r]=rest(b);const k=SOUNDS.findIndex(x=>x[0]===r.sound);r.sound=SOUNDS[(k+1)%SOUNDS.length][0];save();drawCombo();if(r.sound!=='none')bell(r.sound);return}
@@ -1533,8 +1545,8 @@ function bell(kind){if(kind==='bowl'){try{BOWL=BOWL||new Audio(BOWL_SRC);BOWL.cu
   P.forEach(([f,a],k)=>{const o=c.createOscillator(),g=c.createGain();o.frequency.value=f*(1+(k?0.003*k:0));g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(a,t0+0.008);g.gain.exponentialRampToValueAtTime(0.0001,t0+dur/(1+k*0.6));o.connect(g);g.connect(out);o.start(t0);o.stop(t0+dur)})}
 // 念诵中：念到有安住的段落结尾，暂停录音，倒计时，结束时响钵或磬，再接着念
 const REST={on:false};
-function restPoints(){const x=qItem();if(!x||!A.tm||!x.it.rests||!x.it.rests.length)return [];const R=RITUALS[S.rit];
-  return x.it.rests.map(r=>{const s=R.sections.find(s=>s.id===r.after);if(!s)return null;const last=[...s.lines].reverse().find(l=>A.tm[l.id]);if(!last)return null;
+function restPoints(){if(!A.tm)return [];const x=qItem(),R=RITUALS[S.rit];const rs=x?(ritById(x.it.rid)===R?itemRests(x.it):[]):defRests(R);
+  return rs.map(r=>{const s=R.sections.find(s=>s.id===r.after);if(!s)return null;const last=[...s.lines].reverse().find(l=>A.tm[l.id]);if(!last)return null;
     const i=A.order.indexOf(last);const isEnd=i===A.order.length-1;return {r,t:isEnd?Infinity:lineEnd(i),end:isEnd}}).filter(Boolean)}
 // 段落遍数（如前行的祈祷上师念 3 遍）：念到这一段结尾就跳回段首再念，A.sr 记每段念到第几遍；最后一段的重复在 ended 里处理
 function secRepPoints(){const R=RITUALS[S.rit]||RITUALS[0];if(!A.tm||R.sections.length<2)return [];if(A._sp&&A._spv===A.tm&&A._spg===S.tgap)return A._sp;
@@ -1549,7 +1561,7 @@ function checkSecRep(t){const prev=A.prevT;A.prevT=t;if(A.marking||A.stopAt!=nul
   const r=A.el.playbackRate||1,p=secRepPoints().find(p=>{const at=p.t-xfLead(p.t)*r;return !p.end&&prev<at&&t>=at});return !!p&&secRepeat(p)}
 // 只有一段的仪轨（如增长咒念 3 遍）不在组合里单独念时，也按自带遍数重复
 function soloRepeat(){const n=ritReps(RITUALS[S.rit]||RITUALS[0]);if((A.solo||1)<n){A.solo=(A.solo||1)+1;A.sr={};A.el.currentTime=0;play();return true}A.solo=1;return false}
-function checkRest(t){if(REST.on||!Q()||A.el.paused)return;S.q.done=S.q.done||[];const p=restPoints().find(p=>!p.end&&!S.q.done.includes(p.r.after)&&t>=p.t-0.05);if(p){S.q.done.push(p.r.after);save();startRest(p.r,()=>play())}}
+function checkRest(t){if(REST.on||A.el.paused||A.stopAt!=null||A.marking)return;const d=rDone(),p=restPoints().find(p=>!p.end&&!d.includes(p.r.after)&&t>=p.t-0.05);if(p){d.push(p.r.after);save();startRest(p.r,()=>play())}}
 function startRest(r,then){A.el.pause();const x=qItem();Object.assign(REST,{on:true,left:restSec(x&&x.c,r),paused:false,r,then,last:Date.now()});
   clearInterval(REST.iv);REST.iv=setInterval(()=>{if(REST.paused){REST.last=Date.now();return}const now=Date.now();REST.left-=(now-REST.last)/1000;REST.last=now;if(REST.left<=0)endRest(true);else drawRest()},250);drawRest()}
 function endRest(ring){if(!REST.on)return;clearInterval(REST.iv);REST.on=false;if(ring&&REST.r.sound!=='none')bell(REST.r.sound);const f=REST.then;drawRest();syncPlayer();setTimeout(()=>f&&f(),ring&&REST.r.sound!=='none'?(REST.r.sound==='bowl'?3000:1500):0)}
