@@ -74,7 +74,29 @@ if not os.path.exists(stamp) or need - set(open(stamp, encoding='utf-8').read())
         sb = subset.Subsetter(o); sb.populate(text=''.join(sorted(need))); sb.subset(fnt); subset.save_font(fnt, kai, o)
         open(stamp, 'w', encoding='utf-8').write(''.join(sorted(need)))
     except ImportError: print('提示：没装 fontTools，音译楷体用旧子集')
-kai_css = "@font-face{font-family:'PhKai';font-display:swap;src:url(data:font/woff2;base64,%s) format('woff2')}" % base64.b64encode(open(kai, 'rb').read()).decode() if os.path.exists(kai) else ''
+# w 2026-10-27 改用文鼎简中楷（gkai00mp，Arphic Public License，原文件在 app/fonts/src/）。
+# 它缺的少数字（如吽）仍用上面的霞鹜文楷子集补：两个 @font-face 同名，用 unicode-range 分开。
+gk, gstamp = f'{root}/app/fonts/gkai-ph.woff2', f'{root}/app/fonts/gkai-ph.chars'
+if not os.path.exists(gstamp) or need - set(open(gstamp, encoding='utf-8').read()):
+    try:
+        from fontTools import subset
+        from fontTools.ttLib import TTFont
+        o = subset.Options(); o.flavor = 'woff2'
+        g = subset.load_font(f'{root}/app/fonts/src/gkai00mp.ttf', o)
+        has = ''.join(sorted(c for c in need if ord(c) in g.getBestCmap()))
+        sb = subset.Subsetter(o); sb.populate(text=has); sb.subset(g); subset.save_font(g, gk, o)
+        open(gstamp, 'w', encoding='utf-8').write(''.join(sorted(need)))
+    except ImportError: print('提示：没装 fontTools，音译楷体用旧子集')
+def urange(cs): return ','.join('U+%X' % ord(c) for c in sorted(cs))
+kai_css = ''
+if os.path.exists(gk):
+    from fontTools.ttLib import TTFont
+    gch = {chr(u) for u in TTFont(gk).getBestCmap()}
+    kai_css += "@font-face{font-family:'PhKai';font-display:swap;src:url(data:font/woff2;base64,%s) format('woff2');unicode-range:%s}" % (base64.b64encode(open(gk, 'rb').read()).decode(), urange(gch))
+    rest = need - gch
+else: rest = None
+if os.path.exists(kai):
+    kai_css += "@font-face{font-family:'PhKai';font-display:swap;src:url(data:font/woff2;base64,%s) format('woff2')%s}" % (base64.b64encode(open(kai, 'rb').read()).decode(), ';unicode-range:' + urange(rest) if rest else '')
 t = t.replace('/*DATA*/', json.dumps(data, ensure_ascii=False)).replace('/*KAIFONT*/', kai_css).replace('/*LEX*/null', json.dumps(used, ensure_ascii=False))
 if audio is None:
     assert t.count('/*AUDIO*/null') == 1
