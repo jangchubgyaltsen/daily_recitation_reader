@@ -5,6 +5,8 @@
   "title.zh": "回向偈",
   "title.zh_ph": "",
   "restriction": "public",
+  "common": "true",
+  "common.group": "愿文",
   "status": "draft",
   "source.zh": "喇荣课诵 2024-05-02 版，第51页",
   "gloss.status": "draft（节拍释义和颜色对应由 Claude 起草，待校对）"

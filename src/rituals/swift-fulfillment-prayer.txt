@@ -8,6 +8,8 @@
 @title.zh: 所欲速疾成就祈请文
 @title.zh_ph:
 @restriction: public
+@common: true
+@common.group: 祈祷
 # w 2026-10-27 要求加入
 @status: draft
 @source.zh: w 给的课诵文本（繁体，转简体）

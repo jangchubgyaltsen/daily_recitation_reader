@@ -1,0 +1,24 @@
+# 虚空藏咒：从护法简供（protector-offering）里单独拿出来的条目，内容照原仪轨，原仪轨改了这里也要跟着改。
+# w 2026-10-27 要求把祈祷文和咒语分开放进仪轨库，已经单独有的不重复放。
+
+@id: akashagarbha-mantra
+@title.bo: ནམ་མཁའ་མཛོད་ཀྱི་གཟུངས།
+@title.zh: 虚空藏咒
+@title.zh_ph:
+@restriction: public
+@common: true
+@common.group: 咒语
+@status: draft
+@source.zh: 喇荣课诵 2024-05-02 版，第39–42页
+@kind: mantra
+@gloss.status: draft（节拍释义和颜色对应由 Claude 起草，待校对）
+
+== offering
+title.zh: 虚空藏咒
+
+-- 1
+kind: mantra
+mantra.zh: 虚空藏咒
+bo: ན་མཿ སརྦ་ཏ་ཐཱ་ག་ཏ་བྷྱོ་བི་ཤྭ་མུ་ཁེ་བྷྱཿ སརྦ་ཐཱ་ཁཾ་ཨུདྒ་ཏེ་སྥ་ར་ཎ་ཨི་མཾ་ག་ག་ན་ཁཾ་སྭཱ་ཧཱ།
+zh_ph: 那美萨儿瓦达塔嘎达巴哟波秀么剋贝 萨儿瓦达康额嘎得 萨帕Ra那额芒嘎嘎那康索哈
+

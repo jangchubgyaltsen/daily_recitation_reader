@@ -1,0 +1,50 @@
+{
+ "meta": {
+  "id": "vajrasattva-mantra",
+  "title.bo": "རྡོ་རྗེ་སེམས་དཔའི་སྙིང་པོ།",
+  "title.zh": "金刚萨埵心咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "咒语",
+  "status": "draft",
+  "source.zh": "喇荣课诵 2024-05-02 版，第267–284页",
+  "kind": "mantra",
+  "gloss.status": "暂无（逐词对应以后再做）"
+ },
+ "sections": [
+  {
+   "id": "vajrasattva-dedication",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "金刚萨埵心咒",
+     "rubric.bo": "ཡིག་དྲུག་བཟླ།",
+     "rubric.zh": "诵六字心咒：",
+     "bo": "ཨོཾ་བཛྲ་ས་ཏྭ་ཧཱུྃ།",
+     "zh_ph": "嗡班匝儿萨埵吽",
+     "en_ph": "om benza sato hung",
+     "syllables": [
+      {
+       "bo": "ཨོཾ"
+      },
+      {
+       "bo": "བཛྲ"
+      },
+      {
+       "bo": "ས"
+      },
+      {
+       "bo": "ཏྭ"
+      },
+      {
+       "bo": "ཧཱུྃ"
+      }
+     ]
+    }
+   ],
+   "title.zh": "金刚萨埵心咒"
+  }
+ ]
+}

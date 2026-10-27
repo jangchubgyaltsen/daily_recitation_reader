@@ -5,6 +5,8 @@
   "title.zh": "佛法恒久住世愿文",
   "title.zh_ph": "",
   "restriction": "public",
+  "common": "true",
+  "common.group": "愿文",
   "status": "draft",
   "source.zh": "w 给的课诵文本（繁体，转简体）",
   "gloss.status": "draft（节拍释义由 Claude 起草，待校对）"

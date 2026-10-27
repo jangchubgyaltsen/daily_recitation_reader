@@ -1,0 +1,27 @@
+# 金刚萨埵心咒：从前行·开显解脱道（ngondro）里单独拿出来的条目，内容照原仪轨，原仪轨改了这里也要跟着改。
+# w 2026-10-27 要求把祈祷文和咒语分开放进仪轨库，已经单独有的不重复放。
+
+@id: vajrasattva-mantra
+@title.bo: རྡོ་རྗེ་སེམས་དཔའི་སྙིང་པོ།
+@title.zh: 金刚萨埵心咒
+@title.zh_ph:
+@restriction: public
+@common: true
+@common.group: 咒语
+@status: draft
+@source.zh: 喇荣课诵 2024-05-02 版，第267–284页
+@kind: mantra
+@gloss.status: 暂无（逐词对应以后再做）
+
+== vajrasattva-dedication
+title.zh: 金刚萨埵心咒
+
+-- 1
+kind: mantra
+mantra.zh: 金刚萨埵心咒
+rubric.bo: ཡིག་དྲུག་བཟླ།
+rubric.zh: 诵六字心咒：
+bo: ཨོཾ་བཛྲ་ས་ཏྭ་ཧཱུྃ།
+zh_ph: 嗡班匝儿萨埵吽
+en_ph: om benza sato hung
+

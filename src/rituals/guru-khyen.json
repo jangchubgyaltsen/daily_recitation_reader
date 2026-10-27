@@ -1,0 +1,85 @@
+{
+ "meta": {
+  "id": "guru-khyen",
+  "title.bo": "བླ་མ་མཁྱེན།",
+  "title.zh": "上师知",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "祈祷",
+  "status": "draft",
+  "source.zh": "喇荣课诵 2024-05-02 版，第267–284页",
+  "gloss.status": "暂无（逐词对应以后再做）"
+ },
+ "sections": [
+  {
+   "id": "call-guru",
+   "lines": [
+    {
+     "id": "1",
+     "bo": "བླ་མ་མཁྱེན།",
+     "zh_ph": "喇嘛钦",
+     "en_ph": "lama khyen",
+     "zh": "上师知",
+     "beats": "བླ་མ=上师; མཁྱེན=知",
+     "zh_align": "上师=བླ་མ; 知=མཁྱེན",
+     "syllables": [
+      {
+       "bo": "བླ",
+       "zh_ph": "喇",
+       "en_word": 0
+      },
+      {
+       "bo": "མ",
+       "zh_ph": "嘛",
+       "en_word": 0
+      },
+      {
+       "bo": "མཁྱེན",
+       "zh_ph": "钦",
+       "en_word": 1
+      }
+     ],
+     "en_words": [
+      "lama",
+      "khyen"
+     ],
+     "zh_segs": [
+      {
+       "t": "上师",
+       "syl": [
+        0,
+        1
+       ]
+      },
+      {
+       "t": "知",
+       "syl": [
+        2
+       ]
+      }
+     ],
+     "beat_groups": [
+      {
+       "syl": [
+        0,
+        1
+       ],
+       "zh": "上师",
+       "en": ""
+      },
+      {
+       "syl": [
+        2
+       ],
+       "zh": "知",
+       "en": ""
+      }
+     ]
+    }
+   ],
+   "title.zh": "上师知",
+   "repeat": "3"
+  }
+ ]
+}

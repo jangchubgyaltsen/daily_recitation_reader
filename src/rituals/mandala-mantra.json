@@ -1,0 +1,84 @@
+{
+ "meta": {
+  "id": "mandala-mantra",
+  "title.bo": "མཎྜལ་གྱི་སྔགས།",
+  "title.zh": "供曼茶咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "咒语",
+  "status": "draft",
+  "source.zh": "喇荣课诵 2024-05-02 版，第267–284页",
+  "kind": "mantra",
+  "gloss.status": "暂无（逐词对应以后再做）"
+ },
+ "sections": [
+  {
+   "id": "mandala",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "供曼茶咒",
+     "bo": "ཨོཾ་རཏྣ་མཎྜལ་པཱུ་ཛ་མེ་གྷ་ས་མུ་དྲ་སྥ་ར་ཎ་ས་མ་ཡེ་ཨཱཿཧཱུྃ།",
+     "zh_ph": "嗡Ra那曼扎拉 波匝美嘎萨么扎 萨帕Ra那萨玛耶啊吽",
+     "en_ph": "om ratna mandal pudza megha samudra saparana samayé ah hung",
+     "syllables": [
+      {
+       "bo": "ཨོཾ"
+      },
+      {
+       "bo": "རཏྣ"
+      },
+      {
+       "bo": "མཎྜལ"
+      },
+      {
+       "bo": "པཱུ"
+      },
+      {
+       "bo": "ཛ"
+      },
+      {
+       "bo": "མེ"
+      },
+      {
+       "bo": "གྷ"
+      },
+      {
+       "bo": "ས"
+      },
+      {
+       "bo": "མུ"
+      },
+      {
+       "bo": "དྲ"
+      },
+      {
+       "bo": "སྥ"
+      },
+      {
+       "bo": "ར"
+      },
+      {
+       "bo": "ཎ"
+      },
+      {
+       "bo": "ས"
+      },
+      {
+       "bo": "མ"
+      },
+      {
+       "bo": "ཡེ"
+      },
+      {
+       "bo": "ཨཱཿཧཱུྃ"
+      }
+     ]
+    }
+   ],
+   "title.zh": "供曼茶咒"
+  }
+ ]
+}

@@ -8,6 +8,8 @@
 @title.zh: 佛法恒久住世愿文
 @title.zh_ph:
 @restriction: public
+@common: true
+@common.group: 愿文
 # w 2026-10-27 要求加入
 @status: draft
 @source.zh: w 给的课诵文本（繁体，转简体）

@@ -8,6 +8,8 @@
 @title.zh: 成就所愿谛实语
 @title.zh_ph:
 @restriction: public
+@common: true
+@common.group: 愿文
 # w 2026-10-27 按序列加入
 @status: draft
 @source.zh: 喇荣课诵 2024-05-02 版，第71页

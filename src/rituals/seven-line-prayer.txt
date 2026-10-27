@@ -15,6 +15,8 @@
 @subtitle.bo: བླ་མ་གསང་འདུས་ལས་གསུངས་པའི་ཁྱད་པར་བླ་སྒྲུབ་ཚིག་བདུན་གསོལ་འདེབས་ནི།
 @subtitle.zh: ——《上师密集》中所说上师修法
 @restriction: public
+@common: true
+@common.group: 祈祷
 # w 2026-10-27 选定加入；书中列在法堂课诵类，日常公开念诵
 @status: draft
 @source.zh: 喇荣课诵 2024-05-02 版，第23–24页

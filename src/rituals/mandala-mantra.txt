@@ -1,0 +1,25 @@
+# 供曼茶咒：从前行·开显解脱道（ngondro）里单独拿出来的条目，内容照原仪轨，原仪轨改了这里也要跟着改。
+# w 2026-10-27 要求把祈祷文和咒语分开放进仪轨库，已经单独有的不重复放。
+
+@id: mandala-mantra
+@title.bo: མཎྜལ་གྱི་སྔགས།
+@title.zh: 供曼茶咒
+@title.zh_ph:
+@restriction: public
+@common: true
+@common.group: 咒语
+@status: draft
+@source.zh: 喇荣课诵 2024-05-02 版，第267–284页
+@kind: mantra
+@gloss.status: 暂无（逐词对应以后再做）
+
+== mandala
+title.zh: 供曼茶咒
+
+-- 1
+kind: mantra
+mantra.zh: 供曼茶咒
+bo: ཨོཾ་རཏྣ་མཎྜལ་པཱུ་ཛ་མེ་གྷ་ས་མུ་དྲ་སྥ་ར་ཎ་ས་མ་ཡེ་ཨཱཿཧཱུྃ།
+zh_ph: 嗡Ra那曼扎拉 波匝美嘎萨么扎 萨帕Ra那萨玛耶啊吽
+en_ph: om ratna mandal pudza megha samudra saparana samayé ah hung
+

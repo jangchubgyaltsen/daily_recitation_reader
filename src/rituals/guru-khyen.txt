@@ -1,0 +1,26 @@
+# 上师知：从前行·开显解脱道（ngondro）里单独拿出来的条目，内容照原仪轨，原仪轨改了这里也要跟着改。
+# w 2026-10-27 要求把祈祷文和咒语分开放进仪轨库，已经单独有的不重复放。
+
+@id: guru-khyen
+@title.bo: བླ་མ་མཁྱེན།
+@title.zh: 上师知
+@title.zh_ph:
+@restriction: public
+@common: true
+@common.group: 祈祷
+@status: draft
+@source.zh: 喇荣课诵 2024-05-02 版，第267–284页
+@gloss.status: 暂无（逐词对应以后再做）
+
+== call-guru
+title.zh: 上师知
+repeat: 3
+
+-- 1
+bo: བླ་མ་མཁྱེན།
+zh_ph: 喇嘛钦
+en_ph: lama khyen
+zh: 上师知
+beats: བླ་མ=上师; མཁྱེན=知
+zh_align: 上师=བླ་མ; 知=མཁྱེན
+
