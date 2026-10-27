@@ -1,0 +1,62 @@
+{
+ "meta": {
+  "id": "amitabha-mantra",
+  "title.bo": "སངས་རྒྱས་འོད་དཔག་མེད་ཀྱི་གཟུངས།",
+  "title.zh": "阿弥陀佛心咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "咒语",
+  "status": "draft",
+  "source.zh": "喇荣课诵 2024-05-02 版，第149页（祈祷与咒语）",
+  "kind": "mantra",
+  "gloss.status": "draft（节拍释义和颜色对应由 Claude 起草，待校对）"
+ },
+ "sections": [
+  {
+   "id": "mantra",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "阿弥陀佛心咒",
+     "bo": "ཨོཾ་ཨ་མི་དེ་ཝ་ཨཱ་ཡུ་སིདྡྷི་ཧཱུྃ་ཧྲཱིཿ",
+     "zh_ph": "嗡阿么得瓦阿耶色德吽舍",
+     "syllables": [
+      {
+       "bo": "ཨོཾ"
+      },
+      {
+       "bo": "ཨ"
+      },
+      {
+       "bo": "མི"
+      },
+      {
+       "bo": "དེ"
+      },
+      {
+       "bo": "ཝ"
+      },
+      {
+       "bo": "ཨཱ"
+      },
+      {
+       "bo": "ཡུ"
+      },
+      {
+       "bo": "སིདྡྷི"
+      },
+      {
+       "bo": "ཧཱུྃ"
+      },
+      {
+       "bo": "ཧྲཱིཿ"
+      }
+     ]
+    }
+   ],
+   "title.zh": "阿弥陀佛心咒"
+  }
+ ]
+}

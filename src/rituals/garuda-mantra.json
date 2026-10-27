@@ -1,0 +1,65 @@
+{
+ "meta": {
+  "id": "garuda-mantra",
+  "title.bo": "ཁྱུང་སྔགས།",
+  "title.zh": "大鹏心咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "咒语",
+  "status": "draft",
+  "source.zh": "喇荣课诵 2024-05-02 版，第155–156页（祈祷与咒语）",
+  "kind": "mantra",
+  "gloss.status": "draft（节拍释义和颜色对应由 Claude 起草，待校对）"
+ },
+ "sections": [
+  {
+   "id": "mantra",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "大鹏心咒",
+     "bo": "ཨོཾ་ཁྲ་ག་རུ་ཌ་ཙ་ལེ་ཙ་ལེ་ཧཱུྃ་ཕཊ།",
+     "zh_ph": "嗡冲嘎热扎 匝类匝类吽啪的",
+     "syllables": [
+      {
+       "bo": "ཨོཾ"
+      },
+      {
+       "bo": "ཁྲ"
+      },
+      {
+       "bo": "ག"
+      },
+      {
+       "bo": "རུ"
+      },
+      {
+       "bo": "ཌ"
+      },
+      {
+       "bo": "ཙ"
+      },
+      {
+       "bo": "ལེ"
+      },
+      {
+       "bo": "ཙ"
+      },
+      {
+       "bo": "ལེ"
+      },
+      {
+       "bo": "ཧཱུྃ"
+      },
+      {
+       "bo": "ཕཊ"
+      }
+     ]
+    }
+   ],
+   "title.zh": "大鹏心咒"
+  }
+ ]
+}

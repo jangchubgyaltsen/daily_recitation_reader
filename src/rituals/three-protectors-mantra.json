@@ -1,0 +1,98 @@
+{
+ "meta": {
+  "id": "three-protectors-mantra",
+  "title.bo": "རིགས་གསུམ་མགོན་པོའི་བསྙེན་པ།",
+  "title.zh": "三部怙主心咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "咒语",
+  "status": "draft",
+  "source.zh": "喇荣课诵 2024-05-02 版，第151页（祈祷与咒语）",
+  "kind": "mantra",
+  "gloss.status": "draft（节拍释义和颜色对应由 Claude 起草，待校对）"
+ },
+ "sections": [
+  {
+   "id": "mantra",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "金刚手心咒",
+     "bo": "ཨོཾ་བཛྲ་པཱ་ཎི་ཧཱུྃ།",
+     "zh_ph": "嗡班匝儿巴呢吽",
+     "syllables": [
+      {
+       "bo": "ཨོཾ"
+      },
+      {
+       "bo": "བཛྲ"
+      },
+      {
+       "bo": "པཱ"
+      },
+      {
+       "bo": "ཎི"
+      },
+      {
+       "bo": "ཧཱུྃ"
+      }
+     ]
+    },
+    {
+     "id": "2",
+     "kind": "mantra",
+     "mantra.zh": "文殊心咒",
+     "bo": "ཨོཾ་ཝཱ་གཱི་ཤྭ་རི་མུཾ།",
+     "zh_ph": "嗡瓦格秀热门",
+     "syllables": [
+      {
+       "bo": "ཨོཾ"
+      },
+      {
+       "bo": "ཝཱ"
+      },
+      {
+       "bo": "གཱི"
+      },
+      {
+       "bo": "ཤྭ"
+      },
+      {
+       "bo": "རི"
+      },
+      {
+       "bo": "མུཾ"
+      }
+     ]
+    },
+    {
+     "id": "3",
+     "kind": "mantra",
+     "mantra.zh": "观音心咒",
+     "bo": "ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ།",
+     "zh_ph": "嗡玛呢巴美吽",
+     "syllables": [
+      {
+       "bo": "ཨོཾ"
+      },
+      {
+       "bo": "མ"
+      },
+      {
+       "bo": "ཎི"
+      },
+      {
+       "bo": "པདྨེ"
+      },
+      {
+       "bo": "ཧཱུྃ"
+      }
+     ]
+    }
+   ],
+   "title.zh": "三部怙主心咒"
+  }
+ ]
+}

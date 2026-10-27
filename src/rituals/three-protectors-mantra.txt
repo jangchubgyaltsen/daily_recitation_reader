@@ -1,0 +1,39 @@
+# 三部怙主心咒：校对源文件（规则见 eight-auspicious.txt 开头）
+# 藏文：中文版 PDF 抽出的文字有系统性乱码，按规律还原，并用书中汉文音译核对音节数，待 w 对书校对。
+#   咒语藏文按梵文咒语的通行拼法整理（PDF 里 ཨཾ→ཨོཾ，ཏོདྱ→ཏདྱ，བྷི→བྷ，元音和 ྃ、ཿ 重复等），待 w 对书校对。
+# 汉文音译、汉文：喇荣课诵 2024-05-02 版，第151页（原样照录）。
+# 节拍释义、颜色对应由 Claude 起草，待校对。
+
+@id: three-protectors-mantra
+@title.bo: རིགས་གསུམ་མགོན་པོའི་བསྙེན་པ།
+@title.zh: 三部怙主心咒
+@title.zh_ph:
+@restriction: public
+@common: true
+@common.group: 咒语
+# w 2026-10-27：喇荣课诵第134–162页「祈祷与咒语」一章逐条单独加入
+@status: draft
+@source.zh: 喇荣课诵 2024-05-02 版，第151页（祈祷与咒语）
+@kind: mantra
+@gloss.status: draft（节拍释义和颜色对应由 Claude 起草，待校对）
+
+== mantra
+title.zh: 三部怙主心咒
+
+-- 1
+kind: mantra
+mantra.zh: 金刚手心咒
+bo: ཨོཾ་བཛྲ་པཱ་ཎི་ཧཱུྃ།
+zh_ph: 嗡班匝儿巴呢吽
+
+-- 2
+kind: mantra
+mantra.zh: 文殊心咒
+bo: ཨོཾ་ཝཱ་གཱི་ཤྭ་རི་མུཾ།
+zh_ph: 嗡瓦格秀热门
+
+-- 3
+kind: mantra
+mantra.zh: 观音心咒
+bo: ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ།
+zh_ph: 嗡玛呢巴美吽

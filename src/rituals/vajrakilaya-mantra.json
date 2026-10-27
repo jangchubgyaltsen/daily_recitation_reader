@@ -1,0 +1,68 @@
+{
+ "meta": {
+  "id": "vajrakilaya-mantra",
+  "title.bo": "ཕུར་པའི་བསྙེན་པ།",
+  "title.zh": "金刚橛心咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "咒语",
+  "status": "draft",
+  "source.zh": "喇荣课诵 2024-05-02 版，第150页（祈祷与咒语）",
+  "kind": "mantra",
+  "gloss.status": "draft（节拍释义和颜色对应由 Claude 起草，待校对）"
+ },
+ "sections": [
+  {
+   "id": "mantra",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "金刚橛心咒",
+     "bo": "ཨོཾ་བཛྲ་ཀཱི་ལི་ཀཱི་ལ་ཡ་སརྦ་བིགྷྣཱན་བཾ་ཧཱུྃ་ཕཊ༔",
+     "zh_ph": "嗡班匝儿格勒格拉雅 萨儿瓦布南万吽啪的",
+     "syllables": [
+      {
+       "bo": "ཨོཾ"
+      },
+      {
+       "bo": "བཛྲ"
+      },
+      {
+       "bo": "ཀཱི"
+      },
+      {
+       "bo": "ལི"
+      },
+      {
+       "bo": "ཀཱི"
+      },
+      {
+       "bo": "ལ"
+      },
+      {
+       "bo": "ཡ"
+      },
+      {
+       "bo": "སརྦ"
+      },
+      {
+       "bo": "བིགྷྣཱན"
+      },
+      {
+       "bo": "བཾ"
+      },
+      {
+       "bo": "ཧཱུྃ"
+      },
+      {
+       "bo": "ཕཊ"
+      }
+     ]
+    }
+   ],
+   "title.zh": "金刚橛心咒"
+  }
+ ]
+}

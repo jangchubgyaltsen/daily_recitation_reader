@@ -1,0 +1,74 @@
+{
+ "meta": {
+  "id": "simhamukha-mantra",
+  "title.bo": "སེང་གདོང་མའི་བསྙེན་པ།",
+  "title.zh": "狮面佛母心咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "咒语",
+  "status": "draft",
+  "source.zh": "喇荣课诵 2024-05-02 版，第152页（祈祷与咒语）",
+  "kind": "mantra",
+  "gloss.status": "draft（节拍释义和颜色对应由 Claude 起草，待校对）"
+ },
+ "sections": [
+  {
+   "id": "mantra",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "狮面佛母心咒",
+     "bo": "ཨཿ ཀཿ སཿ མཿ རཿ ཙཿ ཤཿ དཿ རཿ སཿ མཿ རཿ ཡཿ ཕཊ༔",
+     "zh_ph": "阿嘎萨玛Ra匝夏达Ra萨玛Ra雅啪的",
+     "syllables": [
+      {
+       "bo": "ཨཿ"
+      },
+      {
+       "bo": "ཀཿ"
+      },
+      {
+       "bo": "སཿ"
+      },
+      {
+       "bo": "མཿ"
+      },
+      {
+       "bo": "རཿ"
+      },
+      {
+       "bo": "ཙཿ"
+      },
+      {
+       "bo": "ཤཿ"
+      },
+      {
+       "bo": "དཿ"
+      },
+      {
+       "bo": "རཿ"
+      },
+      {
+       "bo": "སཿ"
+      },
+      {
+       "bo": "མཿ"
+      },
+      {
+       "bo": "རཿ"
+      },
+      {
+       "bo": "ཡཿ"
+      },
+      {
+       "bo": "ཕཊ"
+      }
+     ]
+    }
+   ],
+   "title.zh": "狮面佛母心咒"
+  }
+ ]
+}

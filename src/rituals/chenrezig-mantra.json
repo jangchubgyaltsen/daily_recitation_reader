@@ -1,0 +1,50 @@
+{
+ "meta": {
+  "id": "chenrezig-mantra",
+  "title.bo": "སྤྱན་རས་གཟིགས་ཀྱི་སྙིང་པོ།",
+  "title.zh": "观音心咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "咒语",
+  "status": "draft",
+  "source.zh": "喇荣课诵 2024-05-02 版，第150页（祈祷与咒语）",
+  "kind": "mantra",
+  "gloss.status": "draft（节拍释义和颜色对应由 Claude 起草，待校对）"
+ },
+ "sections": [
+  {
+   "id": "mantra",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "观音心咒",
+     "bo": "ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ་ཧྲཱིཿ",
+     "zh_ph": "嗡玛呢巴美吽舍",
+     "syllables": [
+      {
+       "bo": "ཨོཾ"
+      },
+      {
+       "bo": "མ"
+      },
+      {
+       "bo": "ཎི"
+      },
+      {
+       "bo": "པདྨེ"
+      },
+      {
+       "bo": "ཧཱུྃ"
+      },
+      {
+       "bo": "ཧྲཱིཿ"
+      }
+     ]
+    }
+   ],
+   "title.zh": "观音心咒"
+  }
+ ]
+}

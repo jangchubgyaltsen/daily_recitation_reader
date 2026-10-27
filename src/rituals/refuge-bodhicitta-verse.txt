@@ -3,7 +3,7 @@
 
 @id: refuge-bodhicitta-verse
 @title.bo: སྐྱབས་འགྲོ་སེམས་བསྐྱེད།
-@title.zh: 皈依发心偈
+@title.zh: 皈依发心偈（释迦佛修法）
 @title.zh_ph:
 @restriction: public
 @common: true

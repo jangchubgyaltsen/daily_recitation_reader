@@ -1,0 +1,53 @@
+{
+ "meta": {
+  "id": "mahakala-mantra",
+  "title.bo": "མགོན་པོའི་བསྙེན་པ།",
+  "title.zh": "玛哈嘎拉心咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "咒语",
+  "status": "draft",
+  "source.zh": "喇荣课诵 2024-05-02 版，第156页（祈祷与咒语）",
+  "kind": "mantra",
+  "gloss.status": "draft（节拍释义和颜色对应由 Claude 起草，待校对）"
+ },
+ "sections": [
+  {
+   "id": "mantra",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "玛哈嘎拉心咒",
+     "bo": "ཨོཾ་མ་ཧཱ་ཀཱ་ལ་ཧཱུྃ་ཕཊ༔",
+     "zh_ph": "嗡玛哈嘎拉吽啪的",
+     "syllables": [
+      {
+       "bo": "ཨོཾ"
+      },
+      {
+       "bo": "མ"
+      },
+      {
+       "bo": "ཧཱ"
+      },
+      {
+       "bo": "ཀཱ"
+      },
+      {
+       "bo": "ལ"
+      },
+      {
+       "bo": "ཧཱུྃ"
+      },
+      {
+       "bo": "ཕཊ"
+      }
+     ]
+    }
+   ],
+   "title.zh": "玛哈嘎拉心咒"
+  }
+ ]
+}

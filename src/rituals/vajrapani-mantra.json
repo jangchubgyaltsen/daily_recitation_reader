@@ -1,0 +1,62 @@
+{
+ "meta": {
+  "id": "vajrapani-mantra",
+  "title.bo": "ཕྱག་རྡོར་གྱི་བསྙེན་པ།",
+  "title.zh": "金刚手菩萨心咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "咒语",
+  "status": "draft",
+  "source.zh": "喇荣课诵 2024-05-02 版，第151页（祈祷与咒语）",
+  "kind": "mantra",
+  "gloss.status": "draft（节拍释义和颜色对应由 Claude 起草，待校对）"
+ },
+ "sections": [
+  {
+   "id": "mantra",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "金刚手菩萨心咒",
+     "bo": "ཨོཾ་བཛྲ་ཙཎྜ་མ་ཧཱ་རོ་ཥ་ཎ་ཧཱུྃ་ཕཊ།",
+     "zh_ph": "嗡班匝儿赞扎玛哈若卡那吽啪的",
+     "syllables": [
+      {
+       "bo": "ཨོཾ"
+      },
+      {
+       "bo": "བཛྲ"
+      },
+      {
+       "bo": "ཙཎྜ"
+      },
+      {
+       "bo": "མ"
+      },
+      {
+       "bo": "ཧཱ"
+      },
+      {
+       "bo": "རོ"
+      },
+      {
+       "bo": "ཥ"
+      },
+      {
+       "bo": "ཎ"
+      },
+      {
+       "bo": "ཧཱུྃ"
+      },
+      {
+       "bo": "ཕཊ"
+      }
+     ]
+    }
+   ],
+   "title.zh": "金刚手菩萨心咒"
+  }
+ ]
+}

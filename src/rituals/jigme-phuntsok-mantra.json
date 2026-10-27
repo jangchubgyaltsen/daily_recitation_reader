@@ -1,0 +1,62 @@
+{
+ "meta": {
+  "id": "jigme-phuntsok-mantra",
+  "title.bo": "ཆོས་རྗེ་ཡིད་བཞིན་ནོར་བུའི་མཚན་སྔགས།",
+  "title.zh": "法王如意宝心咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "咒语",
+  "status": "draft",
+  "source.zh": "喇荣课诵 2024-05-02 版，第150页（祈祷与咒语）",
+  "kind": "mantra",
+  "gloss.status": "draft（节拍释义和颜色对应由 Claude 起草，待校对）"
+ },
+ "sections": [
+  {
+   "id": "mantra",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "法王如意宝心咒",
+     "bo": "ཨོཾ་གུ་རུ་ཨ་བྷྱ་ལཀྵཾ་ཀ་ར་སིདྡྷི་ཨཱཿཧཱུྃ།",
+     "zh_ph": "嗡格热阿贝拉江嘎Ra色德啊吽",
+     "syllables": [
+      {
+       "bo": "ཨོཾ"
+      },
+      {
+       "bo": "གུ"
+      },
+      {
+       "bo": "རུ"
+      },
+      {
+       "bo": "ཨ"
+      },
+      {
+       "bo": "བྷྱ"
+      },
+      {
+       "bo": "ལཀྵཾ"
+      },
+      {
+       "bo": "ཀ"
+      },
+      {
+       "bo": "ར"
+      },
+      {
+       "bo": "སིདྡྷི"
+      },
+      {
+       "bo": "ཨཱཿཧཱུྃ"
+      }
+     ]
+    }
+   ],
+   "title.zh": "法王如意宝心咒"
+  }
+ ]
+}
