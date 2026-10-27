@@ -118,7 +118,7 @@ body.has-audio{padding-bottom:160px}
 .player-in{position:relative}
 .speedpop{position:absolute;right:0;bottom:calc(100% + 14px);background:var(--sheet);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:12px;display:flex;flex-direction:column;gap:10px;width:min(320px,calc(100vw - 32px));box-sizing:border-box}
 .speedpop[hidden]{display:none}
-#tgaprow[hidden]{display:none}
+#tgaprow[hidden],#xfrow[hidden]{display:none}
 #speeds{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
 #speeds .chip{padding:6px 0;font-size:13px;min-height:40px}
 @media (max-width:560px){.speedpop{width:auto;min-width:120px}#speeds{grid-template-columns:1fr}#speeds .chip{min-height:44px;font-size:15px}}
@@ -550,6 +550,7 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
   <div class="speedpop" id="speedpop" hidden>
     <div class="row" id="speeds" role="group" aria-label="播放速度"></div>
     <div class="row" id="tgaprow"><span class="lbl">木鱼句间</span><input type="range" id="tgap" min="0.5" max="2.5" step="0.1" aria-label="只有调子时，句与句之间停几拍"><span id="tgapval" class="lbl"></span></div>
+    <div class="row" id="xfrow"><span class="lbl">段间过渡</span><input type="range" id="xfade" min="0" max="3" step="0.5" aria-label="一遍念完接下一遍、下一部时，前后两段叠着渐弱渐入的秒数"><span id="xfval" class="lbl"></span></div>
   </div>
 </div></div>
 
@@ -815,22 +816,28 @@ class Player extends EventTarget{
     ['play','pause','ended','timeupdate','loadedmetadata','seeking','error','ratechange'].forEach(ev=>a.addEventListener(ev,()=>{if(!this.v&&a===this.au)this.emit(ev)}));return a});
     this.au=this.els[0];this.v=false;this.vt=0;this.vd=0;this.vp=true;this.vr=1;this.t0=0;this.iv=null}
   spare(){return this.els[this.els[0]===this.au?1:0]}
-  prep(url){const b=this.spare();if(url&&b.src!==url){b.src=url;b.load()}}
-  ready(url){const b=this.spare();return !!url&&b.src===url&&b.readyState>=3}
+  prep(url){const b=this.spare();if(b===this.fo){this.pend=url;return}if(url&&b.src!==url){b.src=url;b.load()}}
+  ready(url){const b=this.spare();return !!url&&b!==this.fo&&b.src===url&&b.readyState>=3}
+  // 段间过渡：xf 秒设好后，下一次换录音或跳位置不直接跳，而是用另一个 audio 从新位置渐入，原来那个接着念并渐弱（w：自动过渡）
+  handoff(url,from){const X=this.xf;this.xf=0;const o=this.au,b=this.spare();this.stopFade();if(b.src!==url)b.src=url;b.playbackRate=o.playbackRate;b.muted=o.muted;
+    try{b.currentTime=from}catch(e){}b.volume=0;this.au=b;this.fo=o;b.play().catch(()=>{});const t0=performance.now();
+    this.fi=setInterval(()=>{const k=Math.min(1,(performance.now()-t0)/1000/X);b.volume=Math.sin(k*Math.PI/2);o.volume=Math.cos(k*Math.PI/2);if(k>=1)this.stopFade()},30);
+    this.emit('seeking');this.emit('loadedmetadata');this.emit('timeupdate')}
+  stopFade(){if(!this.fo)return;clearInterval(this.fi);const o=this.fo;this.fo=null;o.pause();o.volume=1;this.au.volume=1;if(this.pend){const u=this.pend;this.pend=null;this.prep(u)}}
   // iOS 要在点按时 play 过一次的 audio 才能之后自动播放：第一次点按时把备用的那个静音播一下
   unlock(){const b=this.spare();if(this.ul||!b.paused)return;this.ul=1;const own=!b.getAttribute('src');b.muted=true;if(own)b.src=silWav();
     const p=b.play();Promise.resolve(p).then(()=>{b.pause();b.muted=false;if(own&&b.src.startsWith('data:')){b.removeAttribute('src');b.load()}}).catch(()=>{b.muted=false;this.ul=0})}
   emit(ev){this.dispatchEvent(new Event(ev))}
-  real(url){if(this.v){this.vpause(true);this.v=false}if(!url){this.au.removeAttribute('src');return}if(this.au.src===url)return;
+  real(url){if(this.v){this.vpause(true);this.v=false}if(!url){this.au.removeAttribute('src');return}if(this.au.src===url)return;if(this.xf)return this.handoff(url,0);
     const b=this.spare();if(b.src===url&&b.readyState>=2){const o=this.au;o.pause();b.playbackRate=o.playbackRate;b.muted=o.muted;this.au=b;this.emit('loadedmetadata')}else this.au.src=url}
   virt(dur){this.au.pause();const was=this.v;this.v=true;this.vp=true;clearInterval(this.iv);if(!was||this.vd!==dur){this.vd=dur;this.vt=0}this.emit('loadedmetadata')}
   now(){return this.vp?this.vt:Math.min(this.vd,this.vt+(performance.now()-this.t0)/1000*this.vr)}
   vpause(quiet){if(this.vp)return;this.vt=this.now();this.vp=true;clearInterval(this.iv);if(!quiet)this.emit('pause')}
   play(){if(!this.v)return this.au.play();ac();if(!this.vp)return Promise.resolve();if(this.vt>=this.vd)this.vt=0;this.t0=performance.now();this.vp=false;
     this.iv=setInterval(()=>{if(this.now()>=this.vd){this.vt=this.vd;this.vp=true;clearInterval(this.iv);this.emit('pause');this.emit('ended')}else this.emit('timeupdate')},250);this.emit('play');return Promise.resolve()}
-  pause(){if(!this.v)return this.au.pause();this.vpause()}
+  pause(){this.xf=0;if(!this.v){this.stopFade();return this.au.pause()}this.vpause()}
   get currentTime(){return this.v?this.now():this.au.currentTime}
-  set currentTime(t){if(!this.v){this.au.currentTime=t;return}this.vt=Math.max(0,Math.min(this.vd,+t||0));this.t0=performance.now();this.emit('seeking');this.emit('timeupdate')}
+  set currentTime(t){if(!this.v){if(this.xf)return this.handoff(this.au.src,t);this.au.currentTime=t;return}this.vt=Math.max(0,Math.min(this.vd,+t||0));this.t0=performance.now();this.emit('seeking');this.emit('timeupdate')}
   get duration(){return this.v?this.vd:this.au.duration}
   get paused(){return this.v?this.vp:this.au.paused}
   get ended(){return this.v?this.vp&&this.vt>=this.vd:this.au.ended}
@@ -844,6 +851,16 @@ class Player extends EventTarget{
   getAttribute(k){return this.v?(k==='src'?null:null):this.au.getAttribute(k)}
   removeAttribute(k){this.au.removeAttribute(k)}
 }
+// iPhone 上网页不能调 audio 音量：那里用 Web Audio 把上一段结尾解出来渐弱地叠着放，下一段照常开始
+const VOLOK=(()=>{try{const a=new Audio();a.volume=0.5;return a.volume===0.5}catch(e){return false}})();
+const xfSec=()=>S.xfade??1.5;
+const TAILS={};
+function loadTail(url){if(VOLOK||!url||!url.startsWith('blob:')||url in TAILS)return;TAILS[url]=null;const c=ac();if(!c)return;
+  fetch(url).then(r=>r.arrayBuffer()).then(b=>new Promise((ok,no)=>c.decodeAudioData(b,ok,no))).then(buf=>{const L=Math.min(buf.length,Math.ceil(4*buf.sampleRate)),st=buf.length-L;
+    const t=c.createBuffer(buf.numberOfChannels,L,buf.sampleRate);for(let ch=0;ch<buf.numberOfChannels;ch++)t.copyToChannel(buf.getChannelData(ch).subarray(st),ch);TAILS[url]={buf:t,start:st/buf.sampleRate}}).catch(()=>{})}
+function tailOK(){const tb=TAILS[A.el.src];return !!tb&&!!AC&&AC.state==='running'&&A.el.currentTime>=tb.start}
+function playTail(X){const tb=TAILS[A.el.src],c=AC,src=c.createBufferSource(),g=c.createGain(),now=c.currentTime;src.buffer=tb.buf;src.playbackRate.value=A.el.playbackRate||1;
+  src.connect(g);g.connect(c.destination);g.gain.setValueAtTime(1,now);g.gain.linearRampToValueAtTime(0,now+X);src.start(now,Math.max(0,A.el.currentTime-tb.start));src.stop(now+X+0.05)}
 function silWav(){const n=400,b=new Uint8Array(44+n),v=new DataView(b.buffer),w=(o,t)=>[...t].forEach((c,i)=>b[o+i]=c.charCodeAt(0));
   w(0,'RIFF');v.setUint32(4,36+n,true);w(8,'WAVEfmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,8000,true);v.setUint32(28,8000,true);v.setUint16(32,1,true);v.setUint16(34,8,true);w(36,'data');v.setUint32(40,n,true);b.fill(128,44);
   let s='';b.forEach(x=>s+=String.fromCharCode(x));return 'data:audio/wav;base64,'+btoa(s)}
@@ -901,7 +918,8 @@ async function syncPlayer(){
   syncHist();
   $('hloff').value=S.hlOffset??0.15;$('hloffval').textContent=(S.hlOffset??0.15).toFixed(2)+' 秒';
   $('tgap').value=S.tgap??1.5;$('tgapval').textContent=(S.tgap??1.5).toFixed(1)+' 拍';
-  syncSpeeds();$('tgaprow').hidden=A.track!=='tune';showProgress();
+  $('xfade').value=xfSec();$('xfval').textContent=xfSec()?xfSec().toFixed(1)+' 秒':'不过渡';
+  syncSpeeds();$('tgaprow').hidden=A.track!=='tune';$('xfrow').hidden=A.track==='tune';showProgress();
 }
 const fmt=t=>{t=Math.max(0,t||0);return Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0')};
 function lineEnd(i){return i+1<A.order.length?A.tm[A.order[i+1].id][0]:(A.el.duration||Infinity)}
@@ -973,6 +991,7 @@ $('pspeed').onclick=e=>{e.stopPropagation();syncSpeeds();speedPop($('speedpop').
 $('speedpop').onclick=e=>{e.stopPropagation();const c=e.target.closest('[data-rate]');if(!c)return;S.rate=+c.dataset.rate;A.qRate=null;save();A.el.playbackRate=S.rate;syncPlayer();speedPop(false)};
 document.addEventListener('click',()=>{if(!$('speedpop').hidden)speedPop(false)});
 $('tgap').oninput=e=>{S.tgap=+e.target.value;save();syncPlayer()};
+$('xfade').oninput=e=>{S.xfade=+e.target.value;save();syncPlayer()};
 $('ftrack').onchange=e=>{A.track=e.target.value;S.track=A.track;save();loadTrack()};
 $('ffile').onchange=async e=>{const f=e.target.files[0];if(!f)return;const k=rid()+':'+A.track;if(A.urls[k])URL.revokeObjectURL(A.urls[k]);A.urls[k]=URL.createObjectURL(f);await putFile(k,f);await loadTrack()};
 /* marking: tap at the start of each beat, in order */
@@ -1362,7 +1381,7 @@ async function gotoItem(i,auto){const x=qItem();if(!x)return;const it=x.c.items[
   if(VIEW==='reader'){CUR=h;setURL(h,false);if(S.rit!==idx){S.rit=idx;save();render()}scrollTo(0,0)}
   // 下一部的录音已经在后台载好：先接着念，再换页面，听起来不断
   const fast=auto&&A.pre&&A.pre.rid===it.rid&&A.el.ready(A.pre.url);
-  if(fast){S.rit=idx;A.track=A.pre.t;A.el.real(A.pre.url);A.sr={};A.solo=1;refreshTiming();A.stopAt=null;A.el.currentTime=0;play()}
+  if(fast){S.rit=idx;A.track=A.pre.t;const xf=A.el.xf;A.el.real(A.pre.url);A.sr={};A.solo=1;refreshTiming();A.stopAt=null;if(!xf)A.el.currentTime=0;play()}
   // 常用页、藏历里单独播一部（临时组合）：留在原页，只出迷你播放条（w）
   else if(x.c.hidden){S.rit=idx;save();render()}
   else{if(h!==CUR)STACK.push(CUR);CUR=h;setURL(h,true);S.rit=idx;save();show('reader');render();scrollTo(0,0)}
@@ -1372,16 +1391,21 @@ $('finBack').onclick=()=>{$('fin').hidden=true;STACK.length=0;go('#/',true)};
 // 一部念完：还有遍数就从头再念，否则接下一部
 A.el.addEventListener('ended',()=>{if(performance.now()-(A.endT||0)<1500)return;onEnd()});
 // 自动衔接：念完后还要接着念（下一遍、下一部、段落重复）时，在录音最后几十毫秒就接上，不等浏览器慢半拍的 ended
-function willGoOn(){const sp=secRepPoints().find(p=>p.end);if(sp&&(A.sr[sp.s.id]||1)<sp.k)return true;
+function willGoOn(xf){const sp=secRepPoints().find(p=>p.end);if(sp&&(A.sr[sp.s.id]||1)<sp.k)return true;
   const x=qItem();if(!x)return (A.solo||1)<ritReps(RITUALS[S.rit]||RITUALS[0]);
   if(restPoints().some(p=>p.end&&!(S.q.done||[]).includes(p.r.after)))return false;
-  return S.q.r<itemTotal(x.it)||S.q.i+1<x.c.items.length}
-function earlyEnd(t){if(A.track==='tune'||A.marking||A.stopAt!=null||REST.on||A.el.paused)return false;const d=A.el.duration;
-  if(!isFinite(d)||t<0.5||d-t>0.1*(A.el.playbackRate||1)||performance.now()-(A.endT||0)<1500||!willGoOn())return false;A.endT=performance.now();onEnd();return true}
+  if(S.q.r<itemTotal(x.it))return true;const it=x.c.items[S.q.i+1];if(!it)return false;
+  // 提前过渡要下一部已经载好，否则等这一部念完再换
+  return !xf||!!(A.pre&&A.pre.rid===it.rid&&A.el.ready(A.pre.url)&&ritById(it.rid)!==RITUALS[S.rit])}
+function earlyEnd(t){if(A.track==='tune'||A.marking||A.stopAt!=null||REST.on||A.el.paused)return false;const d=A.el.duration,r=A.el.playbackRate||1;
+  if(!isFinite(d)||t<0.5||performance.now()-(A.endT||0)<1500)return false;
+  let X=Math.min(xfSec(),d/3);const how=X>=0.2&&(VOLOK?'vol':tailOK()?'tail':'');if(!how)X=0.1;
+  if(d-t>X*r||!willGoOn(how))return false;A.endT=performance.now();X=(d-t)/r;
+  if(how==='vol')A.el.xf=X;else if(how==='tail')playTail(X);onEnd();A.el.xf=0;return true}
 // 组合里提前载好下一部的录音
 async function prepNext(){const x=qItem();if(!x||S.q.r<itemTotal(x.it))return;const it=x.c.items[S.q.i+1];if(!it)return;const R=ritById(it.rid);if(!R||R===RITUALS[S.rit])return;
   const key=it.rid+'@'+S.q.i;if(A.preK===key)return;A.preK=key;const [t,url]=await pickTrack(R);if(t==='tune'){A.pre=null;return}A.pre={rid:it.rid,t,url};A.el.prep(url)}
-A.el.addEventListener('play',()=>{prepNext()});
+A.el.addEventListener('play',()=>{prepNext();loadTail(A.el.src)});
 function onEnd(){if(A.marking)return drawMini();if(A.stopAt!=null){A.stopAt=null;return drawMini()}
   {const sp=secRepPoints().find(p=>p.end);if(sp&&secRepeat(sp)){play();return}}
   const x=qItem();if(!x){if(soloRepeat())return;return drawMini()}
