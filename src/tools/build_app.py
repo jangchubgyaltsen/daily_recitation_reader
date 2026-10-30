@@ -60,6 +60,11 @@ t = open(f'{root}/app/template.html', encoding='utf-8').read()
 kai, stamp = f'{root}/app/fonts/kai-ph.woff2', f'{root}/app/fonts/kai-ph.chars'
 need = {c for r in data for s in r['sections'] for l in s['lines'] for c in l.get('zh_ph', '') + ''.join(y.get('zh_ph', '') for y in l.get('syllables', [])) if not c.isspace()}
 need |= {c for c in '·（）' }
+# 音译里的 {} 只是标记「两个汉字对一个藏文音节」，逐音节已经拆好，整句显示时去掉（w 2026-10-27）
+for r in data:
+    for sec in r['sections']:
+        for l in sec['lines']:
+            if 'zh_ph' in l: l['zh_ph'] = l['zh_ph'].replace('{', '').replace('}', '')
 if not os.path.exists(stamp) or need - set(open(stamp, encoding='utf-8').read()):
     try:
         from fontTools import subset
