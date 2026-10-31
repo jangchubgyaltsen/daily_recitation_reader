@@ -566,6 +566,50 @@ section h2{color:var(--muted);letter-spacing:.02em;font-size:15px;border-bottom-
   .ccard,.allrow,.tday,.cd,.chip,.pill,.toc a{transition:background-color 150ms}
 }
 @media (prefers-reduced-motion:reduce){.sheet{animation:none}button:active,.pbtn:active,.ibtn.play:active{transform:none;transition:none}}
+
+/* ===== 方案 3「仪轨书架」 ===== */
+#pane-lib .tday,#allRits{display:none!important}
+#pane-lib .search{height:52px;font-size:17px;margin-top:16px}
+.shelf{display:block}
+.shh{display:flex;align-items:center;justify-content:space-between;margin:22px 0 8px}.shh h2{margin:0;font:600 16px var(--f-zh)}
+.shcrow{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;margin-inline:-16px;padding-inline:16px;scrollbar-width:none}
+.shcrow::-webkit-scrollbar{display:none}
+.shc{flex:0 0 auto;width:200px;scroll-snap-align:start;display:flex;align-items:center;gap:6px;padding:10px 10px 10px 16px;border-radius:18px;background:var(--panel);border:0;box-sizing:border-box}
+.shc.pinned{box-shadow:inset 0 0 0 2px var(--lapis)}
+.shcb{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;border:0;background:transparent;text-align:left;cursor:pointer;color:var(--ink);padding:4px 0}
+.shcb b{font:600 16px var(--f-zh);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.shcb span{font-size:12px;color:var(--muted)}
+.shc.add{width:120px;justify-content:center;flex-direction:column;gap:2px;color:var(--lapis);font-size:13px;cursor:pointer;min-height:64px}.shc.add span{font-size:22px;line-height:1}
+.shcats{position:sticky;top:calc(56px + env(safe-area-inset-top,0px));z-index:4;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;background:var(--paper);margin:16px -16px 0;padding:10px 16px}
+.shcats::-webkit-scrollbar{display:none}
+.shcats .pill{flex:none;height:40px;display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:0}
+.shcats .pill.on{background:var(--sel);color:var(--on-sel)}
+.shg .lbl{font:13px var(--f-ui)}
+.shrow .ibtn.play{background:var(--panel);color:var(--ink)}
+.shcats .pill small{font-size:12px;opacity:.7;font-variant-numeric:tabular-nums}
+.shg{display:flex;align-items:baseline;gap:8px;margin:22px 0 4px;font:600 15px var(--f-zh);color:var(--ink)}
+.shrow{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--rule)}
+.shbody{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;border:0;background:transparent;text-align:left;padding:12px 0;cursor:pointer;color:var(--ink)}
+.shbody .rbo{font:17px/1.6 var(--f-bo);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shbody .rzh{display:flex;align-items:center;gap:8px;font:15px var(--f-zh)}.shbody .rzh b{font-weight:600}
+.shbody .rsub{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.shrow .ibtn.play{width:40px;height:40px}
+.shprev{display:none}
+@media (min-width:700px){.shcrow{margin-inline:0;padding-inline:0}.shcats{margin-inline:-24px;padding-inline:24px}}
+@media (min-width:1024px){
+  #home{padding-inline:32px!important}
+  #pane-lib{max-width:1160px}
+  .shelf{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);gap:32px;align-items:start}
+  .shcats{top:72px;margin-inline:0;padding-inline:0}
+  .shprev{display:block;position:sticky;top:88px;max-height:calc(100vh - 110px);overflow:auto;border-radius:24px;background:var(--panel);padding:24px}
+  .shpv .pbo{margin:0;font:20px/1.7 var(--f-bo)}.shpv h2{margin:4px 0;font:600 26px/1.3 var(--f-zh)}
+  .shpv .pin{font:14px/1.8 var(--f-zh);color:var(--muted)}
+  .plines{display:flex;flex-direction:column;gap:14px;margin:16px 0 20px;padding-top:16px;border-top:1px solid var(--rule)}
+  .pl1 .r-bo{font-size:20px;margin-bottom:0}.pl1 .r-ph{font-size:14px}.pl1 .r-zh{font-size:15px}
+  .pact{display:flex;flex-wrap:wrap;gap:8px}.pact .pill{height:44px;display:inline-flex;align-items:center;gap:6px}
+  .shrow{padding-inline:12px;border-radius:14px;border-bottom:0;margin-bottom:2px}
+  .shrow.sel{background:var(--panel)}
+}
+@media (hover:hover){.shrow:not(.sel):hover{background:var(--panel)}.shc:hover{background:var(--raised)}}
 </style>
 
 <div id="splash" aria-hidden="true"><img class="sp-bg" alt=""><img class="sp-fg" alt=""></div>
@@ -591,9 +635,10 @@ section h2{color:var(--muted);letter-spacing:.02em;font-size:15px;border-bottom-
   <div class="hpane" id="pane-lib">
     <header class="htop"><h1>仪轨库</h1><button class="ibtn" id="homeGear" aria-label="设置与备份"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></header>
     <button class="tday" id="today" hidden></button>
-    <label class="search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="q" placeholder="搜索组合" aria-label="搜索组合" autocomplete="off"></label>
-    <div class="hsec"><h2>我的组合</h2><button class="link" id="newCombo">＋ 新建组合</button></div>
-    <div id="combos"></div>
+    <label class="search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="q" placeholder="搜索仪轨、咒语、组合（藏文汉文都行）" aria-label="搜索仪轨和组合" autocomplete="off"></label>
+    <div class="shelf"><div class="shmain"><div id="shCombos"></div><div class="shcats" id="shCats" role="group" aria-label="分类"></div><div id="shList"></div></div><aside class="shprev" id="shPrev" aria-live="polite"></aside></div>
+    <div class="hsec" hidden><h2>我的组合</h2><button class="link" id="newCombo">＋ 新建组合</button></div>
+    <div id="combos" hidden></div>
     <button class="allrow" id="allRits"><span class="cname">全部仪轨</span><span class="lbl" id="ritCount"></span><span class="chev" aria-hidden="true">›</span></button>
     <div id="apack" hidden><div class="apinfo"><b>离线音频包</b><span class="lbl" id="apsub"></span></div><button class="chip" id="apbtn">下载</button></div>
   </div>
@@ -1419,7 +1464,7 @@ function drawToday(){const el=$('today');try{const today=jdToday(),n=monthOfJD(t
     (nx?`<span class="tdx">${nx.y.jd-today===1?'明天':nx.y.jd-today+' 天后'}是${DAYN(nx.y.d)} ${esc(nx.dj.names[0])}</span>`:'')+
     `<span class="tdgo">打开藏历 ›</span>`;el.hidden=false}catch(e){el.hidden=true}}
 $('today').onclick=()=>{S.tab='cal';save();drawHome();scrollTo(0,0)};
-function drawHome(){apDraw();drawToday();
+function drawHome(){apDraw();$('today').hidden=true;drawShelf();
   const q=norm($('q').value);
   const cs=sortCombos().filter(c=>!q||norm(c.name).includes(q)||c.items.some(it=>{const R=ritById(it.rid);return R&&matchR(R,q)}));
   $('combos').innerHTML=cs.length?cs.map(c=>{const L=comboLen(c);const n=c.items.length;
@@ -1866,6 +1911,45 @@ $('csBack').onclick=()=>goBack();
 $('csAdd').onclick=()=>{$('cxName').value='';$('cxM').innerHTML=MON.map((m,i)=>`<option value="${i+1}">${m}月</option>`).join('');$('cxD').innerHTML=Array.from({length:30},(_,i)=>`<option value="${i+1}">${DAYN(i+1)}</option>`).join('');$('cxsheet').hidden=false;$('cxName').focus()};
 $('cxCancel').onclick=()=>$('cxsheet').hidden=true;
 $('cxOk').onclick=()=>{const name=$('cxName').value.trim();if(!name){$('cxName').focus();return}S.calx.push({name,m:+$('cxM').value,d:+$('cxD').value,ref:null});save();$('cxsheet').hidden=true;drawCalSet()};
+
+// ===== 方案 3「仪轨书架」：一页看全；分类；搜索藏文汉文；不打开就能念；桌面右侧预览 =====
+const CATS=[['prayer','祈祷偈颂'],['mantra','咒语陀罗尼'],['name','佛号'],['practice','修法']];
+const catOf=R=>{const m=R.meta,id=m.id;if(m.kind==='practice')return 'practice';if(/-name$/.test(id))return 'name';if(m.kind==='mantra'||/-(mantra|dharani)(-|$)/.test(id))return 'mantra';return 'prayer'};
+let SHC='',SHSEL=null;
+const wide=()=>matchMedia('(min-width:1024px)').matches;
+function shRow(R){const m=R.meta,sub=ritSub(R),id=esc(m.id);
+  return `<div class="shrow${SHSEL===m.id?' sel':''}"><button class="shbody" data-sh="${id}">${m['title.bo']?`<span class="rbo" lang="bo">${esc(m['title.bo'])}</span>`:''}<span class="rzh"><b>${esc(m['title.zh'])}</b>${m.kind==='practice'?'<span class="tag">修法</span>':''}</span>${sub?`<span class="rsub">${esc(sub)}</span>`:''}</button>
+  <button class="ibtn fav${isFav(m.id)?' on':''}" data-fav="${id}" aria-pressed="${isFav(m.id)}" aria-label="${isFav(m.id)?'从常用移除':'加到常用'} ${esc(m['title.zh'])}">${STARI}</button>
+  <button class="ibtn play" data-shp="${id}" aria-label="直接念诵 ${esc(m['title.zh'])}">${PLAYI}</button></div>`}
+function drawShelf(){try{
+  const q=norm($('q').value);
+  const cs=sortCombos().filter(c=>!q||norm(c.name).includes(q));
+  $('shCombos').innerHTML=(q&&!cs.length)?'':`<div class="shh"><h2>我的组合</h2><button class="link small" data-shnew>＋ 新建</button></div><div class="shcrow">${cs.map(c=>{const L=comboLen(c);return `<div class="shc${c.pin?' pinned':''}"><button class="shcb" data-edit="${esc(c.id)}"><b>${esc(c.name)}</b><span>${c.items.length} 部${L.s?' · 约 '+Math.max(1,Math.round(L.s/60))+' 分钟':''}</span></button><button class="ibtn play" data-cplay="${esc(c.id)}" aria-label="开始念诵 ${esc(c.name)}"${c.items.length?'':' disabled'}>${PLAYI}</button></div>`}).join('')}<button class="shc add" data-shnew><span>＋</span>新建组合</button></div>`;
+  const pool=sortRits().filter(R=>!q||matchR(R,q)||norm(allLinesOf(R).slice(0,3).map(l=>l.zh||'').join('')).includes(q));
+  const cnt=k=>pool.filter(R=>!k||catOf(R)===k).length;
+  $('shCats').innerHTML=[['','全部'],...CATS].map(([k,n])=>`<button class="pill${SHC===k?' on':''}" data-shc="${k}" aria-pressed="${SHC===k}">${n}<small>${cnt(k)}</small></button>`).join('');
+  const rs=pool.filter(R=>!SHC||catOf(R)===SHC);let h='';
+  if(!rs.length)h=`<p class="empty">没有找到“${esc($('q').value)}”。试试藏文、汉文标题或者其中一句。</p>`;
+  else if(!SHC&&!q)CATS.forEach(([k,n])=>{const g=rs.filter(R=>catOf(R)===k);if(g.length)h+=`<h3 class="shg">${n}<span class="lbl">${g.length}</span></h3>`+g.map(shRow).join('')});
+  else h=(q?`<h3 class="shg">找到 ${rs.length} 部</h3>`:'')+rs.map(shRow).join('');
+  $('shList').innerHTML=h;
+  if(wide()){if(!SHSEL||!rs.some(R=>R.meta.id===SHSEL))SHSEL=rs[0]&&rs[0].meta.id;shPreview()}else $('shPrev').innerHTML='';
+  $('ritCount').textContent=RITUALS.length+' 部';
+}catch(e){console.error(e)}}
+function shPreview(){const R=SHSEL&&ritById(SHSEL);const el=$('shPrev');if(!R){el.innerHTML='';return}const m=R.meta,L=allLinesOf(R).slice(0,4),sub=ritSub(R);
+  el.innerHTML=`<div class="shpv">${m['title.bo']?`<p class="pbo" lang="bo">${esc(m['title.bo'])}</p>`:''}<h2>${esc(m['title.zh'])}</h2><p class="lbl">${esc([CATS.find(c=>c[0]===catOf(R))[1],sub,R.sections.length>1?R.sections.length+' 段':''].filter(Boolean).join(' · '))}</p>
+  ${m['intro.zh']||m['note.zh']?`<p class="pin">${esc(m['intro.zh']||m['note.zh'])}</p>`:''}
+  <div class="plines">${L.map(ln=>`<div class="pl1"><div class="r-bo" lang="bo">${esc(ln.bo)}</div><div class="r-ph">${esc(ln.zh_ph||(ln.syllables||[]).map(s=>s.zh_ph||'').join(''))}</div>${ln.zh?`<div class="r-zh">${esc(ln.zh)}</div>`:''}</div>`).join('')}</div>
+  <div class="pact"><button class="pill main" data-shp="${esc(m.id)}">${PLAYI}<span>念诵</span></button><button class="pill" data-open="${esc(m.id)}">打开全文</button><button class="pill" data-tc="${esc(m.id)}">＋ 加入组合</button></div></div>`}
+$('pane-lib').addEventListener('click',e=>{let b;
+  if(b=e.target.closest('[data-shc]')){SHC=b.dataset.shc;drawShelf();return}
+  if(b=e.target.closest('[data-shp]')){e.stopPropagation();const R=ritById(b.dataset.shp);if(R)playOnce(R,ritReps(R));return}
+  if(b=e.target.closest('[data-shnew]')){e.stopPropagation();$('newCombo').click();return}
+  if(b=e.target.closest('[data-sh]')){e.stopPropagation();if(wide()){SHSEL=b.dataset.sh;document.querySelectorAll('.shrow.sel').forEach(x=>x.classList.remove('sel'));b.closest('.shrow').classList.add('sel');shPreview()}else openRit(b.dataset.sh);return}
+  if(b=e.target.closest('#shPrev [data-open]')){e.stopPropagation();openRit(b.dataset.open);return}
+  if(b=e.target.closest('#shPrev [data-tc]')){e.stopPropagation();openToCombo(b.dataset.tc);return}
+},true);
+addEventListener('resize',()=>{if(VIEW==='home'&&(S.tab||'lib')==='lib')drawShelf()});
 render();
 loadTrack();
 route();
