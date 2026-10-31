@@ -566,6 +566,37 @@ section h2{color:var(--muted);letter-spacing:.02em;font-size:15px;border-bottom-
   .ccard,.allrow,.tday,.cd,.chip,.pill,.toc a{transition:background-color 150ms}
 }
 @media (prefers-reduced-motion:reduce){.sheet{animation:none}button:active,.pbtn:active,.ibtn.play:active{transform:none;transition:none}}
+
+/* ===== 方案 2「跟读教练」 ===== */
+.player.coach{padding-top:10px}
+.player.coach .player-in{flex-direction:column;align-items:stretch;gap:8px}
+.prow1{display:flex;align-items:center;gap:10px;min-width:0}
+.prow1 select{flex:0 1 auto;max-width:42%;height:36px}
+.prow1 .pline{flex:1;min-width:0;font-size:13px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.prow1 #pfull,.prow1 #pspeed{height:36px;min-width:0;padding:0 10px}.prow1 #pfull{width:36px;padding:0}
+@media (max-width:420px){.prow1 .ptime{display:none}}
+.prow2 .speedpop{right:0}
+.prow2{position:relative;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.prow2 #pplay{width:56px;height:56px;font-size:20px}
+.pbtn.ghost{width:48px;height:48px;border-radius:50%;background:transparent;color:var(--ink);font-size:0}
+.pbtn.tog{display:inline-flex;align-items:center;gap:6px;padding:0 12px;min-width:0}
+.pbtn.tog[aria-pressed="true"]{background:var(--sel);color:var(--on-sel)}
+body.has-audio{padding-bottom:200px}
+body.has-audio .sheet{bottom:calc(122px + env(safe-area-inset-bottom,0px))}
+.coachbar{margin:4px 0 14px;padding:14px 18px;border-radius:16px;background:var(--panel);display:flex;flex-direction:column;gap:8px}
+.cbh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:14px}
+.cbh b{font:600 20px var(--f-ui);font-variant-numeric:tabular-nums}
+.cbtrack{height:6px;border-radius:3px;background:var(--raised);overflow:hidden}.cbtrack i{display:block;height:100%;width:0;background:var(--lapis);border-radius:3px;transition:width .3s}
+.line{position:relative;cursor:pointer}
+.line.focus{background:var(--hl);box-shadow:inset 3px 0 0 var(--lapis)}
+.line[data-heard]:not([data-heard=""])::after{content:"";position:absolute;right:6px;top:12px;width:8px;height:8px;border-radius:50%;border:1.5px solid var(--lapis);box-sizing:border-box}
+.line[data-heard="2"]::after{background:linear-gradient(to top,var(--lapis) 50%,transparent 50%)}
+.line.learned::after{background:var(--lapis)}
+body.quiz .line:not(.reveal) :is(.r-ph,.r-zh,.c-ph,.c-gl){filter:blur(7px);opacity:.55;cursor:pointer;user-select:none;transition:filter .2s,opacity .2s}
+body.quiz .line.reveal :is(.r-ph,.r-zh,.c-ph,.c-gl){filter:none}
+@media (prefers-reduced-motion:reduce){.cbtrack i{transition:none}body.quiz .line :is(.r-ph,.r-zh){transition:none}}
+@media (min-width:700px){.prow2{justify-content:center;gap:14px}.prow1 select{max-width:220px}}
+body.land .prow1{display:none}body.land .player.coach .player-in{flex-direction:row}
 </style>
 
 <div id="splash" aria-hidden="true"><img class="sp-bg" alt=""><img class="sp-fg" alt=""></div>
@@ -722,16 +753,22 @@ section h2{color:var(--muted);letter-spacing:.02em;font-size:15px;border-bottom-
   <div class="row"><button class="chip" id="openAlign">校对颜色对应</button></div>
 </div></div>
 
-<div class="player" id="player" hidden><div class="pprog" aria-hidden="true"><div id="pbar"></div></div><div class="player-in">
-  <button class="pbtn" id="pplay" aria-label="播放">▶</button>
-  <select id="ptrack" aria-label="音轨"></select>
-  <span class="ptime" id="ptime">0:00</span>
-  <button class="pbtn small" id="prest" hidden>结束安住</button>
-  <button class="pbtn small" id="pfull" aria-label="切换横屏跟读 / 竖屏全文" title="切换横屏跟读 / 竖屏全文"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg></button>
+<div class="player coach" id="player" hidden><div class="pprog" aria-hidden="true"><div id="pbar"></div></div><div class="player-in">
+  <div class="prow1"><select id="ptrack" aria-label="音轨"></select><span class="pline" id="pline" aria-live="polite"></span><span class="ptime" id="ptime">0:00</span>
   <button class="pbtn small" id="pspeed" aria-label="播放速度" aria-expanded="false">1.0×</button>
+  <button class="pbtn small" id="pfull" aria-label="切换横屏跟读 / 竖屏全文" title="切换横屏跟读 / 竖屏全文"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg></button>
+  </div>
+  <div class="prow2">
+  <button class="pbtn small tog" id="pquiz" aria-pressed="false" title="遮住音译和汉文，点一下再看"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3.2 3.9M6.6 6.6C3.9 8.4 2 12 2 12s4 7 10 7a9.6 9.6 0 0 0 5.4-1.6"/></svg><span>自测</span></button>
+  <button class="pbtn ghost" id="pprev" aria-label="上一句"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+  <button class="pbtn" id="pplay" aria-label="播放">▶</button>
+  <button class="pbtn ghost" id="pnext" aria-label="下一句"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="currentColor"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
+  <button class="pbtn small tog" id="ploop" aria-pressed="false" title="只念当前这一句，一遍遍重复"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l3 3-3 3"/><path d="M4 11V9a4 4 0 0 1 4-4h12"/><path d="M7 22l-3-3 3-3"/><path d="M20 13v2a4 4 0 0 1-4 4H4"/></svg><span>单句</span></button>
+  <button class="pbtn small" id="prest" hidden>结束安住</button>
   <div class="speedpop" id="speedpop" hidden>
     <div class="row" id="speeds" role="group" aria-label="播放速度"></div>
     <div class="row" id="tgaprow"><span class="lbl">木鱼句间</span><input type="range" id="tgap" min="0.5" max="2.5" step="0.1" aria-label="只有调子时，句与句之间停几拍"><span id="tgapval" class="lbl"></span></div>
+  </div>
   </div>
 </div></div>
 
@@ -905,7 +942,7 @@ function render(){
   if(m['outro.bo']||m['outro.zh']) h+=verseBlock(m['outro.bo']||'',m['outro.zh']||'');
   if(m['colophon.bo']) h+=`<p class="aside colo colo-bo" lang="bo">${esc(m['colophon.bo'])}</p>`;
   if(m['colophon.zh']) h+=`<p class="aside colo">${esc(m['colophon.zh'])}</p>`;
-  h+=`<p class="draft">原型版本。文字以喇荣课诵（中文版）为准。逐词对应为草稿，待校对。点任意一节可查看意思并听它的发音；点一句的空白处或句号，播放这一句的念诵。${m['audio.bo.credit']?'<br>'+esc(m['audio.bo.credit']):''}</p>`;
+  h+=`<p class="draft">原型版本。文字以喇荣课诵（中文版）为准。逐词对应为草稿，待校对。点任意一节可查看意思并听它的发音；点一句就只念这一句（再点句里的词看释义）；打开「单句」会一直重复这一句。${m['audio.bo.credit']?'<br>'+esc(m['audio.bo.credit']):''}</p>`;
   {const lr=$('lrep');if(lr)document.body.appendChild(lr)}
   $('main').innerHTML=h;
   syncControls(); lastKey=''; if(typeof paintMark==='function'&&A.marking) paintMark();
@@ -939,7 +976,8 @@ document.addEventListener('click',e=>{
   }
   const line=e.target.closest('.line');
   const w=e.target.closest('.w,.col');
-  if(line&&!w){ ac(); playRange(lineRange(line.dataset.id)); return; }
+  if(line&&S.quiz&&!line.classList.contains('reveal')&&e.target.closest('.r-ph,.r-zh,.c-ph,.c-gl')){ line.classList.add('reveal'); return; }
+  if(line&&(!w||!line.classList.contains('focus'))){ ac(); coachTap(line.dataset.id); return; }
   if(w&&line){
     const R=RITUALS[S.rit]; const ln=R.sections[line.dataset.s].lines[line.dataset.l]; const k=+w.dataset.w; const wd=words(ln)[k]; const sy=ln.syllables;
     document.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
@@ -1166,7 +1204,7 @@ function showProgress(){const d=A.el.duration,t=A.el.currentTime||0,r=A.el.playb
   if(!isFinite(d)||!d){$('pbar').style.transform='scaleX(0)';return}
   $('pbar').style.transform=`scaleX(${Math.min(1,t/d)})`;$('ptime').textContent=fmt(t/r)+' / '+fmt(d/r)}
 function tick(){const t=A.el.currentTime,stop=A.stopAt;if(checkSecRep(t)||skipGap(t)||earlyEnd(t))return;scheduleClicks(t);
-  if(A.stopAt!=null&&t>=A.stopAt-0.02){A.el.pause();A.stopAt=null;if(E.loop&&!$('edit').hidden){clearTimeout(E.lt);E.lt=setTimeout(()=>{if(E.loop&&!$('edit').hidden)ePlay(E.loop)},450)}}
+  if(A.stopAt!=null&&t>=A.stopAt-0.02){A.el.pause();A.stopAt=null;coachEnd();if(E.loop&&!$('edit').hidden){clearTimeout(E.lt);E.lt=setTimeout(()=>{if(E.loop&&!$('edit').hidden)ePlay(E.loop)},450)}}
   if(typeof checkRest==='function')checkRest(t);
   if(!A.marking){let tt=t+(A.track==='tune'?0.03:(S.hlOffset??0.15))*A.el.playbackRate;if(stop!=null)tt=Math.min(tt,stop-0.05);
     // ignore tiny backward jitter of currentTime (some phones), but follow real seeks
@@ -1866,6 +1904,38 @@ $('csBack').onclick=()=>goBack();
 $('csAdd').onclick=()=>{$('cxName').value='';$('cxM').innerHTML=MON.map((m,i)=>`<option value="${i+1}">${m}月</option>`).join('');$('cxD').innerHTML=Array.from({length:30},(_,i)=>`<option value="${i+1}">${DAYN(i+1)}</option>`).join('');$('cxsheet').hidden=false;$('cxName').focus()};
 $('cxCancel').onclick=()=>$('cxsheet').hidden=true;
 $('cxOk').onclick=()=>{const name=$('cxName').value.trim();if(!name){$('cxName').focus();return}S.calx.push({name,m:+$('cxM').value,d:+$('cxD').value,ref:null});save();$('cxsheet').hidden=true;drawCalSet()};
+
+// ===== 方案 2「跟读教练」：点一句就听一句；单句循环；上一句/下一句；自测遮挡；每句跟读次数 =====
+S.learn=S.learn||{};
+const LEARNED=3;
+A.focus=null;A.cur=null;
+const coachLines=()=>allLines();
+const lineEl=id=>document.querySelector(`.line[data-id="${CSS.escape(id)}"]`);
+function learnOf(){const k=rid();return S.learn[k]=S.learn[k]||{}}
+function setFocus(id,scroll){A.focus=id;document.querySelectorAll('.line.focus').forEach(x=>x.classList.remove('focus'));const el=id&&lineEl(id);
+  if(el){el.classList.add('focus');if(scroll){const r=el.getBoundingClientRect();if(r.top<90||r.bottom>innerHeight-200)el.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}}
+  coachLine()}
+function coachTap(id){setFocus(id);const r=lineRange(id);if(r){A.rangeId=id;playRange(r)}}
+function coachEnd(){const id=A.rangeId;A.rangeId=null;if(!id)return;const L=learnOf();L[id]=(L[id]||0)+1;save();coachMarks();
+  if(S.loop&&A.focus===id){clearTimeout(A.loopT);A.loopT=setTimeout(()=>{if(S.loop&&A.el.paused&&A.focus===id){const r=lineRange(id);if(r){A.rangeId=id;playRange(r)}}},700)}}
+function coachStep(d){const L=coachLines();if(!L.length)return;const cur=A.focus||A.cur;let i=cur?L.findIndex(l=>l.id===cur)+d:0;i=Math.min(L.length-1,Math.max(0,i));
+  const id=L[i].id;clearTimeout(A.loopT);setFocus(id,true);const r=lineRange(id);if(r){A.rangeId=id;playRange(r)}}
+function coachLine(){const L=coachLines(),id=A.focus||A.cur,i=id?L.findIndex(l=>l.id===id):-1;const el=$('pline');if(!el)return;
+  el.textContent=i>=0?`第 ${i+1} / ${L.length} 句`+(S.loop?' · 单句循环':''):`共 ${L.length} 句 · 点一句开始`}
+function coachMarks(){const L=coachLines(),lm=learnOf();let n=0;
+  L.forEach(l=>{const c=lm[l.id]||0;if(c>=LEARNED)n++;const el=lineEl(l.id);if(el){el.classList.toggle('learned',c>=LEARNED);el.dataset.heard=c?Math.min(c,LEARNED):'';}});
+  const bar=$('coachbar');if(bar){bar.querySelector('b').textContent=n;bar.querySelector('i').style.width=(L.length?n/L.length*100:0)+'%';bar.querySelector('.cbt').textContent=L.length}}
+function coachSync(){$('ploop').setAttribute('aria-pressed',String(!!S.loop));$('pquiz').setAttribute('aria-pressed',String(!!S.quiz));document.body.classList.toggle('quiz',!!S.quiz);coachLine()}
+const _render=render;render=function(){_render();const m=$('main');if(m&&!$('coachbar')){const h=m.querySelector('.lines');const d=document.createElement('div');d.id='coachbar';d.className='coachbar';
+  d.innerHTML='<div class="cbh"><span>已听熟 <b>0</b> / <span class="cbt">0</span> 句</span><span class="lbl">一句念满 '+LEARNED+' 遍算听熟</span></div><div class="cbtrack"><i></i></div>';if(h)h.before(d);else m.prepend(d)}
+  if(A.focus&&!coachLines().some(l=>l.id===A.focus))A.focus=null;setFocus(A.focus);coachMarks();coachSync()};
+const _paint=paint;paint=function(pos){_paint(pos);if(pos&&pos.id!==A.cur){A.cur=pos.id;if(!A.rangeId||A.rangeId===pos.id){if(A.focus!==pos.id&&!S.loop)setFocus(pos.id);else coachLine()}}};
+$('pprev').onclick=()=>{ac();coachStep(-1)};$('pnext').onclick=()=>{ac();coachStep(1)};
+$('ploop').onclick=()=>{S.loop=!S.loop;save();if(S.loop&&!A.focus){const L=coachLines();if(L.length)setFocus(A.cur||L[0].id,true)}coachSync()};
+$('pquiz').onclick=()=>{S.quiz=!S.quiz;save();document.querySelectorAll('.line.reveal').forEach(x=>x.classList.remove('reveal'));coachSync()};
+{const _pp=$('pplay').onclick;$('pplay').onclick=()=>{if(A.el.paused&&!REST.on&&S.loop&&A.focus){ac();const r=lineRange(A.focus);if(r){A.rangeId=A.focus;playRange(r);return}}A.rangeId=null;_pp()}}
+document.addEventListener('keydown',e=>{if(VIEW!=='reader'||A.marking||e.target.closest('input,select,textarea'))return;
+  if(e.key==='ArrowDown'||e.key==='j'){e.preventDefault();coachStep(1)}else if(e.key==='ArrowUp'||e.key==='k'){e.preventDefault();coachStep(-1)}else if(e.key==='l'){$('ploop').click()}});
 render();
 loadTrack();
 route();
