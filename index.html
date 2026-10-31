@@ -22,7 +22,7 @@
   --paper:#16181d; --ink:#e7e5e0; --muted:#9a9ea8; --rule:#2c3038; --lapis:#93acea; --hl:#24304a;
   --w0:#93acea; --w1:#f0957f; --w2:#79cfa6; --w3:#e2b866; --w4:#d3a0de;
   --sheet:#1f2228; --shadow:0 -8px 30px rgba(0,0,0,.5); --cur:rgba(147,172,234,.3); --play:rgba(147,172,234,.07); --sl:#262b36; --slf:#334063; color-scheme:dark}
-html,body{background:var(--paper);color:var(--ink)}
+html,body{background:var(--paper);color:var(--ink);touch-action:manipulation}  /* 不要点两下放大（w），双指缩放还在 */
 body{margin:0;font-family:var(--f-ui);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:96px}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
 button{font:inherit;color:inherit}
