@@ -55,15 +55,15 @@ main{max-width:760px;margin:0 auto;padding-inline:var(--mpadp,0px)}
 .toc-d .toc{margin-top:4px}
 .rubric{margin:4px 0 2px;color:var(--muted);font:13px/1.7 var(--f-zh)}
 .rubric .rb{font:14px/1.8 var(--f-bo)}  /* 说明里的藏文和汉文说明一样大（w），不跟正文字号走 */
-.rubric.ln{padding-left:calc(2.2rem + 8px);margin-top:10px}
-.rubric.end{padding-left:calc(2.2rem + 8px);margin-top:10px}
+.rubric.ln{margin-top:10px}
+.rubric.end{margin-top:10px}
 .toc a{font-size:13px;color:var(--lapis);text-decoration:none;border:1px solid var(--rule);border-radius:999px;padding:3px 10px}
 section{padding-block:18px}
 section h2{display:flex;align-items:baseline;gap:10px;font:600 15px var(--f-zh);color:var(--lapis);letter-spacing:.08em;margin:8px 0 12px;border-bottom:1px solid var(--rule);padding-bottom:6px}
 section h2 .rep{font:12px var(--f-ui);color:var(--muted);letter-spacing:0;margin-left:auto}
-.line{display:grid;grid-template-columns:2.2em 1fr;gap:4px 8px;padding-block:10px var(--lgap);border-bottom:1px dashed var(--rule)}
+.line{display:grid;grid-template-columns:1fr;gap:4px 8px;padding-block:10px var(--lgap)}  /* 不显示句号编号和分割线（w） */
 .line:last-child{border-bottom:0}
-.num{font:12px var(--f-ui);color:var(--muted);padding-top:.6em;font-variant-numeric:tabular-nums;text-align:right}
+.num{display:none}
 .body{min-width:0;display:flex;flex-direction:column;gap:2px}
 .r-bo{font:calc(24px * var(--size) * var(--s-bo)) / 1.9 var(--f-bo);overflow-wrap:anywhere;text-wrap:pretty;margin-bottom:-.3em}
 .r-ph{font:calc(16px * var(--size) * var(--s-ph)) / 1.7 var(--f-ph);color:var(--muted);letter-spacing:.06em}
@@ -91,7 +91,7 @@ section h2 .rep{font:12px var(--f-ui);color:var(--muted);letter-spacing:0;margin
 .color .il .col[data-c="3"] .c-bo,.color .il .col[data-c="3"] .c-gl{color:var(--w3)}
 .color .il .col[data-c="4"] .c-bo,.color .il .col[data-c="4"] .c-gl{color:var(--w4)}
 section.flat{padding-block:0}
-section.flat .line:last-child{border-bottom:1px dashed var(--rule)}
+section.flat .line:last-child{border-bottom:0}
 .rep-flat{font-size:13px;color:var(--lapis);padding:6px 0 10px 3.2em}
 .il.tl{gap:8px 14px;margin-bottom:4px}
 .il.tl .c-bo{font:600 calc(22px * var(--size) * var(--s-bo)) / 1.6 var(--f-bo)}
@@ -104,7 +104,6 @@ section.flat .line:last-child{border-bottom:1px dashed var(--rule)}
 .w.cur,.col.cur{background:var(--cur);border-radius:4px}
 .line.playing{background:var(--play)}
 .line{scroll-margin-top:100px}
-.num{cursor:pointer;margin-left:-14px;padding-left:14px;min-height:44px}  /* 点击范围往左边空白扩一点 */
 .player{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--sheet);border-top:1px solid var(--rule);padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .player-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
 .pbtn{width:44px;height:44px;border-radius:50%;border:0;background:var(--lapis);color:var(--paper);font-size:18px;cursor:pointer;flex:none}
