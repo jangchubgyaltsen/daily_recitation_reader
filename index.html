@@ -911,10 +911,13 @@ function syncHist(){const h=histList();$('hist').innerHTML=h.length?h.map((x,i)=
 const YU={};
 function yuStep(R){const d=[];R.sections.forEach(s=>s.lines.forEach(ln=>{const v=ln['t.bo'];if(!v)return;const a=v.trim().split(/\s+/).map(Number);for(let i=1;i<a.length;i++)d.push(a[i]-a[i-1])}));
   if(!d.length)return 0.6;d.sort((x,y)=>x-y);return Math.min(1,Math.max(0.4,+d[d.length>>1].toFixed(2)))}
-function yu(R){const k=R.meta.id;if(YU[k])return YU[k];const T=yuStep(R);let n=1;const tm={};
-  R.sections.forEach(s=>s.lines.forEach(ln=>{if(!(ln.syllables||[]).length)return;const gs=ln.beat_groups&&ln.beat_groups.length?ln.beat_groups.length:ln.syllables.length;  // 咒语没有分节：一个音节一拍
-    tm[ln.id]=Array.from({length:gs},()=>+(T*n++).toFixed(3))}));
-  return YU[k]={tm,T,dur:Math.ceil(T*(n+1))}}
+// 三个字的一组（如 2-2-2-3 的偈子最后三字）打两下：第一个字一下，后两个字一下，间隔还是一拍（w）。
+// tm 是每组开始的时间（高亮按组走），ck 是每一下木鱼的时间
+function yu(R){const k=R.meta.id;if(YU[k])return YU[k];const T=yuStep(R);let n=1;const tm={},ck={};
+  R.sections.forEach(s=>s.lines.forEach(ln=>{if(!(ln.syllables||[]).length)return;
+    const sz=ln.beat_groups&&ln.beat_groups.length?ln.beat_groups.map(g=>(g.syl||[]).length):ln.syllables.map(()=>1);  // 咒语没有分节：一个音节一拍
+    const st=[],c=[];sz.forEach(z=>{st.push(+(T*n).toFixed(3));c.push(+(T*n++).toFixed(3));if(z===3)c.push(+(T*n++).toFixed(3))});tm[ln.id]=st;ck[ln.id]=c}));
+  return YU[k]={tm,ck,T,dur:Math.ceil(T*(n+1))}}
 function refreshTiming(){A.tm=getTiming();A.order=A.tm?allLines().filter(ln=>A.tm[ln.id]&&A.tm[ln.id].length):[]}
 function idb(){return new Promise((res,rej)=>{try{const r=indexedDB.open('reader-audio',1);r.onupgradeneeded=()=>r.result.createObjectStore('f');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}})}
 async function putFile(k,b){try{const d=await idb();d.transaction('f','readwrite').objectStore('f').put(b,k)}catch(e){}}
@@ -983,11 +986,12 @@ function woodblock(when,accent){const c=ac();if(!c)return;const f=accent?700:760
   bp.type='bandpass';bp.frequency.value=f*1.2;bp.Q.value=4;g.gain.setValueAtTime(0.0001,when);g.gain.exponentialRampToValueAtTime(accent?0.85:0.7,when+0.003);g.gain.exponentialRampToValueAtTime(0.0001,when+0.14);
   o.connect(bp);bp.connect(g);g.connect(c.destination);o.start(when);o.stop(when+0.16)}
 const SCHED=new Set();
-function beatList(){if(A._bl&&A._blv===A.tm)return A._bl;const out=[];if(A.tm)A.order.forEach(ln=>(A.tm[ln.id]||[]).forEach((t,k,a)=>out.push({t,k:ln.id+'/'+k,accent:k===a.length-1})));A._bl=out;A._blv=A.tm;return out}
+function beatList(){if(A._bl&&A._blv===A.tm)return A._bl;const out=[],ck=A.track==='tune'?yu(RITUALS[S.rit]||RITUALS[0]).ck:null;if(A.tm)A.order.forEach(ln=>((ck&&ck[ln.id])||A.tm[ln.id]||[]).forEach((t,k,a)=>out.push({t,k:ln.id+'/'+k,accent:k===a.length-1})));A._bl=out;A._blv=A.tm;return out}
 function scheduleClicks(t){if(A.track!=='tune'||A.el.paused||A.marking)return;const c=ac();if(!c)return;const r=A.el.playbackRate||1;
   for(const b of beatList()){if(b.t<t-0.02||b.t>t+0.2)continue;if(SCHED.has(b.k))continue;SCHED.add(b.k);woodblock(c.currentTime+Math.max(0,(b.t-t)/r),b.accent)}}
 function gaps(){if(A._gp&&A._gpv===A.tm&&A._gpg===S.tgap)return A._gp;A._gpg=S.tgap;const out=[];if(A.tm)A.order.forEach((ln,i)=>{const st=A.tm[ln.id];if(i+1>=A.order.length||st.length<2)return;
-  const step=(st[st.length-1]-st[0])/(st.length-1),from=st[st.length-1]+step*(S.tgap??1.5),to=A.tm[A.order[i+1].id][0];if(to-from>0.15)out.push([from-0.12,to-0.12])});A._gp=out;A._gpv=A.tm;return out}
+  const Y=A.track==='tune'?yu(RITUALS[S.rit]||RITUALS[0]):null,c=Y&&Y.ck[ln.id]||st;
+  const step=Y?Y.T:(st[st.length-1]-st[0])/(st.length-1),from=c[c.length-1]+step*(S.tgap??1.5),to=A.tm[A.order[i+1].id][0];if(to-from>0.15)out.push([from-0.12,to-0.12])});A._gp=out;A._gpv=A.tm;return out}
 function skipGap(t){if(A.track!=='tune'||A.marking||A.el.paused)return false;for(const [a,b] of gaps())if(t>=a&&t<b){A.el.currentTime=b;return true}return false}
 // 时间按当前速度换算，2× 时总长就是一半
 function showProgress(){const d=A.el.duration,t=A.el.currentTime||0,r=A.el.playbackRate||+S.rate||1;
