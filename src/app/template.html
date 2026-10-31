@@ -400,6 +400,173 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
 #splash .sp-bg{object-fit:cover;filter:blur(28px) brightness(.55);transform:scale(1.15)}
 #splash .sp-fg{object-fit:contain;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);box-sizing:border-box}
 @media (prefers-reduced-motion: reduce){#splash{transition:none}}
+/* ===== B 组：按 design-system/daily-recitation-reader/MASTER.md（UI UX Pro Max + Taste · editorial-greeting）===== */
+:root{
+  --paper:#fbfaf7; --panel:#f3f1ec; --raised:#e9e6df; --rule:#e6e3dc; --ink:#1b1c20; --muted:#575a62;
+  --lapis:#2d4b8e; --hl:#e2e8f5; --special:#a3302a; --sel:#1b1c20; --on-sel:#fbfaf7;
+  --sheet:#fbfaf7; --sl:#ebe8e1; --slf:#dcd8cf; --shadow:0 -10px 32px rgba(27,28,32,.10);
+  --r-panel:20px; --r-row:12px; --t-press:120ms; --t-in:220ms; --ease-out:cubic-bezier(.22,.8,.3,1);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#121212; --panel:#1c1c1d; --raised:#2a2a2c; --rule:#2a2a2c; --ink:#ecebe7; --muted:#a9abb2;
+  --lapis:#9cb3ec; --hl:#253048; --special:#f08f86; --sel:#ecebe7; --on-sel:#121212; --sheet:#1c1c1d; --sl:#262628; --slf:#36363a}}
+:root[data-theme="dark"]{
+  --paper:#121212; --panel:#1c1c1d; --raised:#2a2a2c; --rule:#2a2a2c; --ink:#ecebe7; --muted:#a9abb2;
+  --lapis:#9cb3ec; --hl:#253048; --special:#f08f86; --sel:#ecebe7; --on-sel:#121212; --sheet:#1c1c1d; --sl:#262628; --slf:#36363a}
+body{-webkit-font-smoothing:antialiased}
+/* 按下反馈：只改透明度/缩放，不动布局（UUPM press-feedback / stable states） */
+button,.chip,.pill,a{-webkit-tap-highlight-color:transparent}
+button:not(:disabled):active,.pill:active,.toc a:active{opacity:.72;transition:opacity var(--t-press)}
+.pbtn:active,.ibtn.play:active{transform:scale(.95);transition:transform var(--t-press)}
+/* ---- 分组标题：不加字距、正常字号（Taste: no tiny tracked labels） ---- */
+.hsec{padding:28px 0 10px}
+.hsec h2,.sheet h3,#prefs .psec{font:600 14px var(--f-ui);letter-spacing:0;color:var(--muted)}
+#settings .stitle{font-size:16px}
+/* ---- 顶栏：实底色，1px 分隔；不用毛玻璃 ---- */
+.htop{min-height:56px}
+.htop h1{font:600 20px var(--f-zh)}
+.iconbtn{border-color:var(--rule);background:var(--panel)}
+/* ---- 面板：一阶色差，无边框，无阴影；软圆角 20 ---- */
+.search{background:var(--panel);border:0;border-radius:999px;height:44px}
+.search:focus-within{outline:2px solid var(--lapis);outline-offset:2px}
+.ccard,.allrow,#apack,.tcard,.dcard,.ccard2,.citem,.plist,.calg{background:var(--panel);border:0;border-radius:var(--r-panel);box-shadow:none}
+.ccard{padding:10px 10px 10px 20px;margin-bottom:12px}
+.ccard .cname{font:600 18px var(--f-zh)}
+.ccard.pinned .cname::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--lapis);margin-left:8px;vertical-align:middle}
+.allrow{margin-top:16px;padding:18px 20px;border-radius:var(--r-panel)}
+.allrow .chev{color:var(--muted)}
+#apack{margin-top:12px;padding:14px 14px 14px 20px}
+#apack .chip{min-height:40px;padding:0 18px;background:var(--paper);border:0}
+.ibtn{transition:background-color var(--t-press)}
+.ibtn.play{background:var(--lapis);color:var(--paper)}
+.ibtn.ring{border:0;background:var(--panel);color:var(--ink)}
+.ibtn.fav.on{color:var(--special)}
+/* ---- 全部仪轨：行用 1px 实线分隔（不用虚线） ---- */
+#rits{margin-top:8px}
+.rrow{border-bottom:1px solid var(--rule);gap:6px}
+.rrow .rbody{padding:14px 0}
+.rrow .rbo{font-size:18px;color:var(--ink)}
+.rrow .rzh{font-size:15px;color:var(--muted)}
+.tag{color:var(--muted);border-color:var(--rule);border-radius:999px;padding:0 8px}
+.plist button{border-bottom:1px solid var(--rule)}
+.empty{color:var(--muted)}
+/* ---- 底部导航：选中 = 墨色字 + 中性胶囊（强调色不上导航） ---- */
+.tabs{background:var(--paper);border-top:1px solid var(--rule)}
+.tabs button{color:var(--muted);font-size:12px;gap:4px;position:relative;isolation:isolate}
+.tabs button[aria-selected="true"]{color:var(--ink);font-weight:600}
+.tabs button[aria-selected="true"]::before{content:"";position:absolute;top:-2px;width:60px;height:32px;border-radius:999px;background:var(--raised);z-index:-1}
+/* ---- 选中态统一：墨色填充（chip / 分段 / 圆钮 / 矩形钮） ---- */
+.chip{min-height:40px;border-color:var(--rule);padding:6px 14px}
+.chip[aria-pressed="true"],.segs button[aria-pressed=true],.ones button[aria-pressed=true],.crect[aria-pressed=true],.lmode button[aria-pressed=true],.pill.on{background:var(--sel);border-color:var(--sel);color:var(--on-sel)}
+.segs{border:0;background:var(--panel);border-radius:999px;padding:3px;gap:2px}
+.segs button{border:0!important;border-radius:999px;background:transparent}
+.pill{border-color:var(--rule)}
+.pill.main{background:var(--lapis);border-color:var(--lapis);color:var(--paper)}
+.pill.danger{color:var(--special)}
+.dlg-in .pill.danger{background:var(--special);border-color:var(--special)}
+.crect{border-radius:999px}
+.sw:checked{background:var(--ink)}
+/* ---- 藏历 ---- */
+.calhead .mid,.calhead .mid b{color:var(--ink)}
+.calg{padding:10px;gap:2px}
+.cd{height:54px;border-radius:12px}
+.cd small{font-size:11px}
+.cd sup{font-size:11px}
+.cd.sp small,.dcard .spn,.dcard .dmul,.setrow .sd small{color:var(--special)}
+.cd.today{background:var(--ink);color:var(--paper)}
+.cd.today small,.cd.today.sp small,.cd.today sup{color:var(--paper);opacity:.9}
+.top select{min-height:40px}
+.segs button{min-height:40px}
+.pitem .segs button{min-height:40px}
+.cd.sel{outline-color:var(--ink)}
+.dcard{padding:16px 20px}
+.dcard.rec{box-shadow:inset 0 0 0 2px var(--lapis)}
+.calg .cw{font-size:12px}
+/* ---- 今日条（只有这个产品才有的元素：今天的藏历 + 下一个殊胜日） ---- */
+.tday{display:flex;flex-direction:column;align-items:stretch;gap:6px;width:100%;margin-top:16px;padding:20px;border:0;border-radius:var(--r-panel);background:var(--panel);text-align:left;cursor:pointer;color:var(--ink)}
+.tday[hidden]{display:none}
+.tday .td1{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.tday .tdz{font:600 26px/1.25 var(--f-zh);letter-spacing:.01em}
+.tday .tdg{font-size:14px;color:var(--muted)}
+.tday .tdn{font:15px/1.6 var(--f-zh);color:var(--ink)}
+.tday .tdn b{color:var(--special);font-weight:600}
+.tday .tdx{font-size:13px;color:var(--muted)}
+.tday .tdgo{align-self:flex-start;margin-top:4px;font-size:14px;color:var(--lapis)}
+/* ---- 阅读页 ---- */
+.top{background:var(--paper)}
+.head{padding-block:32px 12px}
+.head h1{font:600 28px/1.3 var(--f-zh)}
+.head .by{font-size:14px}
+.aside{border-left:0;background:var(--panel);border-radius:var(--r-row);padding:12px 16px;color:var(--muted)}
+section h2{color:var(--muted);letter-spacing:.02em;font-size:15px;border-bottom-color:var(--rule)}
+.toc a{display:inline-flex;align-items:center;min-height:36px;padding:0 14px;font-size:14px;border:0;background:var(--panel);color:var(--ink)}
+.toc-d summary{min-height:44px;display:flex;align-items:center}
+.kp{color:var(--muted);border-color:var(--rule)}
+.line{border-radius:var(--r-row);padding-inline:8px;margin-inline:-8px}
+.rubric{color:var(--muted)}
+.note{color:var(--lapis)}
+/* ---- 播放条 ---- */
+.player{background:var(--paper);border-top:1px solid var(--rule)}
+.pprog{background:var(--rule)}
+.player select{height:40px;border:0;background:var(--panel);border-radius:999px;padding:0 8px}
+.pbtn.small{border:0;background:var(--panel);color:var(--ink)}
+/* ---- 弹层：真浮起的东西才有阴影；进入 220ms，减少动态时关闭 ---- */
+.sheet{border-radius:24px 24px 0 0;padding-top:24px;box-shadow:var(--shadow);animation:bIn var(--t-in) var(--ease-out)}
+.sheet::before{content:"";position:absolute;top:9px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:2px;background:var(--rule)}
+@keyframes bIn{from{transform:translateY(16px);opacity:.4}to{transform:none;opacity:1}}
+.speedpop{border:0;border-radius:var(--r-panel);background:var(--sheet)}
+.dlg-in{border-radius:var(--r-panel)}
+.psl .th{box-shadow:0 1px 4px rgba(27,28,32,.2)}
+.close{min-height:44px;padding:0 4px;font-weight:600}
+.wordcard .wbo{font-size:34px}
+.wordcard .wzh{font-size:20px}
+/* ---- 设置 ---- */
+#prefs .psec{margin:28px 4px 10px}
+.pitem{border-bottom-color:var(--rule);padding:14px 20px;min-height:56px;box-sizing:border-box}
+.plist .pitem{padding:14px 20px}
+.plist .pill{border:0;background:var(--paper);color:var(--ink);height:44px}
+.setrow{border-bottom:1px solid var(--rule)}
+.link.small{min-height:44px}
+/* ---- 产品名（桌面侧栏顶部） ---- */
+.brand{display:none}
+/* ---- 平板 ---- */
+@media (min-width:700px){
+  body{padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+  .htop,.top{margin-inline:-24px;padding-inline:24px}
+  .view{max-width:720px}
+  #combos{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+  .tday{flex-direction:row;align-items:center;flex-wrap:wrap;column-gap:24px}
+  .tday .td1{flex:1 1 100%}
+  .tday .tdgo{margin:0 0 0 auto}
+  #combos>:only-child,#combos>.empty{grid-column:1/-1}
+}
+/* ---- 桌面：open-plane 外壳，左侧 220px 带文字导航 ---- */
+@media (min-width:1024px){
+  body.v-home .brand{display:flex;position:fixed;top:0;left:0;width:220px;box-sizing:border-box;z-index:13;padding:22px 24px 0;flex-direction:column;gap:2px}
+  .brand b{font:600 17px var(--f-zh);color:var(--ink)}.brand small{font-size:12px;color:var(--muted)}
+  .tabs{top:0;bottom:0;right:auto;width:220px;box-sizing:border-box;flex-direction:column;justify-content:flex-start;gap:4px;padding:92px 12px 24px;border-top:0;border-right:1px solid var(--rule)}
+  .tabs button{flex:none;flex-direction:row;justify-content:flex-start;gap:12px;min-height:44px;padding:0 14px;border-radius:12px;font-size:15px}
+  .tabs button svg{width:20px;height:20px}
+  .tabs button[aria-selected="true"]::before{inset:0;top:0;width:auto;height:auto;border-radius:12px}
+  @media (hover:hover){.tabs button:not([aria-selected="true"]):hover{background:var(--panel);color:var(--ink)}}
+  #home{max-width:none;margin:0 0 0 220px;padding-inline:max(16px,calc((100vw - 220px - 880px) / 2 - 16px));box-sizing:border-box}
+  #home .htop{min-height:72px;border-bottom:0;margin-inline:0;padding-inline:0}
+  #home .htop h1{font-size:24px}
+  body.v-home .mini{left:220px}
+  body.v-home .sheet{left:220px}
+  .view:not(#home){max-width:760px}
+}
+/* ---- 悬停（仅鼠标） ---- */
+@media (hover:hover){
+  .ccard:hover,.allrow:hover,.tday:hover,.ccard2:hover{background:var(--raised)}
+  .rrow:hover .rzh{color:var(--ink)}
+  .ibtn:not(.play):hover,.iconbtn:hover{background:var(--raised)}
+  .chip:not([aria-pressed="true"]):hover,.pill:not(.main):not(.on):hover,.toc a:hover{background:var(--raised)}
+  .cd:not(.today):hover{background:var(--raised)}
+  .link:hover{text-decoration:underline;text-underline-offset:3px}
+  .ccard,.allrow,.tday,.cd,.chip,.pill,.toc a{transition:background-color 150ms}
+}
+@media (prefers-reduced-motion:reduce){.sheet{animation:none}button:active,.pbtn:active,.ibtn.play:active{transform:none;transition:none}}
 </style>
 
 <div id="splash" aria-hidden="true"><img class="sp-bg" alt=""><img class="sp-fg" alt=""></div>
@@ -424,6 +591,7 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
 <div class="view" id="home" hidden>
   <div class="hpane" id="pane-lib">
     <header class="htop"><h1>仪轨库</h1><button class="ibtn" id="homeGear" aria-label="设置与备份"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></header>
+    <button class="tday" id="today" hidden></button>
     <label class="search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="q" placeholder="搜索组合" aria-label="搜索组合" autocomplete="off"></label>
     <div class="hsec"><h2>我的组合</h2><button class="link" id="newCombo">＋ 新建组合</button></div>
     <div id="combos"></div>
@@ -442,6 +610,7 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
     <div class="calg" id="calG"></div>
     <div id="calCard"></div>
   </div>
+  <div class="brand" aria-hidden="true"><b>藏汉课诵</b><small>每日课诵阅读器</small></div>
   <nav class="tabs" role="tablist">
     <button role="tab" data-tab="lib"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>仪轨库</button>
     <button role="tab" data-tab="common"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M12 4l2.4 5 5.6.6-4.2 3.8 1.2 5.6L12 16.2 7 19l1.2-5.6L4 9.6 9.6 9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>常用</button>
@@ -1240,7 +1409,18 @@ $('apbtn').onclick=async()=>{if(A.apBusy)return;A.apBusy=true;const b=$('apbtn')
       $('apsub').textContent=`下载中 ${k} / ${APACK.length} · ${apMB(bytes)} / ${apMB(APK)}`}
     try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}}catch(e){fail++}
   A.apBusy=false;b.disabled=false;await apDraw();if(fail)toast(`有 ${fail} 个文件没下载成功，联网后点“继续下载”`)};
-function drawHome(){apDraw();
+// 今日条：今天的藏历日期、殊胜日、下一个殊胜日（B 组：首页的“脸”）
+function drawToday(){const el=$('today');try{const today=jdToday(),n=monthOfJD(today),mi=monthInfo(n),x=monthDays(n).find(d=>d.jd===today);
+  if(!x){el.hidden=true;return}const di=dayInfo(mi,x.d,x.jd,x.dup),g=jdDate(today);
+  let nx=null;for(let k=0;k<3&&!nx&&n+k<ZL.length;k++){const m=monthInfo(n+k);for(const y of monthDays(n+k)){if(y.jd<=today||y.dup)continue;const dj=dayInfo(m,y.d,y.jd);if(dj.names.length){nx={y,dj};break}}}
+  const rec=di.refs.filter(r=>refName(r));
+  el.innerHTML=`<span class="td1"><span class="tdz">藏历${mi.leap?'闰':''}${MON[mi.M-1]}月${DAYN(x.d)}</span><span class="tdg">${g.getUTCMonth()+1}月${g.getUTCDate()}日 · 周${'日一二三四五六'[g.getUTCDay()]} · ${yearName(mi.Y)}</span></span>`+
+    (di.names.length?`<span class="tdn">今天是 <b>${esc(di.names.join('、'))}</b>${di.mult?'，'+esc(di.mult):''}</span>`:'')+
+    (rec.length?`<span class="tdn">推荐念诵：${esc(refName(rec[0]))}</span>`:'')+
+    (nx?`<span class="tdx">${nx.y.jd-today===1?'明天':nx.y.jd-today+' 天后'}是${DAYN(nx.y.d)} ${esc(nx.dj.names[0])}</span>`:'')+
+    `<span class="tdgo">打开藏历 ›</span>`;el.hidden=false}catch(e){el.hidden=true}}
+$('today').onclick=()=>{S.tab='cal';save();drawHome();scrollTo(0,0)};
+function drawHome(){apDraw();drawToday();
   const q=norm($('q').value);
   const cs=sortCombos().filter(c=>!q||norm(c.name).includes(q)||c.items.some(it=>{const R=ritById(it.rid);return R&&matchR(R,q)}));
   $('combos').innerHTML=cs.length?cs.map(c=>{const L=comboLen(c);const n=c.items.length;
