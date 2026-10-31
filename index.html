@@ -200,6 +200,9 @@ body:not(.v-reader) .top,body:not(.v-reader) #main,body:not(.v-reader) .player{d
 #apack .apinfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 #apack .apinfo b{font:600 15px var(--f-ui)}
 #apack.done #apbtn{display:none}
+.allrow{display:flex;align-items:center;gap:10px;width:100%;margin-top:22px;padding:14px;border:1px solid var(--rule);border-radius:12px;background:var(--sheet);cursor:pointer;text-align:left;color:var(--ink)}
+.allrow .cname{flex:1;font:16px var(--f-zh)}.allrow .chev{font-size:22px;color:var(--muted)}
+.ibtn.fav svg{fill:none}.ibtn.fav.on{color:var(--lapis)}.ibtn.fav.on svg{fill:currentColor}
 .rrow{display:flex;align-items:center;gap:10px;border-bottom:1px dashed var(--rule)}
 .rrow .rbody{flex:1;min-width:0;border:0;background:transparent;text-align:left;padding:12px 0;cursor:pointer;display:flex;flex-direction:column;gap:2px}
 .rrow .rbo{font:18px/1.6 var(--f-bo);color:var(--lapis);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -421,12 +424,17 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
 <div class="view" id="home" hidden>
   <div class="hpane" id="pane-lib">
     <header class="htop"><h1>仪轨库</h1><button class="ibtn" id="homeGear" aria-label="设置与备份"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></header>
-    <label class="search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="q" placeholder="搜索组合和仪轨" aria-label="搜索组合和仪轨" autocomplete="off"></label>
+    <label class="search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="q" placeholder="搜索组合" aria-label="搜索组合" autocomplete="off"></label>
     <div class="hsec"><h2>我的组合</h2><button class="link" id="newCombo">＋ 新建组合</button></div>
     <div id="combos"></div>
-    <div class="hsec"><h2>全部仪轨</h2><span class="lbl" id="ritCount"></span></div>
-    <div id="rits"></div>
+    <button class="allrow" id="allRits"><span class="cname">全部仪轨</span><span class="lbl" id="ritCount"></span><span class="chev" aria-hidden="true">›</span></button>
     <div id="apack" hidden><div class="apinfo"><b>离线音频包</b><span class="lbl" id="apsub"></span></div><button class="chip" id="apbtn">下载</button></div>
+  </div>
+  <!-- 全部仪轨：仪轨库的子页面（w：不直接列在仪轨库里） -->
+  <div class="hpane" id="pane-all" hidden><header class="htop"><button class="link" id="allBack">‹ 仪轨库</button><span class="ttl">全部仪轨</span><span class="lbl" id="ritCount2" style="min-width:64px;text-align:right"></span></header>
+    <label class="search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="qa" placeholder="搜索仪轨" aria-label="搜索仪轨" autocomplete="off"></label>
+    <p class="lbl" style="margin:10px 0 0">点 ☆ 把仪轨加到「常用」</p>
+    <div id="rits"></div>
   </div>
   <div class="hpane" id="pane-common" hidden><header class="htop"><h1>常用念诵</h1></header><div id="cgroups"></div><div id="clist"></div></div>
   <div class="hpane" id="pane-cal" hidden><header class="htop"><h1>藏历</h1><button class="link" id="calSetBtn">殊胜日设置</button></header>
@@ -1175,6 +1183,7 @@ $('aexport').onclick=()=>{const R=RITUALS[S.rit]||RITUALS[0],ed=S.align[R.meta.i
   const box=$('aexportBox');box.value=`# ${R.meta['title.zh']}\n`+txt;box.hidden=false;
   navigator.clipboard&&navigator.clipboard.writeText(box.value).then(()=>{$('astatus').textContent='已复制，发给“加入下一部仪轨”那边就能写进数据文件。'}).catch(()=>{box.select();$('astatus').textContent='请手动全选复制下面的内容。'})};
 /* ---------- 首页、仪轨库、组合 ---------- */
+const STARI='<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 4l2.4 5 5.6.6-4.2 3.8 1.2 5.6L12 16.2 7 19l1.2-5.6L4 9.6 9.6 9z"/></svg>';
 const PLAYI='<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg>';
 const SPKI='<svg role="img" aria-label="有录音" viewBox="0 0 24 24" width="16" height="16" style="flex:none;color:var(--muted)"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 const PINI='<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6l-1 6 4 4H6l4-4z"/><path d="M12 13v8"/></svg>';
@@ -1236,14 +1245,15 @@ function drawHome(){apDraw();
       <button class="ibtn${c.pin?' on':''}" data-pin="${esc(c.id)}" aria-pressed="${!!c.pin}" aria-label="${c.pin?'取消置顶':'置顶'}">${PINI}</button>
       <button class="ibtn play" data-cplay="${esc(c.id)}" aria-label="开始念诵 ${esc(c.name)}"${n?'':' disabled'}>${PLAYI}</button></div>`}).join('')
     :`<p class="empty">${q?'没有找到这个组合。':'还没有组合。点“新建组合”，把要念的仪轨按顺序放在一起。'}</p>`;
-  const rs=sortRits().filter(R=>!q||matchR(R,q));
-  $('ritCount').textContent=q?'':RITUALS.length+' 部';
+  const qa=norm($('qa').value),rs=sortRits().filter(R=>!qa||matchR(R,qa));
+  $('ritCount').textContent=$('ritCount2').textContent=RITUALS.length+' 部';
   $('rits').innerHTML=rs.length?rs.map(R=>{const m=R.meta,sub=ritSub(R);
     return `<div class="rrow"><button class="rbody" data-open="${esc(m.id)}">${m['title.bo']?`<span class="rbo" lang="bo">${esc(m['title.bo'])}</span>`:''}<span class="rzh"><span>${esc(m['title.zh'])}</span>${m['audio.bo']?SPKI:''}${m.kind==='practice'?'<span class="tag">修法</span>':''}</span>${sub?`<span class="rsub">${esc(sub)}</span>`:''}</button>
+      <button class="ibtn fav${isFav(m.id)?' on':''}" data-fav="${esc(m.id)}" aria-pressed="${isFav(m.id)}" aria-label="${isFav(m.id)?'从常用移除':'加到常用'} ${esc(m['title.zh'])}">${STARI}</button>
       <button class="ibtn ring" data-tc="${esc(m.id)}" aria-label="把${esc(m['title.zh'])}加入组合">＋</button></div>`}).join('')
     :'<p class="empty">没有找到这部仪轨。</p>';
   document.querySelectorAll('.tabs [data-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===(S.tab||'lib'))));
-  ['lib','common','cal'].forEach(t=>$('pane-'+t).hidden=t!==(S.tab||'lib'));
+  ['lib','common','cal'].forEach(t=>$('pane-'+t).hidden=t!==(S.tab||'lib')||(t==='lib'&&ALLV));$('pane-all').hidden=!(ALLV&&(S.tab||'lib')==='lib');
   if(S.tab==='common')drawCommon();if(S.tab==='cal')drawCal();
 }
 function drawCombo(){const c=comboById(S.ed);if(!c)return;CUR_C=c;
@@ -1316,7 +1326,9 @@ function route(){const h=decodeURIComponent(CUR);let m;
   if(m=h.match(/^#\/c\/(.+)$/)){if(comboById(m[1])){S.ed=m[1];show('combo');drawCombo();scrollTo(0,0);return}}
   if(h==='#/cal'){show('calset');drawCalSet();scrollTo(0,0);return}
   if(h==='#/set'){show('prefs');drawPrefs();scrollTo(0,0);return}
+  const all=h==='#/all';if(all!==ALLV){ALLV=all;if(all)S.tab='lib';scrollTo(0,0)}
   show('home');drawHome()}
+let ALLV=false;  // 是否在「全部仪轨」子页面
 // 路由自己记一个返回栈：在 claude.ai 的预览框里 history.back() 不可靠（会退到外层或没反应），所以返回不靠浏览器历史
 let CUR=location.hash||'#/';const STACK=[];
 function setURL(h,push){try{push?history.pushState(null,'',h):history.replaceState(null,'',h)}catch(e){}}
@@ -1332,8 +1344,9 @@ function ask(title,yes){return new Promise(res=>{$('dlgT').textContent=title;$('
   $('dlgYes').onclick=()=>done(true);$('dlgNo').onclick=()=>done(false);$('dlg').onclick=e=>{if(e.target===$('dlg'))done(false)}})}
 function newCombo(items){const c={id:uid(),name:'新组合',items:items||[],pin:0,at:Date.now()};S.combos.push(c);save();return c}
 // 首页
-$('q').oninput=drawHome;
-document.querySelector('.tabs').onclick=e=>{const b=e.target.closest('[data-tab]');if(!b)return;S.tab=b.dataset.tab;save();drawHome();scrollTo(0,0)};
+$('q').oninput=drawHome;$('qa').oninput=drawHome;
+$('allRits').onclick=()=>go('#/all');$('allBack').onclick=goBack;
+document.querySelector('.tabs').onclick=e=>{const b=e.target.closest('[data-tab]');if(!b)return;S.tab=b.dataset.tab;save();if(ALLV){ALLV=false;CUR='#/';setURL('#/',false)}drawHome();scrollTo(0,0)};
 $('newCombo').onclick=()=>{const c=newCombo();go('#/c/'+c.id);$('cname').select()};
 $('homeGear').onclick=()=>go('#/set');
 // 首页设置页
@@ -1347,6 +1360,7 @@ $('home').addEventListener('click',e=>{let b;
   if(b=e.target.closest('[data-edit]'))return go('#/c/'+b.dataset.edit);
   if(b=e.target.closest('[data-pin]')){const c=comboById(b.dataset.pin);c.pin=c.pin?0:Date.now();save();drawHome();toast(c.pin?'已置顶':'已取消置顶');return}
   if(b=e.target.closest('[data-cplay]'))return playCombo(b.dataset.cplay);
+  if(b=e.target.closest('[data-fav]')){const id=b.dataset.fav,on=!isFav(id);S.fav=on?S.fav.concat(id):S.fav.filter(x=>x!==id);save();drawHome();toast(on?'已加到常用':'已从常用移除');return}
   if(b=e.target.closest('[data-open]'))return openRit(b.dataset.open);
   if(b=e.target.closest('[data-tc]'))return openToCombo(b.dataset.tc)});
 const playCombo=id=>startCombo(id);
@@ -1569,19 +1583,22 @@ function drawRest(){$('prest').hidden=!REST.on;if(REST.on){$('ptime').textConten
 $('prest').onclick=()=>endRest(false);
 function cancelRest(){if(REST.on){clearInterval(REST.iv);REST.on=false;drawRest()}}
 /* ---------- 常用念诵 ---------- */
-// 数据里 meta.common 为真的条目；meta['common.group'] 用来分组筛选
+// 常用由用户自己从「全部仪轨」里点 ☆ 加进来（w），按加入的顺序排；meta['common.group'] 用来分组筛选。
+// 一开始只放饭前供养偈
 S.cnt=S.cnt||{};
-const commons=()=>RITUALS.filter(R=>R.meta.common&&R.meta.common!=='no');
+if(S.favV!==1){S.fav=['meal-offering'];S.favV=1;save()}
+const isFav=id=>(S.fav||[]).includes(id);
+const commons=()=>(S.fav||[]).map(ritById).filter(Boolean);
 let CG='',COPEN='';
 function drawCommon(){const all=commons();const groups=[...new Set(all.map(R=>R.meta['common.group']).filter(Boolean))];
   $('cgroups').innerHTML=groups.length?['',...groups].map(g=>`<button class="pill${g===CG?' on':''}" data-cg="${esc(g)}" aria-pressed="${g===CG}">${esc(g||'全部')}</button>`).join(''):'';
   const rs=all.filter(R=>!CG||R.meta['common.group']===CG);
   $('clist').innerHTML=rs.length?rs.map(R=>{const id=R.meta.id,n=S.cnt[id]||ritReps(R),op=COPEN===id;const L=allLinesOf(R);
     return `<div class="ccard2${op?' open':''}"><div class="chead2"><button class="cbody" data-cx="${esc(id)}" aria-expanded="${op}"><span class="cname">${esc(R.meta['title.zh'])}</span>${R.meta['title.bo']?`<span class="rbo" lang="bo">${esc(R.meta['title.bo'])}</span>`:''}</button>
-      <span class="lbl">${n>1?n+' 遍':''}</span><button class="ibtn ring" data-cp="${esc(id)}" aria-label="念诵 ${esc(R.meta['title.zh'])}">${PLAYI}</button></div>
+      <span class="lbl">${n>1?n+' 遍':''}</span><button class="ibtn fav on" data-fav="${esc(id)}" aria-pressed="true" aria-label="从常用移除 ${esc(R.meta['title.zh'])}">${STARI}</button><button class="ibtn ring" data-cp="${esc(id)}" aria-label="念诵 ${esc(R.meta['title.zh'])}">${PLAYI}</button></div>
       ${op?`<div class="cfull">${L.map(ln=>`<div class="cl"><div class="r-bo" lang="bo">${esc(ln.bo)}</div><div class="r-ph">${esc(ln.zh_ph||(ln.syllables||[]).map(s=>s.zh_ph).join(''))}</div>${ln.zh?`<div class="r-zh">${esc(ln.zh)}</div>`:''}</div>`).join('')}
         <div class="row" style="margin-top:8px"><span class="lbl">念</span><div class="step"><button data-cdec="${esc(id)}" aria-label="少念一遍">−</button><span>${n}</span><button data-cinc="${esc(id)}" aria-label="多念一遍">＋</button></div><span class="lbl">遍</span><span style="flex:1"></span><button class="link" data-tc="${esc(id)}">＋ 加入组合</button><button class="link" data-open="${esc(id)}">打开全文</button></div></div>`:''}</div>`}).join('')
-    :'<p class="empty">还没有常用念诵。供养偈、布施咒等加进数据以后会出现在这里。</p>'}
+    :'<p class="empty">还没有常用念诵。到「仪轨库 › 全部仪轨」里点 ☆，就会加到这里。</p>'}
 function allLinesOf(R){const o=[];R.sections.forEach(s=>s.lines.forEach(l=>o.push(l)));return o}
 $('pane-common').addEventListener('click',e=>{let b;
   if(b=e.target.closest('[data-cg]')){CG=b.dataset.cg;drawCommon();return}
