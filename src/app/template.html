@@ -400,6 +400,105 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
 #splash .sp-bg{object-fit:cover;filter:blur(28px) brightness(.55);transform:scale(1.15)}
 #splash .sp-fg{object-fit:contain;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);box-sizing:border-box}
 @media (prefers-reduced-motion: reduce){#splash{transition:none}}
+/* ===== UI/UX 优化（A 组）：统一配色层次、排版节奏、卡片与导航、悬停/按下反馈、桌面端布局 ===== */
+:root{
+  --paper:#f7f5f0; --ink:#1f2229; --muted:#666b75; --rule:#e2dfd7; --sheet:#ffffff;
+  --card-sh:0 1px 2px rgba(30,35,50,.05),0 2px 8px rgba(30,35,50,.04);
+  --card-sh-h:0 2px 4px rgba(30,35,50,.06),0 8px 20px rgba(30,35,50,.08);
+  --r-lg:16px; --r-md:12px; --ease:cubic-bezier(.2,.7,.2,1);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--card-sh:0 1px 2px rgba(0,0,0,.3);--card-sh-h:0 6px 18px rgba(0,0,0,.45)}}
+:root[data-theme="dark"]{--card-sh:0 1px 2px rgba(0,0,0,.3);--card-sh-h:0 6px 18px rgba(0,0,0,.45)}
+body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+/* 顶栏：半透明磨砂，滚动时内容在下面淡出 */
+.top,.htop{background:color-mix(in srgb,var(--paper) 86%,transparent);-webkit-backdrop-filter:saturate(1.4) blur(14px);backdrop-filter:saturate(1.4) blur(14px)}
+.htop{min-height:60px}
+.htop h1{font:700 22px var(--f-zh);letter-spacing:.02em}
+.top select{font-size:17px;cursor:pointer}
+.iconbtn{transition:background-color .15s,border-color .15s,box-shadow .15s}
+/* 首页：卡片层次 */
+.search{height:46px;border-radius:var(--r-md);box-shadow:var(--card-sh);border-color:transparent;transition:box-shadow .15s}
+.search:focus-within{box-shadow:0 0 0 2px var(--lapis)}
+.hsec{padding:28px 2px 10px}
+.hsec h2{font-size:12px;letter-spacing:.14em}
+.ccard,.allrow,#apack,.tcard,.dcard,.ccard2,.citem{border-color:transparent;box-shadow:var(--card-sh);border-radius:var(--r-lg);transition:box-shadow .2s var(--ease),transform .2s var(--ease)}
+.ccard{padding:8px 8px 8px 18px;margin-bottom:12px}
+.ccard.pinned{box-shadow:inset 3px 0 0 var(--lapis),var(--card-sh)}
+.ccard .cname{font-size:18px}
+#apack{background:var(--sheet);margin-top:16px;padding:14px 14px 14px 18px}
+.allrow{margin-top:24px;padding:16px 18px}
+/* 全部仪轨列表：分组成一张卡 */
+#rits{margin-top:14px;background:var(--sheet);border-radius:var(--r-lg);box-shadow:var(--card-sh);padding:0 6px 0 16px}
+.rrow{border-bottom:1px solid var(--rule)}
+.rrow:last-child{border-bottom:0}
+.rrow .rbody{padding:14px 0}
+.ibtn{transition:background-color .15s,color .15s}
+.ibtn.ring{border-color:var(--rule)}
+.ibtn.play{box-shadow:0 2px 6px color-mix(in srgb,var(--lapis) 35%,transparent)}
+/* 底部导航：居中，选中项有底色 */
+.tabs{background:color-mix(in srgb,var(--sheet) 90%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);justify-content:center;padding-top:6px}
+.tabs button{max-width:180px;font-size:11.5px;gap:3px;position:relative}
+.tabs button svg{transition:transform .2s var(--ease)}
+.tabs button[aria-selected="true"] svg{transform:translateY(-1px)}
+.tabs button[aria-selected="true"]::before{content:"";position:absolute;top:0;width:56px;height:30px;border-radius:15px;background:var(--hl);z-index:-1}
+.tabs button{isolation:isolate}
+/* 藏历 */
+.calhead{margin-top:14px}
+.calg{gap:4px;background:var(--sheet);border-radius:var(--r-lg);box-shadow:var(--card-sh);padding:8px}
+.cd{height:54px;transition:background-color .15s}
+.cd.today{box-shadow:0 2px 8px color-mix(in srgb,var(--lapis) 40%,transparent)}
+/* 常用 */
+#cgroups .pill{height:34px;padding:0 16px}
+/* 阅读页 */
+.head{padding-block:36px 12px}
+.head h1{font-size:28px;letter-spacing:.02em}
+section h2{font-size:14px;letter-spacing:.12em;padding-bottom:8px;margin:12px 0 14px}
+.line{border-radius:10px}
+.line.playing{box-shadow:inset 3px 0 0 var(--lapis)}
+.aside{border-left-color:color-mix(in srgb,var(--lapis) 35%,var(--rule));border-left-width:3px;background:color-mix(in srgb,var(--sheet) 55%,transparent);padding:10px 14px;border-radius:0 10px 10px 0}
+/* 播放条 */
+.player{background:color-mix(in srgb,var(--sheet) 92%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);padding-block:10px calc(10px + env(safe-area-inset-bottom,0px))}
+.pbtn{box-shadow:0 3px 10px color-mix(in srgb,var(--lapis) 35%,transparent);transition:transform .12s var(--ease)}
+.pbtn.small{box-shadow:none}
+.pbtn:active{transform:scale(.94)}
+.player select{height:40px;border-radius:10px;padding:0 8px}
+/* 弹层：圆角更大，带把手，滑入动画 */
+.sheet{border-radius:20px 20px 0 0;padding-top:22px;animation:sheetIn .26s var(--ease)}
+.sheet::before{content:"";position:absolute;top:8px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:2px;background:var(--rule)}
+@keyframes sheetIn{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+.dlg-in{border-radius:20px;animation:sheetIn .2s var(--ease)}
+.chip,.pill,.crect,.segs button,.ones button{transition:background-color .15s,border-color .15s,color .15s}
+.wordcard .wbo{font-size:32px}
+/* 设置页 */
+#prefs .psec{margin:28px 6px 10px}
+.plist{border-color:transparent;box-shadow:var(--card-sh)}
+.pitem{padding:14px 16px;min-height:52px;box-sizing:border-box}
+/* 鼠标设备的悬停反馈 */
+@media (hover:hover){
+  .ccard:hover,.allrow:hover,.ccard2:hover{box-shadow:var(--card-sh-h);transform:translateY(-1px)}
+  .rrow:hover .rzh{color:var(--lapis)}
+  .ibtn:not(.play):hover{background:var(--hl);color:var(--lapis)}
+  .iconbtn:hover{border-color:var(--lapis)}
+  .chip:not([aria-pressed="true"]):hover,.pill:not(.main):not(.on):hover,.crect:not([aria-pressed=true]):hover{border-color:var(--lapis);color:var(--lapis)}
+  .cd:not(.today):hover{background:var(--hl)}
+  .tabs button:hover{color:var(--ink)}
+  .link:hover{text-decoration:underline;text-underline-offset:3px}
+  .plink:hover{background:var(--hl)}
+}
+/* 平板及以上：更宽松的内容区 */
+@media (min-width:700px){
+  .view,main,.top-in,.player-in,.sheet-in,.cfoot-in{max-width:820px}
+  .htop h1{font-size:24px}
+  .head h1{font-size:32px}
+  #combos{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+  .tabs{left:50%;right:auto;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));width:min(420px,calc(100% - 32px));border:1px solid var(--rule);border-radius:22px;box-shadow:var(--card-sh-h);padding:6px 8px}
+  .sheet{left:50%;right:auto;transform:translateX(-50%);width:min(820px,100%);box-sizing:border-box;animation:none}
+}
+@media (min-width:1200px){
+  .view,main,.top-in,.player-in{max-width:880px}
+  .head{padding-top:48px}
+}
+@media (prefers-reduced-motion:reduce){.sheet,.dlg-in{animation:none}.ccard,.allrow{transition:none}}
 </style>
 
 <div id="splash" aria-hidden="true"><img class="sp-bg" alt=""><img class="sp-fg" alt=""></div>
