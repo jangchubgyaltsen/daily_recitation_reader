@@ -203,6 +203,10 @@ body.has-audio{padding-bottom:160px}
 body:not(.v-reader) .top,body:not(.v-reader) #main,body:not(.v-reader) .player{display:none!important}
 .view{max-width:760px;margin:0 auto;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 .view[hidden],.hpane[hidden]{display:none}
+/* 阅读页全屏（w 2026-11-01）：进来只有经文，点一下出现上下的按钮，滑动或开始播放时再收起 */
+body.v-reader .top,body.v-reader .player{transition:transform .3s ease,opacity .3s ease}
+body.v-reader.imm .top{transform:translateY(calc(-100% - env(safe-area-inset-top,0px)));opacity:0;pointer-events:none}
+body.v-reader.imm .player{transform:translateY(100%);opacity:0;pointer-events:none}
 .htop{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);display:flex;align-items:center;gap:8px;min-height:56px;border-bottom:1px solid var(--rule);margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:0 max(16px,env(safe-area-inset-left,0px))}
 .htop h1{margin:0;flex:1;font:600 20px var(--f-zh)}
 .htop .ttl{flex:1;text-align:center;font:600 17px var(--f-zh)}
@@ -476,7 +480,9 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
 #alist .num{width:26px;height:26px;flex:none;border-radius:50%;border:1.5px solid var(--rule);display:grid;place-items:center;font:600 13px var(--f-ui);color:var(--paper)}
 #alist .arow.sel .num{background:var(--lapis);border-color:var(--lapis)}
 #alist .arow .step button{width:34px;height:34px}
-#addsheet .sheet-in{max-height:calc(80vh - 40px)}#addsheet{max-height:85vh}
+#addsheet[hidden]{display:none}#addsheet{max-height:85vh;height:85vh;overflow:hidden;display:flex;flex-direction:column}#addsheet .sheet-in{flex:1;min-height:0;width:100%}
+#addsheet #alist{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.sheet{overscroll-behavior:contain}
 #addGo{flex:none}
 /* 殊胜日设置 */
 #hdBody .plist button[aria-pressed=true]{color:var(--lapis);font-weight:600}
@@ -491,25 +497,30 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
 #pfFin textarea{width:100%;box-sizing:border-box;min-height:70px;font:15px/1.7 var(--f-zh);border:1px solid var(--rule);border-radius:10px;padding:8px 10px;background:var(--paper);color:var(--ink)}
 #pfFin .pitem.radio{cursor:pointer}#pfFin .pitem.radio .ck{color:var(--lapis);font-weight:600}
 /* 安住：全屏暗下来 */
-.restv{position:fixed;inset:0;z-index:58;background:#0f1013;color:#e7e5e0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.restv{--rb:#fbfaf7;--rf:#55585f;--rl:rgba(0,0,0,.18);position:fixed;inset:0;z-index:58;background:var(--rb);color:var(--rf);opacity:0;transition:opacity .6s ease;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
 .restv[hidden]{display:none}
+.restv.show{opacity:1;transition:opacity 3s ease}  /* 安住：慢慢暗下来，不突然黑屏（w 2026-11-01） */
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .restv{--rb:#000;--rf:#c9c7c2;--rl:rgba(255,255,255,.18)}}
+:root[data-theme="dark"] .restv{--rb:#000;--rf:#c9c7c2;--rl:rgba(255,255,255,.18)}
+.restv .rlast{display:none}
 .restv .rlast{margin:0;max-width:640px;text-align:center;font:24px/1.9 'Jomolhari',var(--f-bo);opacity:.38;transition:opacity 6s ease}
 .restv.fade .rlast{opacity:.12}
-.restv .rctl{position:absolute;left:50%;bottom:calc(64px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:4px 10px 4px 18px;font-size:16px;opacity:0;pointer-events:none;transition:opacity .3s}
+.restv .rctl{position:absolute;left:50%;bottom:calc(64px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;align-items:center;gap:6px;border:1px solid var(--rl);border-radius:999px;padding:4px 10px 4px 18px;font-size:16px;opacity:0;pointer-events:none;transition:opacity .3s}
 .restv.ctl .rctl{opacity:1;pointer-events:auto}
-.restv .rctl .link{color:#e7e5e0;white-space:nowrap;padding:8px 10px}
+.restv .rctl .link{color:var(--rf);white-space:nowrap;padding:8px 10px}
 .restv .rctl>span{white-space:nowrap;margin-right:4px}
-.rline{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.06)}.rline i{display:block;height:100%;width:0;background:#6f84bd}
+.rline{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(127,127,127,.12)}.rline i{display:block;height:100%;width:0;background:#6f84bd}
 /* 按时间念咒 */
 .mtv{position:fixed;inset:0;z-index:57;background:var(--paper);display:flex;flex-direction:column;padding:calc(14px + env(safe-area-inset-top,0px)) 20px calc(14px + env(safe-area-inset-bottom,0px))}
 .mtv[hidden]{display:none}
 .mttop{font-size:12px;color:var(--muted);text-align:right}
-.mtmid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;overflow:auto}
+.mtmid{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;gap:18px;overflow:auto;padding:12px 0}.mtmid>h2{margin-top:auto!important}.mtmid>#mtText{margin-bottom:auto}
+.mtl .zh{font:16px/1.7 var(--f-zh);color:var(--muted);text-align:center}
 .mtmid h2{margin:0;font:600 17px var(--f-zh);letter-spacing:.5em;color:var(--lapis)}
 #mtText{display:flex;flex-direction:column;gap:18px;align-items:center}
 .mtl{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px}
 .mtl .sy{display:flex;flex-direction:column;align-items:center;gap:2px}
-.mtl .sb{font:30px/1.6 'Jomolhari',var(--f-bo)}.mtl .sp{font:17px var(--f-ph);color:var(--lapis)}
+.mtl .sb{font:30px/1.6 'Jomolhari',var(--f-bo)}#mtText.verse .mtl .sb{font-size:22px}#mtText.verse .mtl .sp{font-size:15px}#mtText.verse{gap:12px}.mtl .sp{font:17px var(--f-ph);color:var(--lapis)}
 .mtbar{position:relative;padding-top:10px}.mtbar .rline{position:static;background:var(--rule);height:3px;border-radius:2px;overflow:hidden}.mtbar .rline i{background:var(--lapis)}
 .mtbar .row{justify-content:space-between;font-size:13px;color:var(--muted);margin-top:6px}
 .mtbtns{display:flex;align-items:center;gap:8px;padding-top:12px;border-top:1px solid var(--rule);margin-top:12px}
@@ -575,7 +586,7 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
 <div class="view" id="combo" hidden>
   <header class="htop"><button class="link" id="cback">取消</button><span class="ttl">调整组合</span><button class="link strong" id="cdone">完成</button></header>
   <div style="padding-top:18px"><label class="lbl" for="cname">组合名称</label><input class="cname-in" id="cname" autocomplete="off"></div>
-  <div class="row cmrow"><button class="chip" id="cmorn" aria-pressed="false">设为早课</button><span class="lbl" id="cmornx"></span></div>
+  <div class="row cmrow"><button class="chip" id="cmorn" aria-pressed="false">设为早课</button><button class="chip" id="ceve" aria-pressed="false">设为晚课</button><span class="lbl" id="cmornx"></span></div>
   <div class="hsec"><h2>念诵顺序</h2><span class="lbl">左滑删除 · 长按拖动</span></div>
   <div id="citems"></div>
   <div class="addrow"><button class="addbtn" id="cadd">＋ 加仪轨（可多选）</button><button class="addbtn" id="crest">＋ 加安住</button></div>
@@ -872,9 +883,12 @@ function render(){
       h+=rubricHTML(ln,'rubric','ln');
       h+=`<div class="line${ln.kind==='mantra'?' mantra':''}" data-s="${si}" data-l="${li}" data-id="${esc(ln.id)}"><div class="num" title="播放这一句">${esc(ln.id)}</div><div class="body">`;
       const hasPh=(ln.syllables||[]).length&&ln.syllables[0].zh_ph, hasGl=!!(ln.words||ln.beat_groups);
+      // 咒语永远显示藏文和音译，不受显示设置影响（w 2026-11-01）
+      const isM=m.kind==='mantra'||ln.kind==='mantra'||!!ln['mantra.zh'],sv=[S.bo,S.ph];if(isM){S.bo=1;S.ph=1}
       if(S.bo) h+=`<div class="r-bo">${boHTML(ln,ws)}</div>`;
       if(hasPh&&((S.ph&&hasGl)||(S.gl&&hasGl))) h+=pwHTML(ln,ws);
-      else if(S.ph) h+=`<div class="r-ph">${phHTML(ln,ws)}</div>`;
+      else if(S.ph&&(ln.zh_ph||hasPh)) h+=`<div class="r-ph">${phHTML(ln,ws)}</div>`;
+      if(isM){S.bo=sv[0];S.ph=sv[1]}
       if(S.zh&&ln[zk()]) h+=`<div class="r-zh">${zhHTML(ln,ws)}</div>`;
       h+='</div></div>';
     });
@@ -1347,6 +1361,7 @@ const comboById=id=>(S.combos||[]).find(c=>c.id===id);
 const ritReps=R=>+R.meta.repeat||(R.sections.length===1?+R.sections[0].repeat||1:1);
 if(!S.combos){S.combos=[{id:uid(),name:'早课',items:['eight-auspicious','wangdu-prayer','multiplying-mantra'].filter(ritById).map(rid=>({rid,n:1})),pin:0,at:Date.now()}];save()}
 S.use=S.use||{};S.dur=S.dur||{};
+S.tab='today';  // 打开 app 先到今天（w 2026-11-01）
 // w 2026-11-01 最终方案：不再有「设定总时长」；指定早课；殊胜日分「换成一个组合 / 在功课后加念」；去掉「常用」标签
 if(S.planV!==1){S.combos.forEach(c=>{delete c.total;delete c.fill});
   if(!S.morning){const m=S.combos.find(c=>c.name==='早课'&&!c.hidden);if(m)S.morning=m.id}
@@ -1430,16 +1445,19 @@ function todayInfo(){try{const jd=jdToday(),m=monthOfJD(jd),mi=monthInfo(m),x=mo
 function drawToday(){const h=new Date().getHours(),wk='日一二三四五六'[new Date().getDay()];$('tdHi').textContent=h<5||h>=18?'晚上好':h<11?'早上好':h<14?'中午好':'下午好';
   const ti=todayInfo(),day=ti&&(ti.di.names[0]||'');
   $('tdSub').innerHTML=ti?`藏历${ti.mi.leap?'闰':''}${MON[ti.mi.M-1]}月${DAYN(ti.x.d)}${day?' · <b>'+esc(day)+'</b>':''} · 周${wk}`:'周'+wk;
-  const swap=ti&&ti.swap,c=swap?comboById(swap.id):comboById(S.morning);let html;
-  if(!c||c.hidden)html=`<div class="tbig2 empty"><span class="tk">早课</span><span class="ts">还没有设定早课。在仪轨库里打开一个组合，点「设为早课」，它就会出现在这里。</span><div class="tfoot"><button class="link" data-gotab="lib">去仪轨库 ›</button></div></div>`;
+  // 早课、晚课（w 2026-11-01 要晚课）：下午两点到凌晨四点显示晚课，其余显示早课；只设了一个就一直显示那一个
+  const okc=id=>{const x=comboById(id);return x&&!x.hidden?x:null},mo=okc(S.morning),ev=okc(S.evening),late=h>=14||h<4;
+  const slot=(late&&ev)||!mo?'eve':'morn',reg=slot==='eve'?ev:mo,other=slot==='eve'?mo:ev;
+  const swap=ti&&ti.swap,c=swap?comboById(swap.id):reg;let html;
+  if(!c||c.hidden)html=`<div class="tbig2 empty"><span class="tk">早课</span><span class="ts">还没有设定早课或晚课。在仪轨库里打开一个组合，点「设为早课」或「设为晚课」，它就会出现在这里。</span><div class="tfoot"><button class="link" data-gotab="lib">去仪轨库 ›</button></div></div>`;
   else{const q=S.q&&S.q.cid===c.id&&c.items[S.q.i]?S.q:null,L=comboLen(c),nr=c.items.filter(it=>!it.rest).length;
     const left=q?c.items.slice(q.i).reduce((a,it)=>a+(stepSec(it)||0),0):L.s;
     const ts=q?`已念 ${c.items.slice(0,q.i).filter(it=>!it.rest).length} / ${nr} 部 · 还剩约 ${Math.max(1,Math.round(left/60))} 分 · 约 ${hm(Date.now()+left*1000)} 念完`
       :`${nr} 部 · 约 ${Math.max(1,Math.round(L.s/60))} 分 · 现在开始约 ${hm(Date.now()+L.s*1000)} 念完`;
     const nx=c.items[q?q.i:0],nxn=nx?(nx.rest?'安住':((ritById(nx.rid)||{meta:{}}).meta['title.zh']||'')):'';
-    html=`<div class="tbig2"><span class="tk">${swap?'今天是'+esc(day||'殊胜日')+'，换成这个组合':'今天的早课'}</span><span class="tn">${esc(c.name)}</span><span class="ts">${esc(ts)}</span>
+    html=`<div class="tbig2"><span class="tk">${swap?'今天是'+esc(day||'殊胜日')+'，换成这个组合':slot==='eve'?'今天的晚课':'今天的早课'}</span><span class="tn">${esc(c.name)}</span><span class="ts">${esc(ts)}</span>
       <div class="tbar">${c.items.map((it,k)=>`<i class="${q&&k<q.i?'on':''}"></i>`).join('')}</div>${nxn?`<span class="ts">${q?'接下来':'第一部'}：${esc(nxn)}</span>`:''}
-      <button class="tgo" data-tgo="${esc(c.id)}"${c.items.length?'':' disabled'}>${q?'接着念':'开始念诵'}</button><div class="tfoot"><button class="link" data-edit="${esc(c.id)}">调整</button></div></div>`}
+      <button class="tgo" data-tgo="${esc(c.id)}"${c.items.length?'':' disabled'}>${q?'接着念':'开始念诵'}</button><div class="tfoot"><button class="link" data-edit="${esc(c.id)}">调整</button>${other&&other!==c?`<button class="link" data-tgo="${esc(other.id)}">念${slot==='eve'?'早课':'晚课'}「${esc(other.name)}」 ›</button>`:''}</div></div>`}
   $('tdMain').innerHTML=html;
   const add=ti&&ti.add,its=add?add.items.filter(it=>ritById(it.rid)):[];
   $('tdAdd').innerHTML=its.length?`<div class="tsm"><div class="tsb"><b>${esc(day||'殊胜日')}加念</b><small>${esc(its.map(it=>ritById(it.rid).meta['title.zh']+(it.n>1?' ×'+it.n:'')).join('、'))} · 约 ${Math.max(1,Math.round(its.reduce((a,it)=>a+(stepSec(it)||0),0)/60))} 分</small></div><button class="ibtn ring" data-tadd="1" aria-label="念加念">念</button></div>`:''}
@@ -1450,7 +1468,7 @@ function stepLabel(it){if(it.rest)return it.sec?fmtMin(it.sec)+' · '+SOUNDN(it.
 const SOUNDN=k=>(SOUNDS.find(x=>x[0]===k)||SOUNDS[0])[1];
 function drawCombo(){const c=ED();if(!c)return;CUR_C=c;
   if(document.activeElement!==$('cname'))$('cname').value=c.name;
-  $('cmorn').setAttribute('aria-pressed',String(!!c._morn));$('cmorn').textContent=c._morn?'✓ 已设为早课':'设为早课';$('cmornx').textContent=c._morn?'会出现在「今天」页上':'';
+  $('cmorn').setAttribute('aria-pressed',String(!!c._morn));$('cmorn').textContent=c._morn?'✓ 已设为早课':'设为早课';$('ceve').setAttribute('aria-pressed',String(!!c._eve));$('ceve').textContent=c._eve?'✓ 已设为晚课':'设为晚课';$('cmornx').textContent='';
   const row=(i,cls,dis1,mid,dis2,extra)=>`<div class="citem${cls}" data-i="${i}"><div class="cwrap"><div class="csw"><button class="pm" data-dec="${i}" aria-label="少一些"${dis1?' disabled':''}>−</button><div class="cmid">${mid}</div><button class="pm" data-inc="${i}" aria-label="多一些"${dis2?' disabled':''}>＋</button></div><button class="trash" data-del="${i}" aria-label="删除">${TRASHI}</button></div>${extra||''}</div>`;
   $('citems').innerHTML=c.items.length?c.items.map((it,i)=>{
     if(it.rest)return row(i,' isrest',!(it.sec>60),`<span class="cn">安住</span><button class="qcap" data-q="${i}">${esc(stepLabel(it))}</button>`,!it.sec);
@@ -1512,7 +1530,7 @@ function landRep(){const R=RITUALS[S.rit]||RITUALS[0],x=qItem(),tot0=x?itemTotal
 new MutationObserver(()=>{if(LAND.on){LAND.k=null;landSync()}}).observe($('settings'),{attributes:true,attributeFilter:['hidden']});
 $('pfull').onclick=()=>{LAND.force=!LAND.on;landSync()};
 (LQ.addEventListener?LQ.addEventListener('change',landSync):LQ.addListener(landSync));addEventListener('resize',()=>{if(LAND.on)landSync()});
-function show(v){VIEW=v;setTimeout(()=>typeof landSync==='function'&&landSync());document.body.classList.toggle('v-home',v==='home');document.body.classList.toggle('v-reader',v==='reader');document.body.classList.toggle('v-combo',v==='combo');document.body.classList.toggle('v-calset',v==='calset'||v==='prefs');
+function show(v){if(v==='reader'&&VIEW!=='reader')setTimeout(()=>typeof immSet==='function'&&immSet(true));else if(v!=='reader')document.body.classList.remove('imm');VIEW=v;setTimeout(()=>typeof landSync==='function'&&landSync());document.body.classList.toggle('v-home',v==='home');document.body.classList.toggle('v-reader',v==='reader');document.body.classList.toggle('v-combo',v==='combo');document.body.classList.toggle('v-calset',v==='calset'||v==='prefs');
   $('home').hidden=v!=='home';$('combo').hidden=v!=='combo';$('calset').hidden=v!=='calset';$('prefs').hidden=v!=='prefs';
   ['settings','tools','word','mark','edit','align','addsheet','tocombo','speedpop','qsheet','rpick','cxsheet','savesheet','stepsheet','hdsheet'].forEach(id=>$(id).hidden=true);
   if(typeof drawMini==='function')drawMini()}
@@ -1575,13 +1593,14 @@ $('tclist').onclick=e=>{const b=e.target.closest('button');if(!b)return;const ri
 let DRAFT=null,DORIG='',SWIPED=0,DRAGGING=false,UNDO=[],AFTER=null;
 const ED=()=>DRAFT;
 const edClean=c=>JSON.stringify(c,(k,v)=>k==='open'?undefined:v);
-function edOpen(id){if(DRAFT&&DRAFT.id===id)return;const c=comboById(id);DRAFT=JSON.parse(JSON.stringify(c));DRAFT._morn=S.morning===id;DORIG=edClean(DRAFT);UNDO=[];$('undo').hidden=true}
+function edOpen(id){if(DRAFT&&DRAFT.id===id)return;const c=comboById(id);DRAFT=JSON.parse(JSON.stringify(c));DRAFT._morn=S.morning===id;DRAFT._eve=S.evening===id;DORIG=edClean(DRAFT);UNDO=[];$('undo').hidden=true}
 const isDirty=()=>!!DRAFT&&(edClean(DRAFT)!==DORIG||!!DRAFT.fresh);
-function edCommit(asNew){const d=JSON.parse(JSON.stringify(DRAFT));const morn=d._morn;delete d._morn;delete d.fresh;d.items.forEach(it=>delete it.open);if(!d.name.trim())d.name='未命名组合';
+function edCommit(asNew){const d=JSON.parse(JSON.stringify(DRAFT));const morn=d._morn,eve=d._eve;delete d._morn;delete d._eve;delete d.fresh;d.items.forEach(it=>delete it.open);if(!d.name.trim())d.name='未命名组合';
   const o=comboById(d.id);let id=d.id;
   if(asNew){id=uid();Object.assign(d,{id,pin:0,at:Date.now()});if(o&&o.name===d.name)d.name+=' 副本';S.combos.push(d)}
   else{const k=S.combos.findIndex(x=>x.id===d.id);if(k>=0)S.combos[k]=d;else S.combos.push(d)}
   if(morn)S.morning=id;else if(!asNew&&S.morning===id)S.morning=null;
+  if(eve)S.evening=id;else if(!asNew&&S.evening===id)S.evening=null;
   DRAFT=null;save();return id}
 function askSave(after){AFTER=after||null;if(!isDirty()){const id=S.ed;DRAFT=null;AFTER?AFTER(id):goBack();return}
   $('svSave').textContent='保存到「'+(ED().name.trim()||'未命名组合')+'」';const o=comboById(ED().id);$('svNew').hidden=!!(o&&o.fresh);$('savesheet').hidden=false}
@@ -1592,10 +1611,11 @@ $('cdone').onclick=()=>askSave(null);
 $('cback').onclick=async()=>{const o=comboById(S.ed),fresh=o&&o.fresh;if(isDirty()&&!(fresh&&!ED().items.length)&&!await ask(fresh?'不保存这个新组合？':'放弃这些修改？','放弃'))return;
   if(fresh)S.combos=S.combos.filter(x=>x!==o);DRAFT=null;save();goBack()};
 $('cplay').onclick=()=>askSave(id=>playCombo(id));
-$('cdel').onclick=async()=>{const o=comboById(S.ed);if(!o)return;if(!await ask(`删除组合“${ED().name||o.name}”？`,'删除'))return;S.combos=S.combos.filter(x=>x!==o);if(S.morning===o.id)S.morning=null;DRAFT=null;save();goBack()};
+$('cdel').onclick=async()=>{const o=comboById(S.ed);if(!o)return;if(!await ask(`删除组合“${ED().name||o.name}”？`,'删除'))return;S.combos=S.combos.filter(x=>x!==o);if(S.morning===o.id)S.morning=null;if(S.evening===o.id)S.evening=null;DRAFT=null;save();goBack()};
 $('cname').oninput=e=>{ED().name=e.target.value};
 $('cname').onblur=e=>{const c=ED();if(c&&!c.name.trim()){c.name='未命名组合';drawCombo()}};
 $('cmorn').onclick=()=>{ED()._morn=!ED()._morn;drawCombo()};
+$('ceve').onclick=()=>{ED()._eve=!ED()._eve;drawCombo()};
 $('crest').onclick=()=>{const c=ED();c.items.push({rest:1,sec:180,sound:S.restSound||'bowl'});drawCombo();openStep({i:c.items.length-1})};
 // 删除：左滑露出垃圾桶，滑到底直接删；删了 5 秒内可以撤销（连删几部可以一部一部撤回）
 function delStep(i){const c=ED(),it=c.items.splice(i,1)[0];if(!it)return;UNDO.push({it,i});drawCombo();const R=it.rest?null:ritById(it.rid);
@@ -1826,6 +1846,15 @@ function keepAlive(on){try{if(on){if(!KEEP.getAttribute('src'))KEEP.src=silWav()
 KEEP.addEventListener('timeupdate',()=>{if(REST.on)restTick();if(TS.on)tsTick()});
 let WL=null;async function wake(on){try{if(on&&!WL&&navigator.wakeLock&&document.visibilityState==='visible'){WL=await navigator.wakeLock.request('screen');WL.addEventListener('release',()=>{WL=null})}else if(!on&&WL){const w=WL;WL=null;w.release()}}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&(REST.on||TS.on||!A.el.paused))wake(true)});
+
+// 阅读页全屏：进来时收起上下的按钮；全屏时点一下只是把按钮叫出来，不会点到经文；滑动或开始播放时再收起
+const IMM={y:0};
+function immSet(on){document.body.classList.toggle('imm',!!on);IMM.y=scrollY}
+const sheetOpen=()=>[...document.querySelectorAll('.sheet,.kp,.speedpop')].some(x=>!x.hidden&&x.offsetParent!==null);
+document.addEventListener('click',e=>{if(VIEW!=='reader'||!document.body.classList.contains('imm'))return;if(e.target.closest('.top,.player,.sheet,.restv,.mtv,.fin,.dlg,.kp'))return;
+  e.stopPropagation();e.preventDefault();immSet(false)},true);
+addEventListener('scroll',()=>{if(VIEW!=='reader'||document.body.classList.contains('imm'))return;if(Math.abs(scrollY-IMM.y)>40&&!sheetOpen())immSet(true)},{passive:true});
+A.el.addEventListener('play',()=>{if(VIEW==='reader'&&!sheetOpen())setTimeout(()=>{if(!A.el.paused&&!sheetOpen())immSet(true)},800)});
 A.el.addEventListener('play',()=>wake(true));A.el.addEventListener('pause',()=>{if(!REST.on&&!TS.on&&!S.q)wake(false)});
 let MM='';function mediaMeta(t){if(t===MM||!('mediaSession' in navigator)||typeof MediaMetadata==='undefined')return;MM=t;try{navigator.mediaSession.metadata=new MediaMetadata({title:t,artist:'藏汉课诵'})}catch(e){}}
 function restLastBo(R,secId){if(!R)return '';const ss=secId?R.sections.filter(s=>s.id===secId):R.sections;const s=ss[ss.length-1];const l=s&&s.lines[s.lines.length-1];return l?l.bo||'':''}
@@ -1848,10 +1877,10 @@ function soloRepeat(){const n=ritReps(RITUALS[S.rit]||RITUALS[0]);if((A.solo||1)
 function checkRest(t){if(REST.on||A.el.paused||A.stopAt!=null||A.marking)return;const d=rDone(),p=restPoints().find(p=>!p.end&&!d.includes(p.r.after)&&t>=p.t-0.05);if(p){d.push(p.r.after);save();startRest(Object.assign({last:restLastBo(RITUALS[S.rit],p.r.after)},p.r),()=>play())}}
 function startRest(r,then){A.el.pause();const sec=r.sec||0;Object.assign(REST,{on:true,left:sec,tot:sec,open:!sec,el:0,paused:false,r,then,last:Date.now()});
   clearInterval(REST.iv);REST.iv=setInterval(restTick,250);keepAlive(true);wake(true);
-  const v=$('restv');$('rvLast').textContent=r.last||'';v.classList.remove('fade','ctl');v.hidden=false;clearTimeout(REST.ft);REST.ft=setTimeout(()=>v.classList.add('fade'),400);drawRest()}
+  const v=$('restv');clearTimeout(REST.ht);v.classList.remove('show','ctl');v.hidden=false;void v.offsetWidth;requestAnimationFrame(()=>v.classList.add('show'));drawRest()}
 function restTick(){if(!REST.on)return;const now=Date.now(),dt=(now-REST.last)/1000;REST.last=now;if(REST.paused){drawRest();return}
   if(REST.open){REST.el+=dt;drawRest();return}REST.left-=dt;if(REST.left<=0)endRest(true);else drawRest()}
-function endRest(ring){if(!REST.on)return;clearInterval(REST.iv);REST.on=false;$('restv').hidden=true;const snd=ring&&REST.r.sound!=='none'?REST.r.sound:null;if(snd)bell(snd);
+function endRest(ring){if(!REST.on)return;clearInterval(REST.iv);REST.on=false;restHide();const snd=ring&&REST.r.sound!=='none'?REST.r.sound:null;if(snd)bell(snd);
   keepAlive(TS.on&&TS.how==='self');const f=REST.then;drawRest();syncPlayer();setTimeout(()=>f&&f(),snd?(snd==='bowl'?3000:1500):0)}
 function drawRest(){$('prest').hidden=!REST.on;if(REST.on){const lbl=REST.open?'安住 '+fmt(REST.el):'安住 '+fmt(Math.ceil(REST.left));$('ptime').textContent=lbl;$('pplay').textContent=REST.paused?'▶':'❚❚';
   $('rvLeft').textContent=REST.open?'已安住 '+fmt(REST.el):'还有 '+fmt(Math.ceil(REST.left));$('rvBar').style.width=REST.open?'0':Math.min(100,100*(1-REST.left/Math.max(1,REST.tot)))+'%';$('rvPlus').hidden=REST.open;mediaMeta(lbl)}drawMini()}
@@ -1860,9 +1889,11 @@ $('rvPlus').onclick=()=>{REST.left+=60;REST.tot+=60;drawRest();const v=$('restv'
 $('rvEnd').onclick=()=>endRest(false);
 // 按时间念 / 不计时的一步（w：按时间念咒的画面用积累页方案三，但不记数量）：咒在正中，藏文按音节，下面对着音译；底部只有时间
 const TS={on:false};
-function mantraHTML(R){const ls=[];R.sections.forEach(s=>s.lines.forEach(l=>ls.push(l)));return ls.slice(0,6).map(l=>{const sy=l.syllables||[];
-  if(sy.length&&sy.every(x=>x.zh_ph))return `<div class="mtl">${sy.map(x=>`<span class="sy"><span class="sb" lang="bo">${esc(x.bo||'')}</span><span class="sp">${esc(x.zh_ph)}</span></span>`).join('')}</div>`;
-  return `<div class="mtl" style="flex-direction:column;align-items:center"><span class="sb" lang="bo">${esc(l.bo||'')}</span><span class="sp">${esc(l.zh_ph||'')}</span></div>`}).join('')}
+// 按时间念：显示整部的咒或偈子（w 2026-11-01）。咒按音节对着音译；偈子一句藏文、一句音译，有汉文也显示
+function mantraHTML(R){const ls=[];R.sections.forEach(s=>s.lines.forEach(l=>ls.push(l)));const isM=R.meta.kind==='mantra';$('mtText').classList.toggle('verse',ls.length>4);
+  return ls.map(l=>{const sy=l.syllables||[],zh=!isM&&l.zh?`<span class="zh">${esc(l.zh)}</span>`:'';
+  if(sy.length&&sy.every(x=>x.zh_ph))return `<div class="mtl">${sy.map(x=>`<span class="sy"><span class="sb" lang="bo">${esc(x.bo||'')}</span><span class="sp">${esc(x.zh_ph)}</span></span>`).join('')}</div>`+(zh?`<div class="mtl">${zh}</div>`:'');
+  return `<div class="mtl" style="flex-direction:column;align-items:center"><span class="sb" lang="bo">${esc(l.bo||'')}</span><span class="sp">${esc(l.zh_ph||'')}</span>${zh}</div>`}).join('')}
 function timedStart(it){const R=ritById(it.rid);if(!R)return;Object.assign(TS,{on:true,it,how:it.how||'audio',left:stepQ(it)==='time'?(it.min||10)*60:null,tot:stepQ(it)==='time'?(it.min||10)*60:0,el:0,paused:false,up:false,last:Date.now()});
   clearInterval(TS.iv);TS.iv=setInterval(tsTick,250);if(TS.how==='self'){keepAlive(true)}wake(true);
   $('mtName').textContent=R.meta['title.zh'];$('mtText').innerHTML=mantraHTML(R);$('mtv').hidden=false;drawTS()}
@@ -1879,20 +1910,22 @@ $('mtPlus').onclick=()=>{TS.left=Math.max(0,TS.left)+300;TS.up=false;drawTS()};
 $('mtEnd').onclick=()=>timedNext();
 A.el.addEventListener('play',()=>{if(TS.on)drawTS()});A.el.addEventListener('pause',()=>{if(TS.on)drawTS()});
 $('prest').onclick=()=>endRest(false);
-function cancelRest(){if(REST.on){clearInterval(REST.iv);REST.on=false;$('restv').hidden=true;keepAlive(false);drawRest()}timedClose()}
+function restHide(){const v=$('restv');v.classList.remove('show','ctl');clearTimeout(REST.ht);REST.ht=setTimeout(()=>{if(!REST.on)v.hidden=true},650)}
+function cancelRest(){if(REST.on){clearInterval(REST.iv);REST.on=false;restHide();keepAlive(false);drawRest()}timedClose()}
 /* ---------- 常用念诵 ---------- */
 // 常用由用户自己从「全部仪轨」里点 ☆ 加进来（w），按加入的顺序排；meta['common.group'] 用来分组筛选。
 // 一开始只放饭前供养偈
 S.cnt=S.cnt||{};
 if(S.favV!==1){S.fav=['meal-offering'];S.favV=1;save()}
 const isFav=id=>(S.fav||[]).includes(id);
-const commons=()=>(S.fav||[]).map(ritById).filter(Boolean);
+// 按最近 30 天打开或念的次数排，常念的在前（w 2026-11-01）；次数只用来排序，不显示
+const commons=()=>(S.fav||[]).map(ritById).filter(Boolean).map((R,i)=>[R,score('r:'+R.meta.id),lastUse('r:'+R.meta.id),i]).sort((a,b)=>b[1]-a[1]||b[2]-a[2]||a[3]-b[3]).map(x=>x[0]);
 let CG='',COPEN='';
 function drawCommon(){const all=commons();const groups=[...new Set(all.map(R=>R.meta['common.group']).filter(Boolean))];
   $('cgroups').innerHTML=groups.length?['',...groups].map(g=>`<button class="pill${g===CG?' on':''}" data-cg="${esc(g)}" aria-pressed="${g===CG}">${esc(g||'全部')}</button>`).join(''):'';
   const rs=all.filter(R=>!CG||R.meta['common.group']===CG);
   $('clist').innerHTML=rs.length?rs.map(R=>{const id=R.meta.id,n=S.cnt[id]||ritReps(R),op=COPEN===id;const L=allLinesOf(R);
-    return `<div class="ccard2${op?' open':''}"><div class="chead2"><button class="cbody" data-cx="${esc(id)}" aria-expanded="${op}"><span class="cname">${esc(R.meta['title.zh'])}</span>${R.meta['title.bo']?`<span class="rbo" lang="bo">${esc(R.meta['title.bo'])}</span>`:''}</button>
+    return `<div class="ccard2${op?' open':''}"><div class="chead2"><button class="cbody" data-cx="${esc(id)}"><span class="cname">${esc(R.meta['title.zh'])}</span>${R.meta['title.bo']?`<span class="rbo" lang="bo">${esc(R.meta['title.bo'])}</span>`:''}</button>
       <span class="lbl">${n>1?n+' 遍':''}</span><button class="ibtn fav on" data-fav="${esc(id)}" aria-pressed="true" aria-label="从常用移除 ${esc(R.meta['title.zh'])}">${STARI}</button><button class="ibtn ring" data-cp="${esc(id)}" aria-label="念诵 ${esc(R.meta['title.zh'])}">${PLAYI}</button></div>
       ${op?`<div class="cfull">${L.map(ln=>`<div class="cl"><div class="r-bo" lang="bo">${esc(ln.bo)}</div><div class="r-ph">${esc(ln.zh_ph||(ln.syllables||[]).map(s=>s.zh_ph).join(''))}</div>${ln.zh?`<div class="r-zh">${esc(ln.zh)}</div>`:''}</div>`).join('')}
         <div class="row" style="margin-top:8px"><span class="lbl">念</span><div class="step"><button data-cdec="${esc(id)}" aria-label="少念一遍">−</button><span>${n}</span><button data-cinc="${esc(id)}" aria-label="多念一遍">＋</button></div><span class="lbl">遍</span><span style="flex:1"></span><button class="link" data-tc="${esc(id)}">＋ 加入组合</button><button class="link" data-open="${esc(id)}">打开全文</button></div></div>`:''}</div>`}).join('')
@@ -1900,10 +1933,10 @@ function drawCommon(){const all=commons();const groups=[...new Set(all.map(R=>R.
 function allLinesOf(R){const o=[];R.sections.forEach(s=>s.lines.forEach(l=>o.push(l)));return o}
 $('pane-today').addEventListener('click',e=>{let b;
   if(b=e.target.closest('[data-cg]')){CG=b.dataset.cg;drawCommon();return}
-  if(b=e.target.closest('[data-cx]')){COPEN=COPEN===b.dataset.cx?'':b.dataset.cx;drawCommon();return}
+  if(b=e.target.closest('[data-cx]'))return openRit(b.dataset.cx);
   if(b=e.target.closest('[data-cinc]')){const R=ritById(b.dataset.cinc);S.cnt[R.meta.id]=(S.cnt[R.meta.id]||ritReps(R))+1;save();drawCommon();return}
   if(b=e.target.closest('[data-cdec]')){const R=ritById(b.dataset.cdec);const v=(S.cnt[R.meta.id]||ritReps(R))-1;if(v>=1){S.cnt[R.meta.id]=v;save();drawCommon()}return}
-  if(b=e.target.closest('[data-cp]')){const R=ritById(b.dataset.cp);playOnce(R,S.cnt[R.meta.id]||ritReps(R));return}
+  if(b=e.target.closest('[data-cp]')){const R=ritById(b.dataset.cp);use('r:'+R.meta.id);playOnce(R,S.cnt[R.meta.id]||ritReps(R));return}
   if(b=e.target.closest('[data-open]'))return openRit(b.dataset.open);
   if(b=e.target.closest('[data-tc]'))return openToCombo(b.dataset.tc)});
 // 常用页、藏历推荐：用一个不显示的临时组合来按遍数连念
