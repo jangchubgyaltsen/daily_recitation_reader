@@ -5,7 +5,7 @@
 import glob, os, shutil, sys
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 dst = os.path.join(sys.argv[1], 'src')
-PATTERNS = ['app/template.html', 'tools/*.py', 'tools/*.js', 'tools/*.html', 'rituals/*.txt', 'rituals/*.json',
+PATTERNS = ['app/template.html', 'tools/*.py', 'tools/*.js', 'tools/*.html', 'rituals/*.txt', 'rituals/*.json', 'rituals/*.list',
             'plan/*.md', 'lexicon/bo/index.tsv', 'audio/*.txt']
 want = {os.path.relpath(p, root) for pat in PATTERNS for p in glob.glob(f'{root}/{pat}')}
 for p in glob.glob(f'{dst}/**/*', recursive=True):  # 项目里删掉的文件，src/ 里也删掉
