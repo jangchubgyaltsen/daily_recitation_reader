@@ -1,0 +1,31 @@
+{
+ "meta": {
+  "id": "bodily-waste-mantra",
+  "title.bo": "",
+  "title.zh": "排出身体排泄物咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "咒语",
+  "status": "draft",
+  "source.zh": "w 2026-11-01 提供",
+  "kind": "mantra",
+  "intro.zh": "排出身体上的任何一种排泄物，比如流汗的时候，可念诵此咒语。"
+ },
+ "sections": [
+  {
+   "id": "mantra",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "排出身体排泄物咒",
+     "bo": "",
+     "zh_ph": "嗡马拉啊哈日呗梭哈",
+     "syllables": []
+    }
+   ],
+   "title.zh": "排出身体排泄物咒"
+  }
+ ]
+}

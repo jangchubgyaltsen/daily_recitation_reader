@@ -1,0 +1,31 @@
+{
+ "meta": {
+  "id": "nose-blowing-mantra",
+  "title.bo": "",
+  "title.zh": "擤鼻涕咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "咒语",
+  "status": "draft",
+  "source.zh": "w 2026-11-01 提供",
+  "kind": "mantra",
+  "intro.zh": "擤鼻涕的时候，念诵此咒语，这样鼻涕就变成了饿鬼眼中的美味。"
+ },
+ "sections": [
+  {
+   "id": "mantra",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "擤鼻涕咒",
+     "bo": "",
+     "zh_ph": "嗡嗓噶那啊哈日呗梭哈",
+     "syllables": []
+    }
+   ],
+   "title.zh": "擤鼻涕咒"
+  }
+ ]
+}

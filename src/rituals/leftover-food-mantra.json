@@ -1,0 +1,31 @@
+{
+ "meta": {
+  "id": "leftover-food-mantra",
+  "title.bo": "",
+  "title.zh": "剩饭剩菜咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "咒语",
+  "status": "draft",
+  "source.zh": "w 2026-11-01 提供",
+  "kind": "mantra",
+  "intro.zh": "倒剩饭、剩菜、剩水等时，念诵此咒语，然后观想将这些丢弃物布施给饿鬼道的众生。"
+ },
+ "sections": [
+  {
+   "id": "mantra",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "剩饭剩菜咒",
+     "bo": "",
+     "zh_ph": "嗡俄啧扎啊哈日呗梭哈",
+     "syllables": []
+    }
+   ],
+   "title.zh": "剩饭剩菜咒"
+  }
+ ]
+}

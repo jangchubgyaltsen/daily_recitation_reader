@@ -1,0 +1,25 @@
+# 供花咒：校对源文件（规则见 eight-auspicious.txt 开头）
+# 汉文音译、用途说明：w 2026-11-01 在对话里直接给出（原样照录），属于日常生活中念的咒语。
+# 藏文：w 没有给，暂缺。没有可靠出处之前不自己拼写，找到后补在 bo 行和 @title.bo。
+
+@id: flower-offering-mantra
+@title.bo:
+@title.zh: 供花咒
+@title.zh_ph:
+@restriction: public
+@common: true
+@common.group: 咒语
+# w 2026-11-01 要求加入仪轨库（日常咒语）
+@status: draft
+@source.zh: w 2026-11-01 提供
+@kind: mantra
+@intro.zh: 每次供花的时候念七遍此咒语，则供一朵花的功德就变成供一千万朵花的功德了。
+
+== mantra
+title.zh: 供花咒
+
+-- 1
+kind: mantra
+mantra.zh: 供花咒
+bo:
+zh_ph: 嗡南无巴噶哇地 吡呗给嘚Ra砸呀 达塔噶达雅 啊尔哈地 三渺三菩提呀 达呀他 嗡吡呗吡呗 摩诃吡呗 吡呗斯吡呗 额尔巴唯 吡呗嗓巴唯 吡呗阿瓦葛Ra呢梭哈
