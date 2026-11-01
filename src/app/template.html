@@ -619,7 +619,7 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
 </div>
 <div class="view" id="calset" hidden>
   <header class="htop"><button class="link" id="csBack">‹ 藏历</button><span class="ttl">殊胜日设置</span><span style="width:52px"></span></header>
-  <p class="lbl" style="line-height:1.7">每个殊胜日可以「换成一个组合」，也可以「在功课后加念」几部。设了的日子会出现在今天页上。</p>
+  <p class="lbl" style="line-height:1.7">每个殊胜日可以「加一个组合」，也可以「加念几部」仪轨。设了的日子，今天页上会在早课、晚课旁边多一张卡。</p>
   <div id="csList"></div>
   <button class="link" id="csAdd" style="margin-top:8px">＋ 加一个纪念日（如四大节日、上师诞辰）</button>
 </div>
@@ -659,7 +659,7 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
 </div></div>
 <div class="sheet" id="hdsheet" hidden><div class="sheet-in">
   <div class="row"><h3 id="hdT"></h3><button class="close" id="hdOk">完成</button></div>
-  <div class="segs" id="hdMode"><button data-hm="swap">换成一个组合</button><button data-hm="add">在功课后加念</button><button data-hm="">不设</button></div>
+  <div class="segs" id="hdMode"><button data-hm="swap">加一个组合</button><button data-hm="add">加念几部</button><button data-hm="">不设</button></div>
   <div id="hdBody"></div>
 </div></div>
 <!-- 安住：全屏暗下来，只留刚念完的一句；点屏幕才出现时间和按钮 -->
@@ -1439,7 +1439,8 @@ function drawHome(){apDraw();
   ['today','lib','cal'].forEach(t=>$('pane-'+t).hidden=t!==tab||(t==='lib'&&ALLV));$('pane-all').hidden=!(ALLV&&tab==='lib');
   if(tab==='today'){drawToday();drawCommon()}if(tab==='cal')drawCal();
 }
-// 今天页（C-3）：早课放成大卡；殊胜日「换成一个组合」时大卡换成那个组合，「加念」时多一张小卡；下面是常用的偈子和咒
+// 今天页（C-3）：早课或晚课放成大卡；殊胜日「加一个组合」或「加念几部」时多一张小卡，和早课晚课并列（w 2026-11-01：不换掉早课）；下面是常用的偈子和咒
+// 数据里 mode:'swap' 沿用旧名字，现在的意思是「这天加一个组合」
 function todayInfo(){try{const jd=jdToday(),m=monthOfJD(jd),mi=monthInfo(m),x=monthDays(m).find(d=>d.jd===jd);if(!x)return null;const di=dayInfo(mi,x.d,x.jd,x.dup);
   return {mi,x,di,swap:di.refs.find(r=>r&&r.mode==='swap'&&comboById(r.id)),add:di.refs.find(r=>r&&r.mode==='add'&&(r.items||[]).some(it=>ritById(it.rid)))}}catch(e){return null}}
 function drawToday(){const h=new Date().getHours(),wk='日一二三四五六'[new Date().getDay()];$('tdHi').textContent=h<5||h>=18?'晚上好':h<11?'早上好':h<14?'中午好':'下午好';
@@ -1448,19 +1449,20 @@ function drawToday(){const h=new Date().getHours(),wk='日一二三四五六'[ne
   // 早课、晚课（w 2026-11-01 要晚课）：下午两点到凌晨四点显示晚课，其余显示早课；只设了一个就一直显示那一个
   const okc=id=>{const x=comboById(id);return x&&!x.hidden?x:null},mo=okc(S.morning),ev=okc(S.evening),late=h>=14||h<4;
   const slot=(late&&ev)||!mo?'eve':'morn',reg=slot==='eve'?ev:mo,other=slot==='eve'?mo:ev;
-  const swap=ti&&ti.swap,c=swap?comboById(swap.id):reg;let html;
+  const swap=ti&&ti.swap,c=reg;let html;
   if(!c||c.hidden)html=`<div class="tbig2 empty"><span class="tk">早课</span><span class="ts">还没有设定早课或晚课。在仪轨库里打开一个组合，点「设为早课」或「设为晚课」，它就会出现在这里。</span><div class="tfoot"><button class="link" data-gotab="lib">去仪轨库 ›</button></div></div>`;
   else{const q=S.q&&S.q.cid===c.id&&c.items[S.q.i]?S.q:null,L=comboLen(c),nr=c.items.filter(it=>!it.rest).length;
     const left=q?c.items.slice(q.i).reduce((a,it)=>a+(stepSec(it)||0),0):L.s;
     const ts=q?`已念 ${c.items.slice(0,q.i).filter(it=>!it.rest).length} / ${nr} 部 · 还剩约 ${Math.max(1,Math.round(left/60))} 分 · 约 ${hm(Date.now()+left*1000)} 念完`
       :`${nr} 部 · 约 ${Math.max(1,Math.round(L.s/60))} 分 · 现在开始约 ${hm(Date.now()+L.s*1000)} 念完`;
     const nx=c.items[q?q.i:0],nxn=nx?(nx.rest?'安住':((ritById(nx.rid)||{meta:{}}).meta['title.zh']||'')):'';
-    html=`<div class="tbig2"><span class="tk">${swap?'今天是'+esc(day||'殊胜日')+'，换成这个组合':slot==='eve'?'今天的晚课':'今天的早课'}</span><span class="tn">${esc(c.name)}</span><span class="ts">${esc(ts)}</span>
+    html=`<div class="tbig2"><span class="tk">${slot==='eve'?'今天的晚课':'今天的早课'}</span><span class="tn">${esc(c.name)}</span><span class="ts">${esc(ts)}</span>
       <div class="tbar">${c.items.map((it,k)=>`<i class="${q&&k<q.i?'on':''}"></i>`).join('')}</div>${nxn?`<span class="ts">${q?'接下来':'第一部'}：${esc(nxn)}</span>`:''}
       <button class="tgo" data-tgo="${esc(c.id)}"${c.items.length?'':' disabled'}>${q?'接着念':'开始念诵'}</button><div class="tfoot"><button class="link" data-edit="${esc(c.id)}">调整</button>${other&&other!==c?`<button class="link" data-tgo="${esc(other.id)}">念${slot==='eve'?'早课':'晚课'}「${esc(other.name)}」 ›</button>`:''}</div></div>`}
   $('tdMain').innerHTML=html;
   const add=ti&&ti.add,its=add?add.items.filter(it=>ritById(it.rid)):[];
-  $('tdAdd').innerHTML=its.length?`<div class="tsm"><div class="tsb"><b>${esc(day||'殊胜日')}加念</b><small>${esc(its.map(it=>ritById(it.rid).meta['title.zh']+(it.n>1?' ×'+it.n:'')).join('、'))} · 约 ${Math.max(1,Math.round(its.reduce((a,it)=>a+(stepSec(it)||0),0)/60))} 分</small></div><button class="ibtn ring" data-tadd="1" aria-label="念加念">念</button></div>`:''}
+  const sc=swap&&comboById(swap.id),sq=sc&&S.q&&S.q.cid===sc.id;
+  $('tdAdd').innerHTML=(sc?`<div class="tsm"><div class="tsb"><b>${esc(day||'殊胜日')} · ${esc(sc.name)}</b><small>${sc.items.filter(it=>!it.rest).length} 部 · 约 ${Math.max(1,Math.round(comboLen(sc).s/60))} 分${sq?' · 念到一半':''}</small></div><button class="ibtn ring" data-tgo="${esc(sc.id)}" aria-label="念${esc(sc.name)}">念</button></div>`:'')+(its.length?`<div class="tsm"><div class="tsb"><b>${esc(day||'殊胜日')}加念</b><small>${esc(its.map(it=>ritById(it.rid).meta['title.zh']+(it.n>1?' ×'+it.n:'')).join('、'))} · 约 ${Math.max(1,Math.round(its.reduce((a,it)=>a+(stepSec(it)||0),0)/60))} 分</small></div><button class="ibtn ring" data-tadd="1" aria-label="念加念">念</button></div>`:'')}
 // 加念、藏历推荐：用一个不显示的临时组合按顺序念
 function playItems(items,name){const id='_tmp';S.combos=S.combos.filter(c=>c.id!==id);S.combos.push({id,hidden:1,name:name||'加念',items:JSON.parse(JSON.stringify(items)),at:0});save();startCombo(id)}
 function stepLabel(it){if(it.rest)return it.sec?fmtMin(it.sec)+' · '+SOUNDN(it.sound):'不计时 · '+SOUNDN(it.sound);const q=stepQ(it),self=it.how==='self'?' · 自己念':'';
@@ -1971,7 +1973,7 @@ function dayInfo(mi,d,jd,dup){const sp=!dup&&SPECIAL[d],fe=!dup&&!mi.leap&&FEAST
   const names=[...(fe?[fe[0]]:sp?[sp[0]]:[]),...cx.map(x=>x.name),...(ec?[ec[1]]:[])];const short=cx.length?cx[0].name.slice(0,4):fe?fe[1]:sp?sp[1]:eShort;
   const mult=(fe&&fe[2]?(fe[2]==='无'?'':fe[2]):sp?sp[2]:''),ecl=ec?ec[1]+'：'+(ec[3]?'初亏 '+ec[3]+'，':'')+'食甚 '+ec[2]+(ec[4]?'，复圆 '+ec[4]:'')+'（北京时间）':'';
   const refs=[...(!dup&&S.cal[d]?[S.cal[d]]:[]),...cx.filter(x=>x.ref).map(x=>x.ref)];return {names,short,refs,mult,ecl}}
-function refName(r){if(!r)return '';if(r.mode==='swap'){const c=comboById(r.id);return c?'换成「'+c.name+'」':''}if(r.mode==='add'){const its=(r.items||[]).filter(it=>ritById(it.rid));return its.length?'加念 '+its.map(it=>ritById(it.rid).meta['title.zh']).join('、'):''}if(r.t==='c'){const c=comboById(r.id);return c?c.name:''}const R=ritById(r.id);return R?R.meta['title.zh']:''}
+function refName(r){if(!r)return '';if(r.mode==='swap'){const c=comboById(r.id);return c?'加组合「'+c.name+'」':''}if(r.mode==='add'){const its=(r.items||[]).filter(it=>ritById(it.rid));return its.length?'加念 '+its.map(it=>ritById(it.rid).meta['title.zh']).join('、'):''}if(r.t==='c'){const c=comboById(r.id);return c?c.name:''}const R=ritById(r.id);return R?R.meta['title.zh']:''}
 function drawCal(){const today=jdToday();if(CALN==null)CALN=monthOfJD(today);const mi=monthInfo(CALN),days=monthDays(CALN);
   $('calPrev').disabled=CALN<=0;$('calNext').disabled=CALN>=ZL.length-1;
   $('calT').textContent='藏历'+(mi.leap?'闰':'')+MON[mi.M-1]+'月';
@@ -1985,7 +1987,7 @@ function drawCal(){const today=jdToday();if(CALN==null)CALN=monthOfJD(today);con
   const focus=sel||days.find(x=>x.jd===today);let h='';
   if(focus){const di=dayInfo(mi,focus.d,focus.jd,focus.dup),g=jdDate(focus.jd),isT=focus.jd===today;
     h=`<div class="dcard${di.refs.length?' rec':''}"><div class="trow"><b class="dt">${isT?'今天 · ':''}${DAYN(focus.d)}</b>${di.names.length?`<span class="spn">${esc(di.names.join('、'))}</span>`:''}<span style="flex:1"></span><span class="lbl">${g.getUTCMonth()+1}月${g.getUTCDate()}日</span></div>`+(di.mult?`<p class="dmul">${esc(di.mult)}</p>`:'')+(di.ecl?`<p class="decl">${esc(di.ecl)}</p>`:'')+
-      (CALREFS=di.refs.filter(r=>refName(r))).map((r,k)=>`<div class="recrow"><div style="flex:1;min-width:0"><span class="lbl">${r.mode==='add'?'这天在功课后加念':'这天换成这个组合'}</span><div class="rn">${esc(refName(r))}</div><span class="lbl">你设定的</span></div><button class="ibtn play" data-rec="${k}" aria-label="开始念诵">${PLAYI}</button></div>`).join('')+'</div>'}
+      (CALREFS=di.refs.filter(r=>refName(r))).map((r,k)=>`<div class="recrow"><div style="flex:1;min-width:0"><span class="lbl">${r.mode==='add'?'这天加念':'这天加一个组合'}</span><div class="rn">${esc(refName(r))}</div><span class="lbl">你设定的</span></div><button class="ibtn play" data-rec="${k}" aria-label="开始念诵">${PLAYI}</button></div>`).join('')+'</div>'}
   // 下一个殊胜日
   let nx=null;for(let k=0;k<3&&!nx&&CALN+k<ZL.length;k++){const m=monthInfo(CALN+k);for(const x of monthDays(CALN+k)){if(x.jd<=today||x.dup)continue;const di=dayInfo(m,x.d,x.jd);if(di.names.length){nx={x,di};break}}}
   if(nx)h+=`<p class="lbl" style="margin:10px 2px 0">接下来：${DAYN(nx.x.d)} ${esc(nx.di.names[0])}（还有 ${nx.x.jd-today} 天）</p>`;
@@ -2001,20 +2003,20 @@ $('calSetBtn').onclick=()=>go('#/cal');
 function drawCalSet(){const row=(key,d,label,ref,extra)=>`<button class="setrow" data-cs="${esc(key)}"><span class="sd"><b>${d}</b><small>${esc(label)}</small></span><span class="sv">${ref&&refName(ref)?esc(refName(ref)):'<span class="lbl">不设</span>'}</span>${extra||''}<span class="lbl">›</span></button>`;
   $('csList').innerHTML=Object.entries(SPECIAL).map(([d,[n]])=>row('d'+d,DAYN(+d),n,S.cal[d])).join('')+
     S.calx.map((x,i)=>row('x'+i,MON[x.m-1]+'月'+DAYN(x.d),x.name,x.ref)).join('')}
-// 殊胜日设置：每个日子选「换成一个组合」或「在功课后加念」几部（w 2026-10-31 定两种都留）
+// 殊胜日设置：每个日子选「加一个组合」或「加念几部」（w 2026-11-01：加，不换掉早课晚课）
 let HD=null;
 const hdGet=key=>key[0]==='x'?S.calx[+key.slice(1)].ref:S.cal[key.slice(1)];
 function hdSet(key,ref){if(key[0]==='x')S.calx[+key.slice(1)].ref=ref;else if(ref)S.cal[key.slice(1)]=ref;else delete S.cal[key.slice(1)];save()}
 $('csList').onclick=e=>{const b=e.target.closest('[data-cs]');if(!b)return;const key=b.dataset.cs,x=key[0]==='x'?S.calx[+key.slice(1)]:null;
   HD={key,ref:JSON.parse(JSON.stringify(hdGet(key)||null))};$('hdT').textContent=x?MON[x.m-1]+'月'+DAYN(x.d)+' '+x.name:DAYN(+key.slice(1))+' '+SPECIAL[key.slice(1)][0];drawHD();$('hdsheet').hidden=false};
 function drawHD(){const r=HD.ref,m=r?r.mode:'';document.querySelectorAll('#hdMode [data-hm]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.hm===m)));let h='';
-  if(m==='swap')h='<p class="lbl">这一天，今天页的大卡换成：</p><div class="plist">'+sortCombos().map(c=>`<button data-hc="${esc(c.id)}" aria-pressed="${r.id===c.id}">${esc(c.name)}<span class="lbl">${r.id===c.id?'✓':''}</span></button>`).join('')+'</div>';
+  if(m==='swap')h='<p class="lbl">这一天，今天页上加一张这个组合的卡：</p><div class="plist">'+sortCombos().map(c=>`<button data-hc="${esc(c.id)}" aria-pressed="${r.id===c.id}">${esc(c.name)}<span class="lbl">${r.id===c.id?'✓':''}</span></button>`).join('')+'</div>';
   else if(m==='add')h='<p class="lbl">这一天，今天页上多一张「加念」小卡：</p>'+(r.items||[]).map((it,k)=>{const R=ritById(it.rid);return R?`<div class="hdi"><span>${esc(R.meta['title.zh'])}</span><div class="step"><button data-hn="${k}" data-d="-1" aria-label="少一遍">−</button><span>×${it.n}</span><button data-hn="${k}" data-d="1" aria-label="多一遍">＋</button></div><button class="ibtn" data-hx="${k}" aria-label="移除">✕</button></div>`:''}).join('')+'<button class="link" data-hadd="1">＋ 加仪轨（可多选）</button>';
-  else h='<p class="lbl">这一天不换组合，也不加念。</p>';
+  else h='<p class="lbl">这一天不加组合，也不加念。</p>';
   if(HD.key[0]==='x')h+='<button class="link" data-hdel="1" style="color:#a0402c;display:block">删除这个纪念日</button>';
   $('hdBody').innerHTML=h}
 $('hdMode').onclick=e=>{const b=e.target.closest('[data-hm]');if(!b)return;const m=b.dataset.hm,o=HD.ref;
-  HD.ref=m==='swap'?{mode:'swap',id:(o&&o.mode==='swap'&&o.id)||S.morning||(sortCombos()[0]||{}).id}:m==='add'?{mode:'add',items:(o&&o.mode==='add'&&o.items)||[]}:null;drawHD()};
+  HD.ref=m==='swap'?{mode:'swap',id:(o&&o.mode==='swap'&&o.id)||(sortCombos().find(c=>c.id!==S.morning&&c.id!==S.evening)||sortCombos()[0]||{}).id}:m==='add'?{mode:'add',items:(o&&o.mode==='add'&&o.items)||[]}:null;drawHD()};
 $('hdBody').onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset,r=HD.ref;
   if(d.hc){r.id=d.hc;drawHD()}else if(d.hn!=null){const it=r.items[+d.hn];it.n=Math.max(1,it.n+(+d.d));drawHD()}else if(d.hx!=null){r.items.splice(+d.hx,1);drawHD()}
   else if(d.hadd)openAdd('加念哪些仪轨',items=>{r.items.push(...items);drawHD()});
