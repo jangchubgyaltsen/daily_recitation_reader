@@ -104,6 +104,24 @@ section.flat .line:last-child{border-bottom:0}
 .w.cur,.col.cur{background:var(--cur);border-radius:4px}
 .line.playing{background:var(--play)}
 .line{scroll-margin-top:100px}
+/* 念诵页（念诵五，w 定稿）：每句居中；藏文整行在上，注音按词分开、每个词下面一行小字意译，最后整句汉文。
+   只用一种颜色：意译打开时意译用主题蓝、汉文墨色；意译关掉时汉文用主题蓝。 */
+.lines .line .body{align-items:center;text-align:center}
+.lines .r-bo{font-size:calc(21px * var(--size) * var(--s-bo));margin-bottom:-.15em}
+.lines .r-ph{color:var(--ink)}
+.pw{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 16px;margin-top:2px}
+.pw .col{display:flex;flex-direction:column;align-items:center;cursor:pointer;border-radius:6px;padding:1px 4px;margin:-1px -4px}
+.pw .col.on{background:var(--hl)}
+.pw .c-ph{font:calc(18px * var(--size) * var(--s-ph)) / 1.5 var(--f-ph);color:var(--ink);letter-spacing:.08em;white-space:nowrap}
+.pw .c-gl{font:calc(13px * var(--size) * var(--s-gl)) / 1.4 var(--f-zh);color:var(--muted);white-space:nowrap}
+.pw .c-gl:empty{display:none}
+.lines .r-zh{font-size:calc(17px * var(--size) * var(--s-zh));letter-spacing:.08em;margin-top:6px}
+.lines.gl-on .pw .c-gl{color:var(--lapis)}
+.lines:not(.gl-on) .r-zh{color:var(--lapis)}
+.color .pw .col[data-c="0"] .c-gl{color:var(--w0)}.color .pw .col[data-c="1"] .c-gl{color:var(--w1)}.color .pw .col[data-c="2"] .c-gl{color:var(--w2)}.color .pw .col[data-c="3"] .c-gl{color:var(--w3)}.color .pw .col[data-c="4"] .c-gl{color:var(--w4)}
+.color .line.mantra .pw .c-gl{color:inherit}
+section h2{justify-content:center;border-bottom:0;text-align:center}
+section h2 .rep{margin-left:0}
 .player{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--sheet);border-top:1px solid var(--rule);padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .player-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
 .pbtn{width:44px;height:44px;border-radius:50%;border:0;background:var(--lapis);color:var(--paper);font-size:18px;cursor:pointer;flex:none}
@@ -618,10 +636,11 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
 const RITUALS = /*DATA*/;
 const LAYERS=[['bo','藏文'],['ph','汉文音译'],['zh','汉文'],['gl','意译']];
 const ONE={bo:'藏',ph:'音',zh:'汉',gl:'意'};
-const DEF={bo:1,ph:1,zh:1,gl:0,color:1,size:1,mpad:0,rit:0,split:'beat',s_bo:1,s_ph:1,s_zh:1,s_gl:1,lgap:22};
+const DEF={bo:1,ph:1,zh:1,gl:0,color:0,size:1,mpad:0,rit:0,split:'beat',s_bo:1,s_ph:1,s_zh:1,s_gl:1,lgap:22};
 let S=Object.assign({},DEF);
 try{Object.assign(S,JSON.parse(localStorage.getItem('reader')||'{}'))}catch(e){}
 if(S.trackV!==2){delete S.track;S.trackV=2}
+if(S.lookV!==5){S.color=0;S.lookV=5}  // 念诵页新版式只用一种颜色；颜色对照还能在设置里打开
 // 整体字号已拆成藏文、汉字两根滑条：旧的整体倍数并进各行
 if(S.size&&S.size!==1){['s_bo','s_ph','s_zh','s_gl'].forEach(k=>S[k]=+((S[k]||1)*S.size).toFixed(2));S.size=1}
 const save=()=>{try{localStorage.setItem('reader',JSON.stringify(S))}catch(e){}};
@@ -692,6 +711,13 @@ function ilHTML(ln,ws){
     const ph=w.syl.map(i=>`<span class="s" data-i="${i}">${esc(sy[i].zh_ph||'')}</span>`).join('');
     return `<div class="col" data-w="${k}" data-c="${k%5}">${S.bo?`<span class="c-bo">${bo}</span>`:''}${S.ph?`<span class="c-ph">${ph}</span>`:''}${w.zh&&S.gl?`<span class="c-gl">${esc(w.zh)}</span>`:''}</div>`}).join('')+'</div>';
 }
+// 念诵页：注音按词分开，每个词下面是这个词的意译（意译关掉时只有注音）
+function pwHTML(ln,ws){
+  const sy=ln.syllables||[];
+  return '<div class="pw">'+ws.map((w,k)=>{
+    const ph=w.syl.map(i=>`<span class="s" data-i="${i}">${esc(sy[i].zh_ph||'')}</span>`).join('');
+    return `<div class="col" data-w="${k}" data-c="${k%5}">${S.ph?`<span class="c-ph">${ph}</span>`:''}${S.gl?`<span class="c-gl">${esc(w.zh||'')}</span>`:''}</div>`}).join('')+'</div>';
+}
 // 书里的小字说明（段首 note、段尾 end、句前 rubric）：不编号，不参与播放
 function rubricHTML(o,k,cls){
   const bo=o[k+'.bo'],zh=o[k+'.zh']; if(!bo&&!zh) return '';
@@ -713,7 +739,7 @@ function render(){
     const nav='<nav class="toc" aria-label="段落">'+R.sections.map(s=>`<a href="#${esc(R.meta.id)}-${esc(s.id)}" title="${esc(s['title.zh'])}">${esc(shortSec(s['title.zh']))}</a>`).join('')+'</nav>';
     h+=R.sections.length>8?`<details class="toc-d"><summary>目录（${R.sections.length} 段）</summary>${nav}</details>`:nav;  // 段落多时收起
   }
-  h+=`<div class="lines ${S.color?'color':''}">`;
+  h+=`<div class="lines ${S.color?'color':''} ${S.gl?'gl-on':''}">`;
   R.sections.forEach((s,si)=>{
     h+=`<section id="${esc(R.meta.id)}-${esc(s.id)}" class="${showSec?'':'flat'}">`+(showSec?`<h2>${esc(s['title.zh'])}${+s.repeat>1?`<span class="rep">念 ${esc(s.repeat)} 遍</span>`:''}</h2>`:'');
     h+=rubricHTML(s,'note','');
@@ -721,12 +747,11 @@ function render(){
       const ws=words(ln);
       h+=rubricHTML(ln,'rubric','ln');
       h+=`<div class="line${ln.kind==='mantra'?' mantra':''}" data-s="${si}" data-l="${li}" data-id="${esc(ln.id)}"><div class="num" title="播放这一句">${esc(ln.id)}</div><div class="body">`;
-      if(S.gl && (ln.words||ln.beat_groups)){ h+=ilHTML(ln,ws); if(S.zh) h+=`<div class="r-zh">${zhHTML(ln,ws)}</div>`; }
-      else{
-        if(S.bo) h+=`<div class="r-bo">${boHTML(ln,ws)}</div>`;
-        if(S.ph) h+=`<div class="r-ph">${phHTML(ln,ws)}</div>`;
-        if(S.zh&&ln[zk()]) h+=`<div class="r-zh">${zhHTML(ln,ws)}</div>`;
-      }
+      const hasPh=(ln.syllables||[]).length&&ln.syllables[0].zh_ph, hasGl=!!(ln.words||ln.beat_groups);
+      if(S.bo) h+=`<div class="r-bo">${boHTML(ln,ws)}</div>`;
+      if(hasPh&&((S.ph&&hasGl)||(S.gl&&hasGl))) h+=pwHTML(ln,ws);
+      else if(S.ph) h+=`<div class="r-ph">${phHTML(ln,ws)}</div>`;
+      if(S.zh&&ln[zk()]) h+=`<div class="r-zh">${zhHTML(ln,ws)}</div>`;
       h+='</div></div>';
     });
     h+=rubricHTML(s,'end','end');
