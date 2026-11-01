@@ -1,0 +1,35 @@
+# 排大小便咒：校对源文件（规则见 eight-auspicious.txt 开头）
+# 汉文音译、用途说明：w 2026-11-01 在对话里直接给出（原样照录），属于日常生活中念的咒语。
+# 藏文：w 没有给，暂缺。没有可靠出处之前不自己拼写，找到后补在 bo 行和 @title.bo。
+
+@id: toilet-mantra
+@title.bo:
+@title.zh: 排大小便咒
+@title.zh_ph:
+@restriction: public
+@common: true
+@common.group: 咒语
+# w 2026-11-01 要求加入仪轨库（日常咒语）
+@status: draft
+@source.zh: w 2026-11-01 提供
+@kind: mantra
+
+== stool
+title.zh: 排大便
+note.zh: 排大便的时候，念诵此咒语：
+
+-- 1
+kind: mantra
+mantra.zh: 排大便
+bo:
+zh_ph: 嗡布达哈日呗梭哈
+
+== urine
+title.zh: 排小便
+note.zh: 排小便的时候，念诵此咒语：
+
+-- 2
+kind: mantra
+mantra.zh: 排小便
+bo:
+zh_ph: 嗡嫩杂啊哈日呗梭哈

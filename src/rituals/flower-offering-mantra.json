@@ -1,0 +1,31 @@
+{
+ "meta": {
+  "id": "flower-offering-mantra",
+  "title.bo": "",
+  "title.zh": "供花咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "咒语",
+  "status": "draft",
+  "source.zh": "w 2026-11-01 提供",
+  "kind": "mantra",
+  "intro.zh": "每次供花的时候念七遍此咒语，则供一朵花的功德就变成供一千万朵花的功德了。"
+ },
+ "sections": [
+  {
+   "id": "mantra",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "供花咒",
+     "bo": "",
+     "zh_ph": "嗡南无巴噶哇地 吡呗给嘚Ra砸呀 达塔噶达雅 啊尔哈地 三渺三菩提呀 达呀他 嗡吡呗吡呗 摩诃吡呗 吡呗斯吡呗 额尔巴唯 吡呗嗓巴唯 吡呗阿瓦葛Ra呢梭哈",
+     "syllables": []
+    }
+   ],
+   "title.zh": "供花咒"
+  }
+ ]
+}

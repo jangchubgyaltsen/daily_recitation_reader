@@ -1,0 +1,46 @@
+{
+ "meta": {
+  "id": "toilet-mantra",
+  "title.bo": "",
+  "title.zh": "排大小便咒",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "咒语",
+  "status": "draft",
+  "source.zh": "w 2026-11-01 提供",
+  "kind": "mantra"
+ },
+ "sections": [
+  {
+   "id": "stool",
+   "lines": [
+    {
+     "id": "1",
+     "kind": "mantra",
+     "mantra.zh": "排大便",
+     "bo": "",
+     "zh_ph": "嗡布达哈日呗梭哈",
+     "syllables": []
+    }
+   ],
+   "title.zh": "排大便",
+   "note.zh": "排大便的时候，念诵此咒语："
+  },
+  {
+   "id": "urine",
+   "lines": [
+    {
+     "id": "2",
+     "kind": "mantra",
+     "mantra.zh": "排小便",
+     "bo": "",
+     "zh_ph": "嗡嫩杂啊哈日呗梭哈",
+     "syllables": []
+    }
+   ],
+   "title.zh": "排小便",
+   "note.zh": "排小便的时候，念诵此咒语："
+  }
+ ]
+}
