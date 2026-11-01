@@ -1,6 +1,6 @@
-# 仪轨库分类（w 2026-11-01：仪轨库要加分类方便搜索）
+# 仪轨库分类（w 2026-11-01：仪轨库要加分类方便搜索；同日改成六类，元音咒、辅音咒放咒语名号）
 # 「== 分类名」下面一行写一部仪轨的 id；分类的先后就是筛选按钮的先后。
-# 一部仪轨可以写在几个分类下面（都会出现）。没写到的新仪轨：咒语归「心咒陀罗尼」，其余归「其他」。
+# 一部仪轨可以写在几个分类下面（都会出现）。没写到的新仪轨：咒语归「咒语名号」，其余归「其他」。
 # 改完重新生成网页即可（tools/build_app.py 读这个文件）。
 
 == 修法仪轨
@@ -10,28 +10,7 @@ guru-yoga
 seven-line-guru-yoga
 bodhisattva-vow
 
-== 皈依发心
-refuge-four
-refuge-bodhicitta-mipham
-refuge-bodhicitta-verse
-four-immeasurables
-request-dharma
-
-== 供养忏悔
-offering
-seven-branch
-mandala-mantra
-offering-cloud-mantra
-offering-purification-dharani
-meal-offering
-tsok-short
-seven-vajra-tsok
-remainder-offering
-kangwa-short
-protector-offering
-inexpressible-confession
-
-== 上师祈祷
+== 祈祷文
 seven-line-prayer
 guru-khyen
 lineage-prayer
@@ -47,13 +26,6 @@ swift-fulfillment-prayer
 siddhi-prayer
 barche-lamsel-short
 wangdu-prayer
-
-== 佛菩萨祈祷
-shakyamuni-name
-amitabha-name
-medicine-buddha-name
-ksitigarbha-name
-chenrezig-name
 amitayus-prayer
 medicine-buddha-prayer
 chenrezig-prayer
@@ -66,7 +38,12 @@ manjushri-wisdom
 dhvajagra-praise
 tharpa-sutra-short
 
-== 心咒陀罗尼
+== 咒语名号
+shakyamuni-name
+amitabha-name
+medicine-buddha-name
+ksitigarbha-name
+chenrezig-name
 vajrasattva-100
 vajrasattva-mantra
 shakyamuni-mantra
@@ -115,8 +92,6 @@ vajra-vidarana-dharani
 garuda-mantra
 thirteen-chakra-mantra
 pure-discipline-dharani
-
-== 日常功德咒
 multiplying-mantra
 prostration-multiplying-mantra
 circumambulation-mantra
@@ -142,3 +117,24 @@ truth-words
 aspiration-mantra
 auspicious-verse
 eight-auspicious
+
+== 皈依发心
+refuge-four
+refuge-bodhicitta-mipham
+refuge-bodhicitta-verse
+four-immeasurables
+request-dharma
+
+== 供养忏悔
+offering
+seven-branch
+mandala-mantra
+offering-cloud-mantra
+offering-purification-dharani
+meal-offering
+tsok-short
+seven-vajra-tsok
+remainder-offering
+kangwa-short
+protector-offering
+inexpressible-confession
