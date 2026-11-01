@@ -6,6 +6,16 @@ root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 order = ['eight-auspicious', 'multiplying-mantra', 'wangdu-prayer', 'ngondro', 'offering', 'seven-branch', 'bodhisattva-vow', 'seven-line-prayer', 'siddhi-prayer', 'shakyamuni', 'protector-offering', 'guru-yoga', 'manjushri-praise', 'longchenpa-prayer', 'mipham-prayer-1', 'mipham-prayer-2', 'jigme-phuntsok-prayer', 'manjushri-mantra', 'manjushri-wisdom', 'request-dharma', 'dedication-verse', 'samantabhadra-aspiration', 'truth-words', 'aspiration-mantra', 'wishfulfilling-guru-prayer', 'menkhyo-longevity', 'auspicious-verse', 'guru-rinpoche-mantra', 'aspiration-ocean', 'manjushri-dzogchen-aspiration', 'teaching-endure-aspiration', 'swift-fulfillment-prayer', 'remainder-offering', 'inexpressible-confession', 'tsok-short', 'kangwa-short', 'seven-line-guru-yoga', 'seven-vajra-tsok', 'refuge-bodhicitta-verse', 'four-immeasurables', 'guru-khyen', 'guru-rinpoche-supplication', 'lineage-prayer', 'vajrasattva-100', 'vajrasattva-mantra', 'shakyamuni-mantra', 'mandala-mantra', 'offering-cloud-mantra', 'akashagarbha-mantra', 'refuge-four', 'refuge-bodhicitta-mipham', 'mipham-auspicious-prayer', 'barche-lamsel-short', 'amitayus-prayer', 'medicine-buddha-prayer', 'chenrezig-prayer', 'tara-prayer', 'tara-eight-fears-prayer', 'marici-prayer', 'marici-praise', 'dhvajagra-praise', 'tharpa-sutra-short', 'thubten-chophel-aspiration', 'jigme-phuntsok-aspiration', 'shakyamuni-name', 'amitabha-name', 'medicine-buddha-name', 'ksitigarbha-name', 'chenrezig-name', 'medicine-buddha-dharani', 'medicine-buddha-mantra-short', 'longevity-dharani', 'amitayus-mantra-short', 'achala-mantra', 'vairocana-mantra', 'amitabha-dharani', 'amitabha-mantra', 'peaceful-wrathful-mantra', 'jigme-phuntsok-mantra', 'wrathful-guru-mantra', 'vajrakilaya-mantra', 'chenrezig-mantra', 'hayagriva-mantra', 'hayagriva-dharani', 'yamantaka-mantra-1', 'yamantaka-mantra-2', 'vajrapani-mantra', 'three-protectors-mantra', 'prajnaparamita-mantra', 'tara-mantra', 'white-tara-mantra', 'marici-mantra', 'parnashavari-mantra', 'sitatapatra-mantra', 'simhamukha-mantra', 'ushnishavijaya-mantra', 'vasudhara-mantra', 'alphabet-mantra', 'consonant-mantra', 'dependent-origination-mantra', 'liberation-mantra', 'urna-light-mantra', 'vajra-armor-mantra', 'epidemic-mantra', 'ucchusma-mantra', 'lion-roar-dharani', 'vajra-vidarana-dharani', 'kagye-mantra', 'garuda-mantra', 'mahakala-mantra', 'thirteen-chakra-mantra', 'pure-discipline-dharani', 'offering-purification-dharani', 'prostration-multiplying-mantra', 'circumambulation-mantra', 'flower-offering-mantra', 'leftover-food-mantra', 'spitting-mantra', 'nose-blowing-mantra', 'bodily-waste-mantra', 'toilet-mantra', 'akshobhya-mantra', 'great-compassion-dharani', 'meal-offering']
 data = [json.load(open(f'{root}/rituals/{n}.json', encoding='utf-8')) for n in order]
 data = [r for r in data if r['meta'].get('restriction') == 'public']  # 需灌顶的内容不进公开版本
+# 仪轨库分类：rituals/categories.list（== 分类名，下面每行一个 id），写进 meta['cats']；没写到的咒语归「心咒陀罗尼」，其余归「其他」
+cats, cur, order_cats = {}, None, []
+for ln in open(f'{root}/rituals/categories.list', encoding='utf-8'):
+    ln = ln.strip()
+    if not ln or ln.startswith('#'): continue
+    if ln.startswith('=='): cur = ln[2:].strip(); order_cats.append(cur); continue
+    cats.setdefault(ln, []).append(cur)
+for r in data:
+    m = r['meta']
+    m['cats'] = cats.get(m['id']) or (['心咒陀罗尼'] if m.get('kind') == 'mantra' else ['其他'])
 import sys; sys.path.insert(0, f'{root}/tools'); import lexicon
 lex = lexicon.load()
 used = {w: 'lexicon/bo/' + lex[w]['file'] for r in data for w in lexicon.ritual_words(r) if w in lex}
@@ -102,6 +112,7 @@ if os.path.exists(gk):
 else: rest = None
 if os.path.exists(kai):
     kai_css += "@font-face{font-family:'PhKai';font-display:swap;src:url(data:font/woff2;base64,%s) format('woff2')%s}" % (base64.b64encode(open(kai, 'rb').read()).decode(), ';unicode-range:' + urange(rest) if rest else '')
+t = t.replace('/*CATS*/[]', json.dumps(order_cats, ensure_ascii=False))
 t = t.replace('/*DATA*/', json.dumps(data, ensure_ascii=False)).replace('/*KAIFONT*/', kai_css).replace('/*LEX*/null', json.dumps(used, ensure_ascii=False))
 if audio is None:
     assert t.count('/*AUDIO*/null') == 1
