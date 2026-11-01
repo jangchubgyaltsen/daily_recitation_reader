@@ -121,6 +121,14 @@ section.flat .line:last-child{border-bottom:0}
 .color .line.mantra .pw .c-gl{color:inherit}
 section h2{justify-content:center;border-bottom:0;text-align:center}
 section h2 .rep{margin-left:0}
+/* 念诵页字体（w 2026-11-01 定：打包进 app）：藏文 Jomolhari，汉文和逐词意译霞鹜文楷，段落标题马善政毛笔字。
+   都是 OFL 字体，按仪轨里用到的字裁成子集，放在 fonts/ 里，离线缓存。 */
+@font-face{font-family:'Jomolhari';font-display:swap;src:url(fonts/Jomolhari.woff2) format('woff2');unicode-range:U+0F00-0FFF,U+200C-200D,U+25CC}
+@font-face{font-family:'WenKaiApp';font-display:swap;src:url(fonts/WenKai.woff2) format('woff2')}
+@font-face{font-family:'BrushApp';font-display:swap;src:url(fonts/MaShanZheng.woff2) format('woff2')}
+.lines .r-bo{font-family:'Jomolhari',var(--f-bo);font-size:calc(23px * var(--size) * var(--s-bo))}
+.lines .r-zh,.pw .c-gl{font-family:'WenKaiApp',var(--f-ph)}
+section h2{font-family:'BrushApp',var(--f-zh);font-weight:400;letter-spacing:.12em}
 .player{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--sheet);border-top:1px solid var(--rule);padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .player-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
 .pbtn{width:44px;height:44px;border-radius:50%;border:0;background:var(--lapis);color:var(--paper);font-size:18px;cursor:pointer;flex:none}

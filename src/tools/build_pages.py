@@ -26,7 +26,8 @@ audio += splash
 assert t.count('/*APACK*/[]') == 1
 t = t.replace('/*APACK*/[]', json.dumps([[f, os.path.getsize(f'{out}/{f}')] for f in audio]))
 os.makedirs(f'{out}/fonts', exist_ok=True)
-shutil.copy(f'{root}/app/fonts/NotoSerifTibetan.woff2', f'{out}/fonts/NotoSerifTibetan.woff2')
+for _f in ['NotoSerifTibetan', 'Jomolhari', 'WenKai', 'MaShanZheng']:  # 念诵页字体（w 2026-11-01）：Jomolhari、霞鹜文楷、马善政子集
+    shutil.copy(f'{root}/app/fonts/{_f}.woff2', f'{out}/fonts/{_f}.woff2')
 face = ("<style>@font-face{font-family:'Noto Serif Tibetan';font-style:normal;font-weight:400 700;font-display:swap;"
         "src:url(fonts/NotoSerifTibetan.woff2) format('woff2');unicode-range:U+0F00-0FFF,U+200C-200D,U+25CC}</style>")
 t, n = re.subn(r'<link rel="preconnect"[^>]*>\s*<link rel="stylesheet" href="https://fonts\.googleapis\.com[^>]*>', face, t)
@@ -56,7 +57,7 @@ json.dump({'name': '藏汉课诵阅读器', 'short_name': name, 'start_url': './
 # 两个缓存：网页本身（每次更新换名字，整页重新下）和音频（名字固定；文件名是内容哈希，
 # 已经下过的不再下，只补新的、删掉不再用的）。安装时只等网页；音频在后台慢慢补。
 ver = hashlib.sha1((t + json.dumps(audio)).encode()).hexdigest()[:10]
-open(f'{out}/sw.js', 'w').write(f"""const C='recite-{ver}',A='recite-audio',FILES=['./','index.html','manifest.webmanifest','icon-180.png','icon-512.png','fonts/NotoSerifTibetan.woff2'];
+open(f'{out}/sw.js', 'w').write(f"""const C='recite-{ver}',A='recite-audio',FILES=['./','index.html','manifest.webmanifest','icon-180.png','icon-512.png','fonts/NotoSerifTibetan.woff2','fonts/Jomolhari.woff2','fonts/WenKai.woff2','fonts/MaShanZheng.woff2'];
 const AUDIO={json.dumps(audio)};
 const base=f=>f.split('/').pop();
 async function fillAudio(){{const c=await caches.open(A),keys=await c.keys(),have=new Set(keys.map(r=>base(new URL(r.url).pathname))),want=new Set(AUDIO.map(base));
