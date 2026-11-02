@@ -331,10 +331,11 @@ body:not(.v-reader).has-audio .sheet{bottom:0}
 .calg{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:6px}
 .calg .cw{text-align:center;font-size:12px;color:var(--muted);padding:4px 0}
 .cd{border:0;background:transparent;border-radius:10px;height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:var(--ink);padding:0}
-.cd b{font:400 15px var(--f-zh)}.cd small{font-size:10px;color:var(--muted);line-height:1}
+.cd b{font:400 15px var(--f-zh)}.cd small{font-size:10px;color:var(--muted);line-height:1;white-space:nowrap;letter-spacing:-.5px}
 .cd sup{font-size:9px;color:var(--muted)}
 .cd.sp b{font-weight:600}.cd.sp small{color:#a0402c}
 .cd.sel{outline:2px solid var(--lapis);outline-offset:-2px}
+.cd.fh{background:rgba(160,64,44,.10)}.cd.fh small{color:#a0402c}
 .cd.today{background:var(--lapis);color:var(--paper)}.cd.today small{color:var(--paper);opacity:.85}
 .dcard{margin-top:14px;padding:12px 14px;background:var(--sheet);border:1px solid var(--rule);border-radius:14px;display:flex;flex-direction:column;gap:10px}
 .dcard.rec{border-color:var(--lapis)}
@@ -397,6 +398,7 @@ body:not(.v-reader).has-audio .sheet{bottom:0}
 .calhead .ibtn:disabled{opacity:.25}
 .dcard .dmul{margin:6px 0 0;font-size:14px;color:#a0402c}
 .dcard .decl{margin:6px 0 0;font-size:13px;color:var(--muted)}
+.dcard .dfh{margin:6px 0 0;font-size:14px;color:#a0402c}
 .v-calset .mini{bottom:env(safe-area-inset-bottom,0px)}
 .v-combo .mini{bottom:calc(66px + env(safe-area-inset-bottom,0px))}
 .mini[hidden]{display:none}
@@ -1982,17 +1984,24 @@ const yearName=Y=>ELEM[Math.floor((((Y-4)%10)+10)%10/2)]+ANIMAL[((Y-4)%12+12)%12
 // 每月的殊胜日：[名称, 日历上的简称, 功德倍数]，按 stonelf/zangli
 const SPECIAL={1:['禅定胜王佛节日','胜王','作何善恶成百倍'],8:['药师佛节日','药师','作何善恶成千倍'],10:['莲师荟供日','莲师','作何善恶成十万倍'],15:['阿弥陀佛节日','阿弥陀','作何善恶成百万倍'],18:['观音菩萨节日','观音','作何善恶成千万倍'],21:['地藏王菩萨节日','地藏','作何善恶成亿倍'],25:['空行母荟供日','空行',''],30:['释迦牟尼佛节日','释迦','作何善恶成九亿倍']};
 // 一年一次的节日（闰月不算），'月-日'：[名称, 简称, 功德倍数（留空则用这天本来的）]；同一天会替代上面的每月节日名
-const FEAST={'1-1':['神变节','神变','无'],'4-7':['释迦牟尼佛诞辰','佛诞'],'4-15':['释迦牟尼佛成道日、涅槃日','萨嘎'],'6-4':['释迦牟尼佛初转法轮日','转法轮'],'6-15':['释迦牟尼佛入胎日','入胎'],'9-20':['释迦牟尼佛天降日','天降']};
+const FEAST={'1-1':['神变节','神变','无'],'4-7':['释迦牟尼佛诞辰','佛诞'],'4-15':['释迦牟尼佛成道日、涅槃日','萨嘎'],'6-4':['释迦牟尼佛初转法轮日','转法轮'],'6-15':['释迦牟尼佛入胎日','入胎'],'9-20':['释迦牟尼佛天降日','天降'],'1-3':['法王如意宝诞辰日','法王诞辰'],'11-15':['法王如意宝涅槃日','法王涅槃']};
+// 每年的法会（w 2026-11-02）：[名称, 简称, 起始月, 起始日, 天数]；从起始那天（闰月不算；起始日是缺日就从前一天，和下面一年一次的节日一样）起连续的公历天数
+const FAHUI=[['持明法会','持明',1,1,15],['金刚萨埵法会','金刚萨埵',4,8,8],['地藏法会（普贤云供）','地藏法会',6,1,8],['极乐法会','极乐',9,18,8],['法王涅槃纪念','涅槃纪念',11,13,7]];
+// 儒略日 → {f: 法会, i: 第几天（从 0 起）, jd0: 起始的儒略日}
+const FH=new Map();ZL.forEach(m=>{if(m.leap)return;for(const f of FAHUI){if(f[2]!==m.M)continue;let k=m.days.findIndex(d=>d>=f[3]);if(k<0)continue;if(m.days[k]!==f[3]&&k>0)k--;for(let i=0;i<f[4];i++)FH.set(m.jd0+k+i,{f,i,jd0:m.jd0+k})}});
 // 日月食（NASA Five Millennium Canon，经 stonelf/zangli）：[儒略日, 类型, 食甚, 初亏, 复圆]，北京时间；是全球的食，不一定在本地看得到
 const ECL=new Map([[2461089,"日环食","20:13","",""],[2461103,"月全食","19:34","17:49","21:17"],[2461266,"日全食","1:47","",""],[2461281,"月偏食","12:14","10:33","13:52"],[2461444,"日环食","0:00","",""],[2461458,"月偏食","7:14","",""],[2461606,"月偏食","0:04","",""],[2461620,"日全食","18:07","",""],[2461635,"月偏食","15:14","",""],[2461783,"月偏食","12:14","11:44","12:42"],[2461797,"日环食","23:08","",""],[2461960,"月偏食","2:20","1:08","3:31"],[2461975,"日全食","10:56","",""],[2462138,"月全食","0:53","",""],[2462152,"日偏食","1:13","",""],[2462300,"日偏食","12:06","",""],[2462314,"月全食","11:23","9:32","13:12"],[2462329,"日偏食","23:37","",""],[2462476,"日偏食","23:03","",""],[2462492,"月全食","6:43","4:55","8:29"],[2462654,"日环食","14:29","",""],[2462669,"月偏食","2:34","1:20","3:46"],[2462831,"日全食","14:51","",""],[2462846,"月偏食","6:28","",""],[2462994,"月偏食","11:52","",""],[2463008,"日环食","15:16","",""],[2463023,"月偏食","19:45","",""],[2463170,"月偏食","15:46","",""],[2463186,"金边日食","5:07","",""],[2463348,"月全食","23:14","21:27","0:59"],[2463362,"日环食","21:26","",""],[2463525,"月全食","3:03","1:24","4:40"],[2463540,"日偏食","13:34","",""],[2463688,"日全食","2:02","",""],[2463703,"月全食","3:13","1:24","5:00"],[2463864,"日偏食","21:54","",""],[2463879,"月全食","18:56","17:13","20:36"],[2464042,"日全食","18:18","",""],[2464057,"月偏食","3:06","",""],[2464219,"日环食","0:19","",""],[2464234,"月偏食","10:47","10:30","11:02"],[2464381,"月偏食","17:06","",""],[2464397,"日环食","7:05","",""],[2464559,"月偏食","9:12","8:31","9:50"],[2464573,"日全食","9:56","",""],[2464736,"月全食","6:13","4:30","7:53"],[2464751,"日偏食","12:46","",""],[2464898,"日偏食","18:32","",""],[2464913,"月全食","10:52","8:55","12:47"],[2464928,"日偏食","1:25","",""],[2465075,"日偏食","17:48","",""],[2465090,"月全食","22:01","20:21","23:39"]].map(e=>[e[0],e]));
 S.cal=S.cal||{};S.calx=S.calx||[];
 let CALN=null,CALSEL=null;
-// 重日的第二天不算殊胜日（按历书），日月食照算
-function dayInfo(mi,d,jd,dup){const sp=!dup&&SPECIAL[d],fe=!dup&&!mi.leap&&FEAST[mi.M+'-'+d];const cx=dup?[]:S.calx.filter(x=>x.m===mi.M&&x.d===d&&!mi.leap);
+// 重日的第二天不算殊胜日（按历书），日月食照算；一年一次的节日遇到缺日，放在前一天
+function dayInfo(mi,d,jd,dup){const sp=!dup&&SPECIAL[d],fe=!dup&&!mi.leap&&(FEAST[mi.M+'-'+d]||(d<30&&mi.n!=null&&!ZL[mi.n].days.includes(d+1)&&FEAST[mi.M+'-'+(d+1)]));const cx=dup?[]:S.calx.filter(x=>x.m===mi.M&&x.d===d&&!mi.leap);
+  const fh=jd!=null&&FH.get(jd),fhs=fh?(()=>{const a=jdDate(fh.jd0),b=jdDate(fh.jd0+fh.f[4]-1);return fh.f[0]+'第 '+(fh.i+1)+' 天，共 '+fh.f[4]+' 天（公历 '+(a.getUTCMonth()+1)+'月'+a.getUTCDate()+'日 – '+(b.getUTCMonth()+1)+'月'+b.getUTCDate()+'日）'})():'';
   const ec=jd!=null&&ECL.get(jd);const eShort=ec?(ec[1].includes('月')?'月食':'日食'):'';
-  const names=[...(fe?[fe[0]]:sp?[sp[0]]:[]),...cx.map(x=>x.name),...(ec?[ec[1]]:[])];const short=cx.length?cx[0].name.slice(0,4):fe?fe[1]:sp?sp[1]:eShort;
+  const names=[...(fe?[fe[0]]:[]),...(fh?[fh.f[0]]:[]),...(!fe&&sp?[sp[0]]:[]),...cx.map(x=>x.name),...(ec?[ec[1]]:[])];const short=cx.length?cx[0].name.slice(0,4):fe?fe[1]:fh?fh.f[1]:sp?sp[1]:eShort;
+  // 法会第二天起不算「接下来」的日子，除非这天本来就有别的节日
+  const nextName=names.find(n=>!fh||fh.i===0||n!==fh.f[0]);
   const mult=(fe&&fe[2]?(fe[2]==='无'?'':fe[2]):sp?sp[2]:''),ecl=ec?ec[1]+'：'+(ec[3]?'初亏 '+ec[3]+'，':'')+'食甚 '+ec[2]+(ec[4]?'，复圆 '+ec[4]:'')+'（北京时间）':'';
-  const refs=[...(!dup&&S.cal[d]?[S.cal[d]]:[]),...cx.filter(x=>x.ref).map(x=>x.ref)];return {names,short,refs,mult,ecl}}
+  const refs=[...(!dup&&S.cal[d]?[S.cal[d]]:[]),...cx.filter(x=>x.ref).map(x=>x.ref)];return {names,short,refs,mult,ecl,fh:fhs,inFh:!!fh,nextName}}
 function refName(r){if(!r)return '';if(r.mode==='swap'){const c=comboById(r.id);return c?'加组合「'+c.name+'」':''}if(r.mode==='add'){const its=(r.items||[]).filter(it=>ritById(it.rid));return its.length?'加念 '+its.map(it=>ritById(it.rid).meta['title.zh']).join('、'):''}if(r.t==='c'){const c=comboById(r.id);return c?c.name:''}const R=ritById(r.id);return R?R.meta['title.zh']:''}
 function drawCal(){const today=jdToday();if(CALN==null)CALN=monthOfJD(today);const mi=monthInfo(CALN),days=monthDays(CALN);
   $('calPrev').disabled=CALN<=0;$('calNext').disabled=CALN>=ZL.length-1;
@@ -2001,16 +2010,16 @@ function drawCal(){const today=jdToday();if(CALN==null)CALN=monthOfJD(today);con
   $('calS').textContent=yearName(mi.Y)+' · 公历 '+(g0.getUTCMonth()+1)+'月'+g0.getUTCDate()+'日 – '+(g1.getUTCMonth()+1)+'月'+g1.getUTCDate()+'日';
   const lead=jdDate(days[0].jd).getUTCDay();
   $('calG').innerHTML='日一二三四五六'.split('').map(x=>`<span class="cw">${x}</span>`).join('')+'<span></span>'.repeat(lead)+days.map(x=>{const di=dayInfo(mi,x.d,x.jd,x.dup),g=jdDate(x.jd);
-    const cls=['cd'];if(x.jd===today)cls.push('today');if(x.jd===CALSEL)cls.push('sel');if(di.names.length)cls.push('sp');
+    const cls=['cd'];if(x.jd===today)cls.push('today');if(x.jd===CALSEL)cls.push('sel');if(di.names.length)cls.push('sp');if(di.inFh)cls.push('fh');
     return `<button class="${cls.join(' ')}" data-jd="${x.jd}" aria-label="${DAYN(x.d)}${x.dup?'（重日）':''} 公历${g.getUTCMonth()+1}月${g.getUTCDate()}日${di.names.length?' '+di.names.join('、'):''}"><b>${DAYN(x.d)}${x.dup?'<sup>重</sup>':''}${di.ecl&&di.short!==''&&!di.short.includes('食')?'<sup>食</sup>':''}</b><small>${di.short?esc(di.short):(g.getUTCDate()===1?(g.getUTCMonth()+1)+'月':g.getUTCDate())}</small></button>`}).join('');
   const sel=CALSEL&&days.find(x=>x.jd===CALSEL&&!x.dup)||days.find(x=>x.jd===CALSEL);
   const focus=sel||days.find(x=>x.jd===today);let h='';
   if(focus){const di=dayInfo(mi,focus.d,focus.jd,focus.dup),g=jdDate(focus.jd),isT=focus.jd===today;
-    h=`<div class="dcard${di.refs.length?' rec':''}"><div class="trow"><b class="dt">${isT?'今天 · ':''}${DAYN(focus.d)}</b>${di.names.length?`<span class="spn">${esc(di.names.join('、'))}</span>`:''}<span style="flex:1"></span><span class="lbl">${g.getUTCMonth()+1}月${g.getUTCDate()}日</span></div>`+(di.mult?`<p class="dmul">${esc(di.mult)}</p>`:'')+(di.ecl?`<p class="decl">${esc(di.ecl)}</p>`:'')+
+    h=`<div class="dcard${di.refs.length?' rec':''}"><div class="trow"><b class="dt">${isT?'今天 · ':''}${DAYN(focus.d)}</b>${di.names.length?`<span class="spn">${esc(di.names.join('、'))}</span>`:''}<span style="flex:1"></span><span class="lbl">${g.getUTCMonth()+1}月${g.getUTCDate()}日</span></div>`+(di.mult?`<p class="dmul">${esc(di.mult)}</p>`:'')+(di.fh?`<p class="dfh">${esc(di.fh)}</p>`:'')+(di.ecl?`<p class="decl">${esc(di.ecl)}</p>`:'')+
       (CALREFS=di.refs.filter(r=>refName(r))).map((r,k)=>`<div class="recrow"><div style="flex:1;min-width:0"><span class="lbl">${r.mode==='add'?'这天加念':'这天加一个组合'}</span><div class="rn">${esc(refName(r))}</div><span class="lbl">你设定的</span></div><button class="ibtn play" data-rec="${k}" aria-label="开始念诵">${PLAYI}</button></div>`).join('')+'</div>'}
   // 下一个殊胜日
-  let nx=null;for(let k=0;k<3&&!nx&&CALN+k<ZL.length;k++){const m=monthInfo(CALN+k);for(const x of monthDays(CALN+k)){if(x.jd<=today||x.dup)continue;const di=dayInfo(m,x.d,x.jd);if(di.names.length){nx={x,di};break}}}
-  if(nx)h+=`<p class="lbl" style="margin:10px 2px 0">接下来：${DAYN(nx.x.d)} ${esc(nx.di.names[0])}（还有 ${nx.x.jd-today} 天）</p>`;
+  let nx=null;for(let k=0;k<3&&!nx&&CALN+k<ZL.length;k++){const m=monthInfo(CALN+k);for(const x of monthDays(CALN+k)){if(x.jd<=today||x.dup)continue;const di=dayInfo(m,x.d,x.jd);if(di.nextName){nx={x,di};break}}}
+  if(nx)h+=`<p class="lbl" style="margin:10px 2px 0">接下来：${DAYN(nx.x.d)} ${esc(nx.di.nextName)}（还有 ${nx.x.jd-today} 天）</p>`;
   $('calCard').innerHTML=h}
 $('pane-cal').addEventListener('click',e=>{let b;
   if(b=e.target.closest('[data-jd]')){CALSEL=+b.dataset.jd===CALSEL?null:+b.dataset.jd;drawCal();return}
