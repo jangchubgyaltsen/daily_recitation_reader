@@ -1,0 +1,45 @@
+# 语加持：元音咒、辅音咒、缘起咒合在一起，每个念七遍（w 2026-11-03）。
+# 三段的藏文、音译照 alphabet-mantra、consonant-mantra、dependent-origination-mantra，原条目改了这里也要跟着改。
+# 藏文标题由 Claude 补，待 w 校对。
+
+@id: speech-blessing
+@title.bo: ངག་བྱིན་རླབས།
+@title.zh: 语加持
+@title.zh_ph:
+@restriction: public
+@common: true
+@common.group: 咒语
+# w 2026-11-03：把元音咒、辅音咒、缘起咒合起来做一个「语加持」，每个都重复七遍
+@status: draft
+@source.zh: 喇荣课诵 2024-05-02 版，第153页（祈祷与咒语）
+@gloss.status: draft（节拍释义和颜色对应由 Claude 起草，待校对）
+
+== vowels
+title.zh: 元音咒
+repeat: 7
+
+-- 1
+kind: mantra
+mantra.zh: 元音咒
+bo: ཨོཾ་ཨ་ཨཱ། ཨི་ཨཱི། ཨུ་ཨཱུ། རྀ་རཱྀ། ལྀ་ལཱྀ། ཨེ་ཨཻ། ཨོ་ཨཽ། ཨཾ་ཨཿ
+zh_ph: 嗡 阿阿—额额—呜呜—热热—勒勒—唉唉—哦哦—昂阿
+
+== consonants
+title.zh: 辅音咒
+repeat: 7
+
+-- 2
+kind: mantra
+mantra.zh: 辅音咒
+bo: ཀ་ཁ་ག་གྷ་ང་། ཙ་ཚ་ཛ་ཛྷ་ཉ། ཊ་ཋ་ཌ་ཌྷ་ཎ། ཏ་ཐ་ད་དྷ་ན། པ་ཕ་བ་བྷ་མ། ཡ་ར་ལ་ཝ། ཤ་ཥ་ས་ཧ་ཀྵ། འགྲུབ་པར་གྱུར་ཅིག་སྭཱ་ཧཱ།
+zh_ph: 嘎卡嘎嘎阿 匝擦匝匝Nia 扎叉扎扎那 达塔达达那 巴帕巴巴玛 雅Ra拉瓦 夏卡萨哈嘉 哲巴杰吉索哈
+
+== dependent-origination
+title.zh: 缘起咒
+repeat: 7
+
+-- 3
+kind: mantra
+mantra.zh: 缘起咒
+bo: ཨོཾ་ཡེ་དྷརྨཱ་ཧེ་ཏུ་པྲ་བྷ་ཝཱ་ཧེ་ཏུན་ཏེ་ཥཱན་ཏ་ཐཱ་ག་ཏོ་ཧྱ་ཝ་དཏ། ཏེ་ཥཱཉྩ་ཡོ་ནི་རོ་དྷ་ཨེ་ཝཾ་ཝཱ་དཱི་མ་ཧཱ་ཤྲ་མ་ཎཿ སྭཱ་ཧཱ།
+zh_ph: 嗡耶达儿玛 黑德抓巴瓦 黑登得堪达塔嘎多哈雅瓦达 得堪匝哟呢若达 诶旺巴德玛哈夏儿玛那索哈

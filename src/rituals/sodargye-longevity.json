@@ -1,0 +1,59 @@
+{
+ "meta": {
+  "id": "sodargye-longevity",
+  "title.bo": "",
+  "title.zh": "索达吉堪布长久住世祈祷文",
+  "title.zh_ph": "",
+  "restriction": "public",
+  "common": "true",
+  "common.group": "祈祷",
+  "status": "draft",
+  "source.zh": "w 2026-11-02 提供",
+  "author.zh": "晋美彭措法王 造",
+  "gloss.status": "draft（节拍释义和颜色对应由 Claude 起草，待校对）"
+ },
+ "sections": [
+  {
+   "id": "prayer",
+   "lines": [
+    {
+     "id": "1",
+     "bo": "",
+     "zh": "具德上师加持入心间",
+     "syllables": []
+    },
+    {
+     "id": "2",
+     "bo": "",
+     "zh": "不偏众生普降大法雨",
+     "syllables": []
+    },
+    {
+     "id": "3",
+     "bo": "",
+     "zh": "三学之藏索朗达吉尊",
+     "syllables": []
+    },
+    {
+     "id": "4",
+     "bo": "",
+     "zh": "祈请身寿不变久住世",
+     "syllables": []
+    },
+    {
+     "id": "5",
+     "bo": "",
+     "zh": "愿以发心皓月之光明",
+     "syllables": []
+    },
+    {
+     "id": "6",
+     "bo": "",
+     "zh": "五浊黑暗消于法界中",
+     "syllables": []
+    }
+   ],
+   "title.zh": "索达吉堪布长久住世祈祷文"
+  }
+ ]
+}
