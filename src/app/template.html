@@ -42,6 +42,8 @@ main{max-width:760px;margin:0 auto;padding-inline:var(--mpadp,0px)}
 .head{padding-block:28px 8px}
 .head .bo{font:600 calc(22px * var(--size) * var(--s-bo)) / 1.7 var(--f-bo);text-wrap:balance}
 .head h1{font:600 26px/1.3 var(--f-zh);margin:6px 0 4px;text-wrap:balance}
+/* 标题只留一个（w 2026-11-04）：用段落小标题的毛笔字和蓝色，居中 */
+.head{text-align:center}.head .il.tl{justify-content:center}.head h1{font-family:'BrushApp',var(--f-zh);font-weight:400;color:var(--lapis);letter-spacing:.12em;font-size:24px}
 .iconbtn.gear{width:40px;height:40px;padding:0;display:grid;place-items:center;color:var(--ink)}
 .head .by{color:var(--muted);font-size:13px}
 .aside{margin-block:12px;border-left:2px solid var(--rule);padding-left:12px;color:var(--muted);font:14px/1.8 var(--f-zh)}
@@ -118,6 +120,8 @@ section.flat .line:last-child{border-bottom:0}
 .lines .r-zh{font-size:calc(17px * var(--size) * var(--s-zh));letter-spacing:.08em;margin-top:6px}
 .lines.gl-on .pw .c-gl{color:var(--lapis)}
 .lines:not(.gl-on) .r-zh{color:var(--lapis)}
+.color .pw .col[data-c="0"] .c-ph{color:var(--w0)}.color .pw .col[data-c="1"] .c-ph{color:var(--w1)}.color .pw .col[data-c="2"] .c-ph{color:var(--w2)}.color .pw .col[data-c="3"] .c-ph{color:var(--w3)}.color .pw .col[data-c="4"] .c-ph{color:var(--w4)}
+.color .il .col[data-c="0"] .c-ph{color:var(--w0)}.color .il .col[data-c="1"] .c-ph{color:var(--w1)}.color .il .col[data-c="2"] .c-ph{color:var(--w2)}.color .il .col[data-c="3"] .c-ph{color:var(--w3)}.color .il .col[data-c="4"] .c-ph{color:var(--w4)}
 .color .pw .col[data-c="0"] .c-gl{color:var(--w0)}.color .pw .col[data-c="1"] .c-gl{color:var(--w1)}.color .pw .col[data-c="2"] .c-gl{color:var(--w2)}.color .pw .col[data-c="3"] .c-gl{color:var(--w3)}.color .pw .col[data-c="4"] .c-gl{color:var(--w4)}
 .color .line.mantra .pw .c-gl{color:inherit}
 section h2{justify-content:center;border-bottom:0;text-align:center}
@@ -203,6 +207,12 @@ body.has-audio{padding-bottom:160px}
 body:not(.v-reader) .top,body:not(.v-reader) #main,body:not(.v-reader) .player{display:none!important}
 .view{max-width:760px;margin:0 auto;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 .view[hidden],.hpane[hidden]{display:none}
+/* 经文上点按是播放，长按是释义：不要弹出系统的选字菜单 */
+#main .lines{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+/* 底部上拉进入下一部（w 2026-11-04） */
+#pullnext{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));z-index:30;transform:translate(-50%,var(--py,40px));opacity:var(--po,0);pointer-events:none;background:var(--sheet);color:var(--muted);border:1px solid var(--rule);border-radius:999px;padding:10px 18px;font:15px var(--f-ui);white-space:nowrap;max-width:calc(100vw - 32px);overflow:hidden;text-overflow:ellipsis;box-shadow:var(--shadow);transition:background .2s,color .2s,border-color .2s}
+#pullnext.go{background:var(--lapis);color:var(--paper);border-color:var(--lapis)}
+#pullnext b{font-weight:600}
 /* 阅读页全屏（w 2026-11-01）：进来只有经文，点一下出现上下的按钮，滑动或开始播放时再收起 */
 body.v-reader .top,body.v-reader .player{transition:transform .3s ease,opacity .3s ease}
 body.v-reader.imm .top{transform:translateY(calc(-100% - env(safe-area-inset-top,0px)));opacity:0;pointer-events:none}
@@ -655,6 +665,7 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
 
 <div class="dlg" id="dlg" hidden><div class="dlg-in" role="dialog" aria-labelledby="dlgT"><h2 id="dlgT"></h2><div class="row2"><button class="pill" id="dlgNo">取消</button><button class="pill danger" id="dlgYes">移除</button></div></div></div>
 <div class="toast" id="toast" hidden role="status"></div>
+<div id="pullnext" aria-live="polite"></div>
 <!-- 组合念完后的结束页 -->
 <section class="fin" id="fin" hidden aria-label="念诵圆满"><p id="finTxt"></p><div class="finbtns"><button class="pill main" id="finBack">回到今天</button><button class="link" id="finAgain">再念一次</button></div></section>
 <div class="sheet" id="savesheet" hidden><div class="sheet-in">
@@ -886,7 +897,8 @@ function render(){
   }
   h+=`<div class="lines ${S.color?'color':''} ${S.gl?'gl-on':''}">`;
   R.sections.forEach((s,si)=>{
-    h+=`<section id="${esc(R.meta.id)}-${esc(s.id)}" class="${showSec?'':'flat'}">`+(showSec?`<h2>${esc(s['title.zh'])}${+s.repeat>1?`<span class="rep">念 ${esc(s.repeat)} 遍</span>`:''}</h2>`:'');
+    const dupH=showSec&&(R.sections.length===1||(s['title.zh']||'').trim()===(m['title.zh']||'').trim());
+    h+=`<section id="${esc(R.meta.id)}-${esc(s.id)}" class="${showSec?'':'flat'}">`+(showSec&&!dupH?`<h2>${esc(s['title.zh'])}${+s.repeat>1?`<span class="rep">念 ${esc(s.repeat)} 遍</span>`:''}</h2>`:'');
     h+=rubricHTML(s,'note','');
     s.lines.forEach((ln,li)=>{
       const ws=words(ln);
@@ -903,14 +915,14 @@ function render(){
       h+='</div></div>';
     });
     h+=rubricHTML(s,'end','end');
-    if(!showSec&&+s.repeat>1) h+=`<div class="rep-flat">念 ${esc(s.repeat)} 遍</div>`;
+    if((!showSec||dupH)&&+s.repeat>1) h+=`<div class="rep-flat">念 ${esc(s.repeat)} 遍</div>`;
     h+='</section>';
   });
   h+='</div>';
   if(m['outro.bo']||m['outro.zh']) h+=verseBlock(m['outro.bo']||'',m['outro.zh']||'');
   if(m['colophon.bo']) h+=`<p class="aside colo colo-bo" lang="bo">${esc(m['colophon.bo'])}</p>`;
   if(m['colophon.zh']) h+=`<p class="aside colo">${esc(m['colophon.zh'])}</p>`;
-  h+=`<p class="draft">原型版本。文字以喇荣课诵（中文版）为准。逐词对应为草稿，待校对。点任意一节可查看意思并听它的发音；点一句的空白处或句号，播放这一句的念诵。${m['audio.bo.credit']?'<br>'+esc(m['audio.bo.credit']):''}</p>`;
+  h+=`<p class="draft">原型版本。文字以喇荣课诵（中文版）为准。逐词对应为草稿，待校对。点一下任意一个字，从那里开始念下去；长按一个词，看它的意思和读音。${m['audio.bo.credit']?'<br>'+esc(m['audio.bo.credit']):''}</p>`;
   {const lr=$('lrep');if(lr)document.body.appendChild(lr)}
   $('main').innerHTML=h;
   syncControls(); lastKey=''; if(typeof paintMark==='function'&&A.marking) paintMark();
@@ -944,8 +956,24 @@ document.addEventListener('click',e=>{
   }
   const line=e.target.closest('.line');
   const w=e.target.closest('.w,.col');
-  if(line&&!w){ ac(); playRange(lineRange(line.dataset.id)); return; }
-  if(w&&line){
+  // w 2026-11-04：点一下是从点到的字开始念，一直念下去（不再只念这一句）；长按才看释义和读音
+  if(line&&e.target.closest('#main')){ if(!$('word').hidden)$('closeWord').onclick(); ac(); playFrom(line,w); return; }
+  if(w&&line)showWord(line,w);
+});
+function playFrom(line,w){if(!A.has||A.marking)return;const id=line.dataset.id;let r=null;
+  if(w&&w.dataset.w!=null&&A.track!=='zh'){const R=RITUALS[S.rit],ln=R.sections[line.dataset.s].lines[line.dataset.l];if(ln.beat_groups&&ln.kind!=='mantra')r=beatRange(id,+w.dataset.w)}
+  r=r||lineRange(id);if(!r){toast('这一句还没有对上录音的时间');return}
+  A.stopAt=null;USR.t=0;lastLine='';seekTo(Math.max(0,r[0]-(A.track==='tune'?0.03:0.02)));if(A.el.paused)play()}
+// 长按一个词：显示释义和读音（原来点一下的功能）
+const LP={t:0,fired:false};
+document.addEventListener('pointerdown',e=>{const w=e.target.closest('#main .line .w,#main .line .col');clearTimeout(LP.t);LP.fired=false;if(!w)return;const x=e.clientX,y=e.clientY;LP.x=x;LP.y=y;
+  LP.t=setTimeout(()=>{LP.fired=true;const line=w.closest('.line');showWord(line,w);try{navigator.vibrate&&navigator.vibrate(10)}catch(_){}} ,480)},true);
+document.addEventListener('pointermove',e=>{if(LP.t&&Math.hypot(e.clientX-LP.x,e.clientY-LP.y)>10)clearTimeout(LP.t)},true);
+['pointerup','pointercancel'].forEach(ev=>document.addEventListener(ev,()=>clearTimeout(LP.t),true));
+document.addEventListener('contextmenu',e=>{if(e.target.closest('#main .lines'))e.preventDefault()});
+// 长按松手后的那一下 click 不算点按（卡片可能正好弹在手指下面）
+document.addEventListener('click',e=>{if(!LP.fired)return;LP.fired=false;e.stopImmediatePropagation();e.preventDefault()},true);
+function showWord(line,w){{
     const R=RITUALS[S.rit]; const ln=R.sections[line.dataset.s].lines[line.dataset.l]; const k=+w.dataset.w; const wd=words(ln)[k]; const sy=ln.syllables;
     document.querySelectorAll('.on').forEach(x=>x.classList.remove('on'));
     line.querySelectorAll(`[data-w="${k}"]`).forEach(x=>x.classList.add('on'));
@@ -962,7 +990,7 @@ document.addEventListener('click',e=>{
     $('wline').textContent='整句：'+(ln[zk()]||ln.zh||'');
     $('settings').hidden=true;$('tools').hidden=true; $('openSettings').setAttribute('aria-expanded','false'); $('word').hidden=false;
   }
-});
+}
 $('openSettings').onclick=()=>{const o=$('settings').hidden;$('tools').hidden=true;$('settings').hidden=!o;$('word').hidden=true;$('openSettings').setAttribute('aria-expanded',String(o));if(o)syncLook()};
 addEventListener('resize',()=>{if(!$('settings').hidden)syncLook()});
 $('closeSettings').onclick=()=>{$('settings').hidden=true;$('openSettings').setAttribute('aria-expanded','false')};
@@ -974,7 +1002,7 @@ $('openTools').onclick=()=>{$('settings').hidden=true;$('openSettings').setAttri
 $('closeTools').onclick=()=>{$('tools').hidden=true};
 $('closeWord').onclick=()=>{$('word').hidden=true;document.querySelectorAll('.on').forEach(x=>x.classList.remove('on'))};
 // 点卡片外面的空白处关掉释义卡；点别的词照常换成那个词
-document.addEventListener('click',e=>{if($('word').hidden||e.target.closest('#word,.w,.col,.player,.top'))return;e.stopPropagation();e.preventDefault();$('closeWord').onclick()},true);
+document.addEventListener('click',e=>{if($('word').hidden||e.target.closest('#word,.w,.col,.player,.top,#main .line'))return;e.stopPropagation();e.preventDefault();$('closeWord').onclick()},true);
 /* 胶囊滑条：拖圆钮或点轨道，圆钮上写当前值（w 给的样子） */
 const PSL_LABEL={han:()=>'汉',mpad:()=>'边距',lgap:()=>'行距',s_bo:()=>'藏',s_ph:()=>'音',s_zh:()=>'文',s_gl:()=>'意'};
 function drawPsl(el){const k=el.dataset.k,mn=+el.dataset.min,mx=+el.dataset.max,v=k==='han'?S.s_zh:S[k]??DEF[k]??mn;
@@ -1086,11 +1114,21 @@ function yuStep(R){const d=[];R.sections.forEach(s=>s.lines.forEach(ln=>{const v
   if(!d.length)return 0.6;d.sort((x,y)=>x-y);return Math.min(1,Math.max(0.4,+d[d.length>>1].toFixed(2)))}
 // 三个字的一组（如 2-2-2-3 的偈子最后三字）打两下：第一个字一下，后两个字一下，间隔还是一拍（w）。
 // tm 是每组开始的时间（高亮按组走），ck 是每一下木鱼的时间
-function yu(R){const k=R.meta.id;if(YU[k])return YU[k];const T=yuStep(R);let n=1;const tm={},ck={};
+function yu(R){const k=R.meta.id;if(YU[k])return YU[k];const T=yuStep(R);let n=1,last=null,lastZ=0;const tm={},ck={};
   R.sections.forEach(s=>s.lines.forEach(ln=>{if(!(ln.syllables||[]).length)return;
     const sz=ln.beat_groups&&ln.beat_groups.length?ln.beat_groups.map(g=>(g.syl||[]).length):ln.syllables.map(()=>1);  // 咒语没有分节：一个音节一拍
-    const st=[],c=[];sz.forEach(z=>{st.push(+(T*n).toFixed(3));c.push(+(T*n++).toFixed(3));if(z===3)c.push(+(T*n++).toFixed(3))});tm[ln.id]=st;ck[ln.id]=c}));
-  return YU[k]={tm,ck,T,dur:Math.ceil(T*(n+1))}}
+    const st=[],c=[];sz.forEach(z=>{st.push(+(T*n).toFixed(3));c.push(+(T*n++).toFixed(3));if(z===3)c.push(+(T*n++).toFixed(3))});tm[ln.id]=st;ck[ln.id]=c;last=ln.id;lastZ=sz[sz.length-1]}));
+  // 最后一遍的最后三个字一字一下（w 2026-11-04）：多出来的那一下放在结尾留的一拍里；结尾再留一拍，和句与句之间一样长
+  const ck3=last?ck[last].concat(lastZ===3?[+(T*n).toFixed(3)]:[]):null;
+  return YU[k]={tm,ck,ck3,last,T,dur:+(T*(n+1)).toFixed(3)}}
+// 这一部是不是在念最后一遍（组合里的遍数、单独念的自带遍数、最后一段的段落遍数都算）
+function finalRep(){const R=RITUALS[S.rit]||RITUALS[0];const sp=secRepPoints().find(p=>p.end);if(sp&&(A.sr[sp.s.id]||1)<sp.k)return false;
+  const x=qItem();if(x&&ritById(x.it.rid)===R)return S.q.r>=itemTotal(x.it);return (A.solo||1)>=ritReps(R)}
+// 字鱼相随重复下一遍时从哪里开始：第一拍前面一点，让遍与遍之间的停顿和句与句之间一样（一拍）
+const repFrom=()=>A.track==='tune'?Math.max(0,yu(RITUALS[S.rit]||RITUALS[0]).T-0.25):0;
+// 字鱼相随：还要再念一遍时，最后一拍之后隔一拍就接下一遍，不等到结尾
+function tuneRep(t){if(A.track!=='tune'||A.marking||A.stopAt!=null||REST.on||A.el.paused||finalRep())return false;const Y=yu(RITUALS[S.rit]||RITUALS[0]);
+  if(t<Y.dur-Y.T-0.25||performance.now()-(A.endT||0)<1500)return false;A.endT=performance.now();onEnd();return true}
 function refreshTiming(){A.tm=getTiming();A.order=A.tm?allLines().filter(ln=>A.tm[ln.id]&&A.tm[ln.id].length):[]}
 function idb(){return new Promise((res,rej)=>{try{const r=indexedDB.open('reader-audio',1);r.onupgradeneeded=()=>r.result.createObjectStore('f');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}})}
 async function putFile(k,b){try{const d=await idb();d.transaction('f','readwrite').objectStore('f').put(b,k)}catch(e){}}
@@ -1142,6 +1180,11 @@ function updKp(){const R=RITUALS[S.rit]||RITUALS[0],kp=$('kp');
   const s=R.sections[+el.dataset.s],k=secReps(R,s);const html=esc(shortSec(s['title.zh']))+(k>1?`<span class="rep">${el.classList.contains('playing')?`第 ${A.sr[s.id]||1} / ${k} 遍`:`念 ${k} 遍`}</span>`:+s.repeat>1?`<span class="rep">念 ${esc(s.repeat)} 遍</span>`:'');
   if(kp.innerHTML!==html)kp.innerHTML=html;kp.hidden=false}
 let kpq=0;addEventListener('scroll',()=>{if(!kpq){kpq=1;requestAnimationFrame(()=>{kpq=0;updKp()})}},{passive:true});
+// 用户自己在滑页面时，不跟着念诵自动滚；停手 3 秒后再回到正在念的那一句（w 2026-11-04）
+const USR={t:0,iv:0};
+function userMoved(){if(VIEW!=='reader')return;USR.t=Date.now();clearTimeout(USR.iv);USR.iv=setTimeout(()=>{if(VIEW==='reader'&&!A.el.paused&&!LAND.on){lastLine='';lastKey='';A.lastT=null}},3050)}
+['wheel','touchmove'].forEach(ev=>addEventListener(ev,userMoved,{passive:true}));
+addEventListener('keydown',e=>{if(['ArrowDown','ArrowUp','PageDown','PageUp',' ','Home','End'].includes(e.key))userMoved()});
 function paint(pos){
   const el=pos?document.querySelector(`.line[data-id="${CSS.escape(pos.id)}"]`):null;
   const want=new Set(el&&pos.b!=null?el.querySelectorAll(`[data-w="${pos.b}"]`):[]);
@@ -1150,7 +1193,7 @@ function paint(pos){
   document.querySelectorAll('.line.playing').forEach(x=>{if(x!==el)x.classList.remove('playing')});
   if(!el)return;if(!el.classList.contains('playing'))el.classList.add('playing');updKp();
   if(LAND.on){lastLine=pos.id;landShow(el);return}
-  if(pos.id!==lastLine){lastLine=pos.id;const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-160)el.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}}
+  if(pos.id!==lastLine){if(Date.now()-USR.t<3000)return;lastLine=pos.id;const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-160)el.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}}
 try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
 addEventListener('pointerdown',()=>{if(AC&&AC.state!=='running')AC.resume();A.el.unlock()},true);
 let AC=null;function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
@@ -1159,7 +1202,8 @@ function woodblock(when,accent){const c=ac();if(!c)return;const f=accent?700:760
   bp.type='bandpass';bp.frequency.value=f*1.2;bp.Q.value=4;g.gain.setValueAtTime(0.0001,when);g.gain.exponentialRampToValueAtTime(accent?0.85:0.7,when+0.003);g.gain.exponentialRampToValueAtTime(0.0001,when+0.14);
   o.connect(bp);bp.connect(g);g.connect(c.destination);o.start(when);o.stop(when+0.16)}
 const SCHED=new Set();
-function beatList(){if(A._bl&&A._blv===A.tm)return A._bl;const out=[],ck=A.track==='tune'?yu(RITUALS[S.rit]||RITUALS[0]).ck:null;if(A.tm)A.order.forEach(ln=>((ck&&ck[ln.id])||A.tm[ln.id]||[]).forEach((t,k,a)=>out.push({t,k:ln.id+'/'+k,accent:k===a.length-1})));A._bl=out;A._blv=A.tm;return out}
+function beatList(){const Y=A.track==='tune'?yu(RITUALS[S.rit]||RITUALS[0]):null,fin=!!Y&&finalRep();if(A._bl&&A._blv===A.tm&&A._blf===fin&&A._bly===Y)return A._bl;const out=[],ck=Y?Y.ck:null;
+  if(A.tm)A.order.forEach(ln=>((fin&&ln.id===Y.last&&Y.ck3)||(ck&&ck[ln.id])||A.tm[ln.id]||[]).forEach((t,k,a)=>out.push({t,k:ln.id+'/'+k,accent:k===a.length-1})));A._bl=out;A._blv=A.tm;A._blf=fin;A._bly=Y;return out}
 function scheduleClicks(t){if(A.track!=='tune'||A.el.paused||A.marking)return;const c=ac();if(!c)return;const r=A.el.playbackRate||1;
   for(const b of beatList()){if(b.t<t-0.02||b.t>t+0.2)continue;if(SCHED.has(b.k))continue;SCHED.add(b.k);woodblock(c.currentTime+Math.max(0,(b.t-t)/r),b.accent)}}
 function gaps(){if(A._gp&&A._gpv===A.tm&&A._gpg===S.tgap)return A._gp;A._gpg=S.tgap;const out=[];if(A.tm)A.order.forEach((ln,i)=>{const st=A.tm[ln.id];if(i+1>=A.order.length||st.length<2)return;
@@ -1170,7 +1214,7 @@ function skipGap(t){if(A.track!=='tune'||A.marking||A.el.paused)return false;for
 function showProgress(){const d=A.el.duration,t=A.el.currentTime||0,r=A.el.playbackRate||+S.rate||1;
   if(!isFinite(d)||!d){$('pbar').style.transform='scaleX(0)';return}
   $('pbar').style.transform=`scaleX(${Math.min(1,t/d)})`;$('ptime').textContent=fmt(t/r)+' / '+fmt(d/r)}
-function tick(){const t=A.el.currentTime,stop=A.stopAt;if(checkSecRep(t)||skipGap(t)||earlyEnd(t))return;scheduleClicks(t);
+function tick(){const t=A.el.currentTime,stop=A.stopAt;if(checkSecRep(t)||skipGap(t)||earlyEnd(t)||tuneRep(t))return;scheduleClicks(t);
   if(A.stopAt!=null&&t>=A.stopAt-0.02){A.el.pause();A.stopAt=null;if(E.loop&&!$('edit').hidden){clearTimeout(E.lt);E.lt=setTimeout(()=>{if(E.loop&&!$('edit').hidden)ePlay(E.loop)},450)}}
   if(typeof checkRest==='function')checkRest(t);
   if(!A.marking){let tt=t+(A.track==='tune'?0.03:(S.hlOffset??0.15))*A.el.playbackRate;if(stop!=null)tt=Math.min(tt,stop-0.05);
@@ -1801,7 +1845,7 @@ function onEnd(){if(A.marking)return drawMini();if(A.stopAt!=null){A.stopAt=null
   qAdvance()}
 function qAdvance(){const x=qItem();if(!x)return;
   if(TS.on&&TS.it===x.it&&TS.up){timedNext();return}
-  if(S.q.r<itemTotal(x.it)){S.q.r++;S.q.done=[];A.sr={};save();drawQ();A.el.currentTime=0;play();prepNext();return}
+  if(S.q.r<itemTotal(x.it)){S.q.r++;S.q.done=[];A.sr={};save();drawQ();A.el.currentTime=repFrom();play();prepNext();return}
   if(S.q.i+1<x.c.items.length)gotoItem(S.q.i+1,true);else finishCombo()}
 function drawQ(){const x=qItem();const on=!!x&&RITUALS[S.rit]&&x.it&&ritById(x.it.rid)===RITUALS[S.rit];
   $('chead').hidden=!on;$('pick').hidden=on;$('cbar').hidden=!on;if(!on){restMarks();return}
@@ -1872,12 +1916,26 @@ KEEP.addEventListener('timeupdate',()=>{if(REST.on)restTick();if(TS.on)tsTick()}
 let WL=null;async function wake(on){try{if(on&&!WL&&navigator.wakeLock&&document.visibilityState==='visible'){WL=await navigator.wakeLock.request('screen');WL.addEventListener('release',()=>{WL=null})}else if(!on&&WL){const w=WL;WL=null;w.release()}}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&(REST.on||TS.on||!A.el.paused))wake(true)});
 
+// 底部上拉（w 2026-11-04）：到页面底再往上拉，出现「下一部」提示；拉够了提示变色，这时松手就进入下一部，没变色松手不跳
+const PU={y0:null,d:0},PULLGO=110;
+function pullTarget(){const x=qItem();if(x&&ritById(x.it.rid)===RITUALS[S.rit]){const nx=x.c.items[S.q.i+1];if(!nx)return null;const R=nx.rest?null:ritById(nx.rid);
+    return {name:nx.rest?'安住':R?R.meta['title.zh']:'',go:()=>{cancelRest();gotoItem(S.q.i+1,true)}}}
+  const R=RITUALS[S.rit+1];return R?{name:R.meta['title.zh'],go:()=>openRit(R.meta.id)}:null}
+const atBottom=()=>innerHeight+scrollY>=document.documentElement.scrollHeight-6;
+function drawPull(d){const el=$('pullnext'),tg=d>8&&pullTarget();if(!tg){el.style.setProperty('--po',0);el.classList.remove('go');return}
+  const go=d>=PULLGO;el.classList.toggle('go',go);el.innerHTML=go?`松手进入 <b>${esc(tg.name)}</b>`:`继续上拉：下一部 <b>${esc(tg.name)}</b>`;
+  el.style.setProperty('--po',Math.min(1,d/50));el.style.setProperty('--py',Math.max(0,40-d*0.4)+'px')}
+addEventListener('touchstart',e=>{PU.y0=null;PU.d=0;if(VIEW!=='reader'||LAND.on||e.touches.length!==1||sheetOpen())return;if(atBottom())PU.y0=e.touches[0].clientY},{passive:true});
+addEventListener('touchmove',e=>{if(VIEW!=='reader'||e.touches.length!==1)return;const y=e.touches[0].clientY;if(PU.y0==null){if(atBottom()&&!sheetOpen())PU.y0=y;return}
+  PU.d=Math.max(0,PU.y0-y);drawPull(PU.d)},{passive:true});
+addEventListener('touchend',()=>{if(PU.y0==null)return;const tg=PU.d>=PULLGO&&pullTarget();PU.y0=null;PU.d=0;drawPull(0);if(tg)tg.go()},{passive:true});
+addEventListener('touchcancel',()=>{PU.y0=null;PU.d=0;drawPull(0)},{passive:true});
 // 阅读页全屏：进来时收起上下的按钮；全屏时点一下只是把按钮叫出来，不会点到经文；滑动或开始播放时再收起
 const IMM={y:0};
 function immSet(on){document.body.classList.toggle('imm',!!on);IMM.y=scrollY}
 const sheetOpen=()=>[...document.querySelectorAll('.sheet,.kp,.speedpop')].some(x=>!x.hidden&&x.offsetParent!==null);
 document.addEventListener('click',e=>{if(VIEW!=='reader'||!document.body.classList.contains('imm'))return;if(e.target.closest('.top,.player,.sheet,.restv,.mtv,.fin,.dlg,.kp'))return;
-  e.stopPropagation();e.preventDefault();immSet(false)},true);
+  e.stopPropagation();e.preventDefault();if(!A.el.paused)A.el.pause();if(REST.on&&!REST.paused){REST.paused=true;drawRest()}immSet(false)},true);
 addEventListener('scroll',()=>{if(VIEW!=='reader'||document.body.classList.contains('imm'))return;if(Math.abs(scrollY-IMM.y)>40&&!sheetOpen())immSet(true)},{passive:true});
 A.el.addEventListener('play',()=>{if(VIEW==='reader'&&!sheetOpen())setTimeout(()=>{if(!A.el.paused&&!sheetOpen())immSet(true)},800)});
 A.el.addEventListener('play',()=>wake(true));A.el.addEventListener('pause',()=>{if(!REST.on&&!TS.on&&!S.q)wake(false)});
@@ -1894,11 +1952,11 @@ function secRepPoints(){const R=RITUALS[S.rit]||RITUALS[0];if(!A.tm||R.sections.
     const gap=A.track==='tune'&&gaps().find(g=>g[1]>=lineEnd(i)-0.2&&g[0]<lineEnd(i));
     return {s,k,from:A.tm[ls[0].id][0],t:gap?gap[0]:lineEnd(i)-(A.track==='tune'?0.25:0.05),end:false}}).filter(Boolean);
   A._sp=out;A._spv=A.tm;A._spg=S.tgap;return out}
-function secRepeat(p){const n=A.sr[p.s.id]||1;if(n>=p.k){delete A.sr[p.s.id];return false}A.sr[p.s.id]=n+1;A.el.currentTime=p.from;updKp();if(LAND.on){LAND.k=null;landSync()}return true}
+function secRepeat(p){const n=A.sr[p.s.id]||1;if(n>=p.k){delete A.sr[p.s.id];return false}A.sr[p.s.id]=n+1;A.el.currentTime=Math.max(0,p.from-(A.track==='tune'?0.25:0));updKp();if(LAND.on){LAND.k=null;landSync()}return true}
 function checkSecRep(t){const prev=A.prevT;A.prevT=t;if(A.marking||A.stopAt!=null||A.el.paused||REST.on||prev==null||t<prev)return false;
   const r=A.el.playbackRate||1,p=secRepPoints().find(p=>{const at=p.t-xfLead(p.t)*r;return !p.end&&prev<at&&t>=at});return !!p&&secRepeat(p)}
 // 只有一段的仪轨（如增长咒念 3 遍）不在组合里单独念时，也按自带遍数重复
-function soloRepeat(){const n=ritReps(RITUALS[S.rit]||RITUALS[0]);if((A.solo||1)<n){A.solo=(A.solo||1)+1;A.sr={};A.el.currentTime=0;play();return true}A.solo=1;return false}
+function soloRepeat(){const n=ritReps(RITUALS[S.rit]||RITUALS[0]);if((A.solo||1)<n){A.solo=(A.solo||1)+1;A.sr={};A.el.currentTime=repFrom();play();return true}A.solo=1;return false}
 function checkRest(t){if(REST.on||A.el.paused||A.stopAt!=null||A.marking)return;const d=rDone(),p=restPoints().find(p=>!p.end&&!d.includes(p.r.after)&&t>=p.t-0.05);if(p){d.push(p.r.after);save();startRest(Object.assign({last:restLastBo(RITUALS[S.rit],p.r.after)},p.r),()=>play())}}
 function startRest(r,then){A.el.pause();const sec=r.sec||0;Object.assign(REST,{on:true,left:sec,tot:sec,open:!sec,el:0,paused:false,r,then,last:Date.now()});
   clearInterval(REST.iv);REST.iv=setInterval(restTick,250);keepAlive(true);wake(true);
