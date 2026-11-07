@@ -10,6 +10,6 @@ face = ("<style>@font-face{font-family:'Noto Serif Tibetan';font-style:normal;fo
 t, n = re.subn(r'<link rel="preconnect"[^>]*>\s*<link rel="stylesheet" href="https://fonts\.googleapis\.com[^>]*>', face, t)
 assert n == 1, '没找到字体链接'
 if not t.lstrip().lower().startswith('<!doctype'):
-    t = '<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>' + t + '</body></html>'
+    t = '<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"></head><body>' + t + '</body></html>'
 open(sys.argv[1], 'w', encoding='utf-8').write(t)
 print('ok', f'{os.path.getsize(sys.argv[1])/1e6:.1f} MB', '外链：', sorted(set(re.findall(r'https?://[\w.-]+', t))))

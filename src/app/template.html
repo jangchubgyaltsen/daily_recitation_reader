@@ -23,7 +23,10 @@
   --paper:#16181d; --ink:#e7e5e0; --muted:#9a9ea8; --rule:#2c3038; --lapis:#93acea; --hl:#24304a;
   --w0:#93acea; --w1:#f0957f; --w2:#79cfa6; --w3:#e2b866; --w4:#d3a0de;
   --sheet:#1f2228; --shadow:0 -8px 30px rgba(0,0,0,.5); --cur:rgba(147,172,234,.3); --play:rgba(147,172,234,.07); --sl:#262b36; --slf:#334063; color-scheme:dark}
-html,body{background:var(--paper);color:var(--ink);touch-action:manipulation}  /* 不要点两下放大（w），双指缩放还在 */
+html,body{background:var(--paper);color:var(--ink);touch-action:pan-x pan-y}  /* 不能缩放（w 2026-11-07：双指也不要） */
+/* 界面上的字都不能选（w 2026-11-07）；输入框除外 */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-text-size-adjust:100%;text-size-adjust:100%}input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text}
+body.kb .tabs{display:none}
 body{margin:0;font-family:var(--f-ui);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:96px}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
 button{font:inherit;color:inherit}
@@ -994,7 +997,8 @@ document.addEventListener('click',e=>{
   const line=e.target.closest('.line');
   const w=e.target.closest('.w,.col');
   // w 2026-11-04：点一下是从点到的字开始念，一直念下去（不再只念这一句）；长按才看释义和读音
-  if(line&&e.target.closest('#main')){ if(!$('word').hidden)$('closeWord').onclick(); ac(); playFrom(line,w); return; }
+  if(line&&!w&&!$('word').hidden){$('closeWord').onclick();return}
+  if(line&&w&&e.target.closest('#main')){ if(!$('word').hidden)$('closeWord').onclick(); ac(); playFrom(line,w); return; }
   if(w&&line)showWord(line,w);
 });
 function playFrom(line,w){if(!A.has||A.marking)return;const id=line.dataset.id;let r=null;
@@ -1998,10 +2002,24 @@ addEventListener('touchend',()=>{if(PU.y0==null)return;const tg=PU.d>=PULLGO&&pu
 addEventListener('touchcancel',()=>{PU.y0=null;PU.d=0;drawPull(0)},{passive:true});
 // 阅读页全屏：进来时收起上下的按钮；全屏时点一下只是把按钮叫出来，不会点到经文；滑动或开始播放时再收起
 const IMM={y:0};
+// iOS Safari 不理 user-scalable=no，双指缩放要在这里拦下
+['gesturestart','gesturechange'].forEach(n=>document.addEventListener(n,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+// 打字时（键盘弹出）藏起底部栏：iOS 键盘开着时往下拉，固定在底部的栏会被带到键盘上面（w 2026-11-07）
+const isField=e=>e&&e.matches&&e.matches('input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select');
+document.addEventListener('focusin',e=>{if(isField(e.target))document.body.classList.add('kb')});
+document.addEventListener('focusout',e=>{if(isField(e.target))setTimeout(()=>{if(!isField(document.activeElement))document.body.classList.remove('kb')},50)});
 function immSet(on){document.body.classList.toggle('imm',!!on);IMM.y=scrollY}
 const sheetOpen=()=>[...document.querySelectorAll('.sheet,.kp,.speedpop')].some(x=>!x.hidden&&x.offsetParent!==null);
 document.addEventListener('click',e=>{if(VIEW!=='reader'||!document.body.classList.contains('imm'))return;if(e.target.closest('.top,.player,.sheet,.restv,.mtv,.fin,.dlg,.kp'))return;
-  e.stopPropagation();e.preventDefault();immSet(false);clearTimeout(IMM.t);IMM.t=setTimeout(()=>{if(VIEW==='reader'&&!A.el.paused&&!sheetOpen())immSet(true)},4000)},true);  // 全屏点一下只显示界面，不暂停（w 2026-11-07 撤回点一下暂停）
+  e.stopPropagation();e.preventDefault();immSet(false);immLater()},true);  // 全屏点一下只显示界面，不暂停（w 2026-11-07 撤回点一下暂停）
+// 播放中界面出来后 3 秒没操作自动收起（w 2026-11-07）；点到界面上的东西就重新计时
+function immLater(){clearTimeout(IMM.t);IMM.t=setTimeout(()=>{const playing=!A.el.paused||(REST.on&&!REST.paused);if(VIEW==='reader'&&!document.body.classList.contains('imm')&&playing&&!sheetOpen()&&$('word').hidden)immSet(true)},3000)}
+// 界面显示着的时候，点空白处（不是字、不是按钮）再收起（w 2026-11-07：点一下出来，再点一下缩回去）
+document.addEventListener('pointerdown',()=>{IMM.busy=!$('word').hidden||sheetOpen();if(VIEW==='reader'&&!document.body.classList.contains('imm'))immLater()},true);
+document.addEventListener('click',e=>{if(VIEW!=='reader'||document.body.classList.contains('imm')||IMM.busy)return;
+  if(e.target.closest('button,a,input,select,label,textarea,.top,.player,.sheet,.restv,.mtv,.fin,.dlg,.kp,.speedpop,#word,#pullnext,.w,.col'))return;
+  immSet(true)});
 addEventListener('scroll',()=>{if(VIEW!=='reader'||document.body.classList.contains('imm')||Date.now()-USR.t>1500)return;  // 只有自己滑才收起，跟读自动滚动不算
   if(Math.abs(scrollY-IMM.y)>40&&!sheetOpen())immSet(true)},{passive:true});
 A.el.addEventListener('play',()=>{if(VIEW==='reader'&&!sheetOpen())setTimeout(()=>{if(!A.el.paused&&!sheetOpen())immSet(true)},800)});
