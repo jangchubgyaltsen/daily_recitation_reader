@@ -113,6 +113,9 @@ else: rest = None
 if os.path.exists(kai):
     kai_css += "@font-face{font-family:'PhKai';font-display:swap;src:url(data:font/woff2;base64,%s) format('woff2')%s}" % (base64.b64encode(open(kai, 'rb').read()).decode(), ';unicode-range:' + urange(rest) if rest else '')
 t = t.replace('/*CATS*/[]', json.dumps(order_cats, ensure_ascii=False))
+# 搜索别名：rituals/search-aliases.list，一行一组、空格隔开（w 2026-11-07）
+aliases = [ln.split() for ln in (l.strip() for l in open(f'{root}/rituals/search-aliases.list', encoding='utf-8')) if ln and not ln.startswith('#')]
+t = t.replace('/*ALIAS*/[]', json.dumps(aliases, ensure_ascii=False))
 t = t.replace('/*DATA*/', json.dumps(data, ensure_ascii=False)).replace('/*KAIFONT*/', kai_css).replace('/*LEX*/null', json.dumps(used, ensure_ascii=False))
 if audio is None:
     assert t.count('/*AUDIO*/null') == 1
