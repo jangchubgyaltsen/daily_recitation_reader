@@ -1476,8 +1476,10 @@ const hm=ms=>{const d=new Date(ms);return d.getHours()+':'+String(d.getMinutes()
 function use(k){const now=Date.now(),a=(S.use[k]||[]).filter(t=>now-t<30*864e5);a.push(now);S.use[k]=a;save()}
 function score(k){const now=Date.now();return (S.use[k]||[]).filter(t=>now-t<30*864e5).length}
 const lastUse=k=>{const a=S.use[k]||[];return a.length?a[a.length-1]:0};
-function sortCombos(){return S.combos.filter(c=>!c.hidden&&!c.fresh).sort((a,b)=>(b.pin||0)-(a.pin||0)||score('c:'+b.id)-score('c:'+a.id)||lastUse('c:'+b.id)-lastUse('c:'+a.id)||b.at-a.at)}
-function sortRits(){return RITUALS.slice().sort((a,b)=>score('r:'+b.meta.id)-score('r:'+a.meta.id)||lastUse('r:'+b.meta.id)-lastUse('r:'+a.meta.id)||RITUALS.indexOf(a)-RITUALS.indexOf(b))}
+// 仪轨库按名称排（w 2026-11-07：不按点得多少排）；置顶的组合仍在最前
+const nk=s=>s.replace(/（([一二三四五六七八九十])）/g,(m,c)=>'（'+'0123456789'['一二三四五六七八九十'.indexOf(c)]+'）'),byName=(x,y)=>nk(x).localeCompare(nk(y),'zh-Hans-CN',{numeric:true});  // （一）（二）按数字排
+function sortCombos(){return S.combos.filter(c=>!c.hidden&&!c.fresh).sort((a,b)=>(b.pin||0)-(a.pin||0)||byName(a.name,b.name)||b.at-a.at)}
+function sortRits(){return RITUALS.slice().sort((a,b)=>byName(a.meta['title.zh']||'',b.meta['title.zh']||'')||RITUALS.indexOf(a)-RITUALS.indexOf(b))}
 // 时长：读录音的长度，算一次存起来
 const DURQ={};
 // 多段仪轨里某一段要念几遍；只有一段的仪轨用整部遍数（ritReps），不在这里重复算
