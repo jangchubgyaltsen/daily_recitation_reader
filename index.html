@@ -464,6 +464,26 @@ body.land .player{padding:8px 10px 8px 18px;bottom:calc(8px + env(safe-area-inse
 /* ---------- 今天页（w 2026-11-01 定稿：C-3 当下放大；常用放在下方） ---------- */
 .tdsub{margin:10px 2px 14px;color:var(--muted);font-size:14px}
 .tdsub b{color:#a0402c;font-weight:600}
+.tdk{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:6px 40px 16px;scrollbar-width:none;overscroll-behavior-x:contain}.tdk::-webkit-scrollbar{display:none}
+.tdk.one{padding-inline:16px}
+.tcard{flex:0 0 100%;scroll-snap-align:center;box-sizing:border-box;border-radius:24px;padding:18px 20px 14px;background:var(--sheet);border:1px solid var(--rule);box-shadow:0 6px 20px rgba(20,25,40,.06);display:flex;flex-direction:column;gap:12px}
+.tch{display:flex;align-items:center;gap:12px}.tct{flex:1;min-width:0;display:flex;flex-direction:column}
+.tcard .tk{font-size:12.5px;color:#a0402c;font-weight:600}
+.tcard .tn{font:400 34px/1.15 'BrushApp',var(--f-zh);color:var(--lapis);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tplay{flex:none;width:56px;height:56px;border-radius:50%;border:0;background:var(--lapis);color:var(--paper);display:grid;place-items:center;cursor:pointer}
+.tst{display:flex;text-align:center}.tst>div{flex:1;display:flex;flex-direction:column}.tst>div+div{border-left:1px solid var(--rule)}
+.tst b{font:600 22px/1.2 var(--f-ui);font-variant-numeric:tabular-nums}.tst small{font-size:12px;color:var(--muted)}
+.tft{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--rule);padding-top:10px}
+.tfrom{font-size:14px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tfrom .lbl{color:var(--muted)}
+.tadj{flex:none;display:inline-flex;align-items:center;gap:5px;min-height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--rule);background:none;color:var(--muted);font-size:13px;cursor:pointer}
+.tdone{display:flex;align-items:center;gap:8px;font:600 20px var(--f-ui);color:var(--w2);padding:4px 0}
+.tdone .ck{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--w2);color:var(--paper);font-size:14px}
+.tcard.done{opacity:.8}.tcard.done .tplay{background:none;color:var(--lapis);border:1.5px solid var(--rule);width:48px;height:48px}
+.tcard.n{background:#1d2027;color:#f4f2ec;border-color:#2e333d;box-shadow:0 10px 26px rgba(0,0,0,.22)}.tcard.n .tn{color:#f4f2ec}.tcard.n .tplay{background:#f4f2ec;color:#1d2027}
+.tcard.n .tst>div+div,.tcard.n .tft{border-color:#353a45}.tcard.n .tst small,.tcard.n .tfrom .lbl,.tcard.n .tadj{color:#a6aab3}.tcard.n .tadj{border-color:#40454f}.tcard.n .tk{color:#f0957f}
+.tcard.n.done .tplay{background:none;color:#f4f2ec;border-color:#40454f}.tcard.n .tdone{color:#79cfa6}.tcard.n .tdone .ck{background:#79cfa6;color:#1d2027}
+.tdots{display:flex;justify-content:center;gap:6px;margin-top:-4px}.tdots i{width:7px;height:7px;border-radius:4px;background:var(--rule);transition:width .2s,background .2s}.tdots i.ok{background:var(--w2);opacity:.6}.tdots i.on{width:20px;background:var(--lapis);opacity:1}
+.tdh{align-items:center}.tall{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:0 12px 0 10px;border-radius:999px;border:0;background:var(--hl);color:var(--lapis);font:600 13px var(--f-ui);cursor:pointer}
 .tbig2{background:#1d2027;color:#f4f2ec;border-radius:22px;padding:18px 18px 14px;display:flex;flex-direction:column;gap:10px}
 .tbig2 .tk{font-size:13px;opacity:.7}
 .tbig2 .tn{font:600 30px/1.2 var(--f-zh);letter-spacing:.04em}
@@ -581,7 +601,7 @@ body.land .player{padding:8px 10px 8px 18px;bottom:calc(8px + env(safe-area-inse
     <p class="tdsub" id="tdSub"></p>
     <div id="tdMain"></div>
     <div id="tdAdd"></div>
-    <div class="hsec"><h2>常用偈子和咒</h2></div>
+    <div class="hsec tdh"><h2>佛法融入生活</h2><button class="tall" id="tdAll"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h6v14H4zM14 5h6v14h-6z"/></svg>全部仪轨 ›</button></div>
     <div id="cgroups"></div><div id="clist"></div>
   </div>
   <div class="hpane" id="pane-lib" hidden>
@@ -1528,26 +1548,43 @@ function drawHome(){apDraw();
 // 数据里 mode:'swap' 沿用旧名字，现在的意思是「这天加一个组合」
 function todayInfo(){try{const jd=jdToday(),m=monthOfJD(jd),mi=monthInfo(m),x=monthDays(m).find(d=>d.jd===jd);if(!x)return null;const di=dayInfo(mi,x.d,x.jd,x.dup);
   return {mi,x,di,swap:di.refs.find(r=>r&&r.mode==='swap'&&comboById(r.id)),add:di.refs.find(r=>r&&r.mode==='add'&&(r.items||[]).some(it=>ritById(it.rid)))}}catch(e){return null}}
+// 今天（w 2026-11-07 选 D1 横滑 + E2 卡片）：早课、晚课、殊胜日的组合和加念各一张卡，左右滑；
+// 今天念完的排在左边，打开时停在该念的那张。白天白卡，晚上黑卡。
+const dkey=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
+function doneAt(k){const d=S.doneD;return d&&d.d===dkey()&&d.m?d.m[k]:0}
+function markDone(k){if(!S.doneD||S.doneD.d!==dkey())S.doneD={d:dkey(),m:{}};S.doneD.m[k]=Date.now();save()}
+const TD={sig:''};
+const ADJI='<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>';
 function drawToday(){const h=new Date().getHours(),wk='日一二三四五六'[new Date().getDay()];$('tdHi').textContent=h<5||h>=18?'晚上好':h<11?'早上好':h<14?'中午好':'下午好';
   const ti=todayInfo(),day=ti&&(ti.di.names[0]||'');
   $('tdSub').innerHTML=ti?`藏历${ti.mi.leap?'闰':''}${MON[ti.mi.M-1]}月${DAYN(ti.x.d)}${day?' · <b>'+esc(day)+'</b>':''} · 周${wk}`:'周'+wk;
-  // 早课、晚课（w 2026-11-01 要晚课）：下午两点到凌晨四点显示晚课，其余显示早课；只设了一个就一直显示那一个
-  const okc=id=>{const x=comboById(id);return x&&!x.hidden?x:null},mo=okc(S.morning),ev=okc(S.evening),late=h>=14||h<4;
-  const slot=(late&&ev)||!mo?'eve':'morn',reg=slot==='eve'?ev:mo,other=slot==='eve'?mo:ev;
-  const swap=ti&&ti.swap,c=reg;let html;
-  if(!c||c.hidden)html=`<div class="tbig2 empty"><span class="tk">早课</span><span class="ts">还没有设定早课或晚课。在仪轨库里打开一个组合，点「设为早课」或「设为晚课」，它就会出现在这里。</span><div class="tfoot"><button class="link" data-gotab="lib">去仪轨库 ›</button></div></div>`;
-  else{const q=S.q&&S.q.cid===c.id&&c.items[S.q.i]?S.q:null,L=comboLen(c),nr=c.items.filter(it=>!it.rest).length;
-    const left=q?c.items.slice(q.i).reduce((a,it)=>a+(stepSec(it)||0),0):L.s;
-    const ts=q?`已念 ${c.items.slice(0,q.i).filter(it=>!it.rest).length} / ${nr} 部 · 还剩约 ${Math.max(1,Math.round(left/60))} 分 · 约 ${hm(Date.now()+left*1000)} 念完`
-      :`${nr} 部 · 约 ${Math.max(1,Math.round(L.s/60))} 分 · 现在开始约 ${hm(Date.now()+L.s*1000)} 念完`;
-    const nx=c.items[q?q.i:0],nxn=nx?(nx.rest?'安住':((ritById(nx.rid)||{meta:{}}).meta['title.zh']||'')):'';
-    html=`<div class="tbig2"><span class="tk">${slot==='eve'?'今天的晚课':'今天的早课'}</span><span class="tn">${esc(c.name)}</span><span class="ts">${esc(ts)}</span>
-      <div class="tbar">${c.items.map((it,k)=>`<i class="${q&&k<q.i?'on':''}"></i>`).join('')}</div>${nxn?`<span class="ts">${q?'接下来':'第一部'}：${esc(nxn)}</span>`:''}
-      <button class="tgo" data-tgo="${esc(c.id)}"${c.items.length?'':' disabled'}>${q?'接着念':'开始念诵'}</button><div class="tfoot"><button class="link" data-edit="${esc(c.id)}">调整</button>${other&&other!==c?`<button class="link" data-tgo="${esc(other.id)}">念${slot==='eve'?'早课':'晚课'}「${esc(other.name)}」 ›</button>`:''}</div></div>`}
-  $('tdMain').innerHTML=html;
+  // 早课、晚课（w 2026-11-01 要晚课）：下午两点到凌晨四点先停在晚课，其余先停在早课
+  const okc=id=>{const x=comboById(id);return x&&!x.hidden?x:null},mo=okc(S.morning),ev=okc(S.evening),late=h>=14||h<4,night=h>=18||h<5;
+  const mods=[];if(mo)mods.push({k:mo.id,c:mo});if(ev&&ev!==mo)mods.push({k:ev.id,c:ev});
+  const swap=ti&&ti.swap,sc=swap&&comboById(swap.id);if(sc&&sc!==mo&&sc!==ev)mods.push({k:sc.id,c:sc,kick:day||'殊胜日'});
   const add=ti&&ti.add,its=add?add.items.filter(it=>ritById(it.rid)):[];
-  const sc=swap&&comboById(swap.id),sq=sc&&S.q&&S.q.cid===sc.id;
-  $('tdAdd').innerHTML=(sc?`<div class="tsm"><div class="tsb"><b>${esc(day||'殊胜日')} · ${esc(sc.name)}</b><small>${sc.items.filter(it=>!it.rest).length} 部 · 约 ${Math.max(1,Math.round(comboLen(sc).s/60))} 分${sq?' · 念到一半':''}</small></div><button class="ibtn ring" data-tgo="${esc(sc.id)}" aria-label="念${esc(sc.name)}">念</button></div>`:'')+(its.length?`<div class="tsm"><div class="tsb"><b>${esc(day||'殊胜日')}加念</b><small>${esc(its.map(it=>ritById(it.rid).meta['title.zh']+(it.n>1?' ×'+it.n:'')).join('、'))} · 约 ${Math.max(1,Math.round(its.reduce((a,it)=>a+(stepSec(it)||0),0)/60))} 分</small></div><button class="ibtn ring" data-tadd="1" aria-label="念加念">念</button></div>`:'')}
+  if(its.length){const name=(day||'殊胜日')+'加念';mods.push({k:'_tmp:'+name,name,items:its,kick:day||'殊胜日',add:1})}
+  mods.forEach(m=>m.done=doneAt(m.k));
+  const want=(late&&ev&&!doneAt(ev.id)&&ev.id)||(mo&&!doneAt(mo.id)&&mo.id)||'';
+  const ord=mods.filter(m=>m.done).concat(mods.filter(m=>!m.done));
+  const card=m=>{const c=m.c,items=c?c.items:m.items,qx=qItem(),inq=qx&&(c?S.q.cid===c.id:qx.c.hidden&&qx.c.name===m.name),qi=inq?S.q.i:0;
+    const nr=items.slice(qi).filter(it=>!it.rest).length,sec=items.slice(qi).reduce((a,it)=>a+(stepSec(it)||0),0),first=items.slice(qi).find(it=>!it.rest);
+    const fn=first?((ritById(first.rid)||{meta:{}}).meta['title.zh']||''):'',name=c?c.name:m.name,go=c?`data-tgo="${esc(c.id)}"`:'data-tadd="1"';
+    return `<div class="tcard${night?' n':''}${m.done?' done':''}" data-k="${esc(m.k)}"><div class="tch"><div class="tct">${m.kick?`<span class="tk">${esc(m.kick)}</span>`:''}<b class="tn">${esc(name)}</b></div>
+      <button class="tplay" ${go} aria-label="念${esc(name)}"${items.length?'':' disabled'}>${PLAYI}</button></div>
+      ${m.done?`<div class="tdone"><span class="ck" aria-hidden="true">✓</span>${hm(m.done)}</div>`:`<div class="tst"><div><b>${nr}</b><small>部</small></div><div><b>${Math.max(1,Math.round(sec/60))}</b><small>分钟</small></div><div><b>${hm(Date.now()+sec*1000)}</b><small>念完</small></div></div>`}
+      <div class="tft"><span class="tfrom">${fn?`<span class="lbl">${inq?'接着':'从'}</span> ${esc(fn)}`:''}</span>${c?`<button class="tadj" data-edit="${esc(c.id)}">${ADJI}调整</button>`:''}</div></div>`};
+  let html;
+  if(!ord.length)html=`<div class="tbig2 empty"><span class="tk">早课</span><span class="ts">还没有设定早课或晚课。在仪轨库里打开一个组合，点「设为早课」或「设为晚课」，它就会出现在这里。</span><div class="tfoot"><button class="link" data-gotab="lib">去仪轨库 ›</button></div></div>`;
+  else html=`<div class="tdk${ord.length>1?'':' one'}" id="tdk">${ord.map(card).join('')}</div>${ord.length>1?`<div class="tdots" aria-hidden="true">${ord.map(m=>`<i class="${m.done?'ok':''}"></i>`).join('')}</div>`:''}`;
+  const keepX=$('tdk')?$('tdk').scrollLeft:0;
+  $('tdMain').innerHTML=html;$('tdAdd').innerHTML='';
+  const k=$('tdk');if(!k)return;const sig=ord.map(m=>m.k+(m.done?1:0)).join('|');
+  const at=ord.findIndex(m=>m.k===want),i=sig!==TD.sig?(at>=0?at:Math.max(0,ord.findIndex(m=>!m.done))):-1;TD.sig=sig;
+  requestAnimationFrame(()=>{const cs=k.children;if(i>=0&&cs[i])k.scrollLeft=cs[i].offsetLeft-(k.clientWidth-cs[i].offsetWidth)/2;else k.scrollLeft=keepX;tdDots()});
+  k.onscroll=tdDots}
+function tdDots(){const k=$('tdk'),d=document.querySelector('.tdots');if(!k||!d)return;const mid=k.scrollLeft+k.clientWidth/2;let best=0,bd=1e9;
+  [...k.children].forEach((c,i)=>{const x=Math.abs(c.offsetLeft+c.offsetWidth/2-mid);if(x<bd){bd=x;best=i}});[...d.children].forEach((x,i)=>x.classList.toggle('on',i===best))}
 // 加念、藏历推荐：用一个不显示的临时组合按顺序念
 function playItems(items,name){const id='_tmp';S.combos=S.combos.filter(c=>c.id!==id);S.combos.push({id,hidden:1,name:name||'加念',items:JSON.parse(JSON.stringify(items)),at:0});save();startCombo(id)}
 function stepLabel(it){if(it.rest)return it.sec?fmtMin(it.sec)+' · '+SOUNDN(it.sound):'不计时 · '+SOUNDN(it.sound);const q=stepQ(it),self=it.how==='self'?' · 自己念':'';
@@ -1651,7 +1688,7 @@ function ask(title,yes){return new Promise(res=>{$('dlgT').textContent=title;$('
 function newCombo(items){const c={id:uid(),name:'新组合',items:items||[],pin:0,at:Date.now(),fresh:1};S.combos.push(c);save();return c}
 // 首页
 $('q').oninput=drawHome;$('qa').oninput=drawHome;
-$('allRits').onclick=()=>go('#/all');$('allBack').onclick=goBack;
+$('allRits').onclick=$('tdAll').onclick=()=>go('#/all');$('allBack').onclick=goBack;
 document.querySelector('.tabs').onclick=e=>{const b=e.target.closest('[data-tab]');if(!b)return;S.tab=b.dataset.tab;save();if(ALLV){ALLV=false;CUR='#/';setURL('#/',false)}drawHome();scrollTo(0,0)};
 $('newCombo').onclick=()=>{const c=newCombo();go('#/c/'+c.id);$('cname').select()};
 $('homeGear').onclick=$('todayGear').onclick=()=>go('#/set');
@@ -1666,7 +1703,7 @@ $('home').addEventListener('click',e=>{let b;
   if(b=e.target.closest('[data-edit]'))return go('#/c/'+b.dataset.edit);
   if(b=e.target.closest('[data-tgo]')){const id=b.dataset.tgo;if(S.q&&S.q.cid===id&&qItem()){ac();cancelRest();gotoItem(S.q.i,true)}else playCombo(id);return}
   if(b=e.target.closest('[data-gotab]')){S.tab=b.dataset.gotab;save();drawHome();scrollTo(0,0);return}
-  if(b=e.target.closest('[data-tadd]')){const ti=todayInfo();if(ti&&ti.add)playItems(ti.add.items.filter(it=>ritById(it.rid)),(ti.di.names[0]||'殊胜日')+'加念');return}
+  if(b=e.target.closest('[data-tadd]')){const ti=todayInfo(),nm=ti&&((ti.di.names[0]||'殊胜日')+'加念'),qx=qItem();if(qx&&qx.c.hidden&&qx.c.name===nm){ac();cancelRest();gotoItem(S.q.i,true);return}if(ti&&ti.add)playItems(ti.add.items.filter(it=>ritById(it.rid)),(ti.di.names[0]||'殊胜日')+'加念');return}
   if(b=e.target.closest('[data-pin]')){const c=comboById(b.dataset.pin);c.pin=c.pin?0:Date.now();save();drawHome();toast(c.pin?'已置顶':'已取消置顶');return}
   if(b=e.target.closest('[data-cplay]'))return playCombo(b.dataset.cplay);
   if(b=e.target.closest('[data-fav]')){const id=b.dataset.fav,on=!isFav(id);S.fav=on?S.fav.concat(id):S.fav.filter(x=>x!==id);save();drawHome();toast(on?'已加到常用':'已从常用移除');return}
@@ -1825,7 +1862,7 @@ async function gotoItem(i,auto){const x=qItem();if(!x)return;const it=x.c.items[
   else{if(h!==CUR)STACK.push(CUR);CUR=h;setURL(h,true);S.rit=idx;save();show('reader');render();scrollTo(0,0)}
   $('pick').value=S.rit;await loadTrack(fast);drawQ();const self=timedStep(it)&&it.how==='self';if(self)A.el.pause();else if(auto&&A.has&&!fast){A.stopAt=null;A.el.currentTime=0;play()}prepNext();
   if(timedStep(it))timedStart(it)}
-function finishCombo(){timedClose();const x=qItem();S.q=null;save();drawQ();drawMini();wake(false);if(!x)return;if(x.c.hidden)toast('念完了');else showFin(x.c.id)}
+function finishCombo(){timedClose();const x=qItem();if(x)markDone(x.c.hidden?'_tmp:'+x.c.name:x.c.id);S.q=null;save();drawQ();drawMini();wake(false);if(!x)return;if(x.c.hidden)toast('念完了');else showFin(x.c.id)}
 // 结束页（w 2026-11-01）：只有回向文，不显示任何数字（数量容易滋生傲慢）；回向文、「再念一次」、背景、自动回到今天可以在设置里改
 const FINTXT={def:'随喜赞叹\n愿一切众生早日成佛',puxian:'文殊师利勇猛智\n普贤慧行亦复然\n我今回向诸善根\n随彼一切常修学'};
 S.fin=Object.assign({text:'def',custom:'',again:1,dark:0,auto:0},S.fin||{});
