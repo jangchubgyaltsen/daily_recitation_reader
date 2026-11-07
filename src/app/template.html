@@ -1999,8 +1999,9 @@ const IMM={y:0};
 function immSet(on){document.body.classList.toggle('imm',!!on);IMM.y=scrollY}
 const sheetOpen=()=>[...document.querySelectorAll('.sheet,.kp,.speedpop')].some(x=>!x.hidden&&x.offsetParent!==null);
 document.addEventListener('click',e=>{if(VIEW!=='reader'||!document.body.classList.contains('imm'))return;if(e.target.closest('.top,.player,.sheet,.restv,.mtv,.fin,.dlg,.kp'))return;
-  e.stopPropagation();e.preventDefault();if(!A.el.paused)A.el.pause();if(REST.on&&!REST.paused){REST.paused=true;drawRest()}immSet(false)},true);
-addEventListener('scroll',()=>{if(VIEW!=='reader'||document.body.classList.contains('imm'))return;if(Math.abs(scrollY-IMM.y)>40&&!sheetOpen())immSet(true)},{passive:true});
+  e.stopPropagation();e.preventDefault();immSet(false);clearTimeout(IMM.t);IMM.t=setTimeout(()=>{if(VIEW==='reader'&&!A.el.paused&&!sheetOpen())immSet(true)},4000)},true);  // 全屏点一下只显示界面，不暂停（w 2026-11-07 撤回点一下暂停）
+addEventListener('scroll',()=>{if(VIEW!=='reader'||document.body.classList.contains('imm')||Date.now()-USR.t>1500)return;  // 只有自己滑才收起，跟读自动滚动不算
+  if(Math.abs(scrollY-IMM.y)>40&&!sheetOpen())immSet(true)},{passive:true});
 A.el.addEventListener('play',()=>{if(VIEW==='reader'&&!sheetOpen())setTimeout(()=>{if(!A.el.paused&&!sheetOpen())immSet(true)},800)});
 A.el.addEventListener('play',()=>wake(true));A.el.addEventListener('pause',()=>{if(!REST.on&&!TS.on&&!S.q)wake(false)});
 let MM='';function mediaMeta(t){if(t===MM||!('mediaSession' in navigator)||typeof MediaMetadata==='undefined')return;MM=t;try{navigator.mediaSession.metadata=new MediaMetadata({title:t,artist:'藏汉课诵'})}catch(e){}}
