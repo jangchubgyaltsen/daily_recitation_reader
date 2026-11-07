@@ -26,6 +26,7 @@
 html,body{background:var(--paper);color:var(--ink);touch-action:pan-x pan-y}  /* 不能缩放（w 2026-11-07：双指也不要） */
 /* 界面上的字都不能选（w 2026-11-07）；输入框除外 */
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-text-size-adjust:100%;text-size-adjust:100%}input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text}
+body.kb .tabs{display:none}
 body{margin:0;font-family:var(--f-ui);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:96px}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
 button{font:inherit;color:inherit}
@@ -2004,6 +2005,10 @@ const IMM={y:0};
 // iOS Safari 不理 user-scalable=no，双指缩放要在这里拦下
 ['gesturestart','gesturechange'].forEach(n=>document.addEventListener(n,e=>e.preventDefault(),{passive:false}));
 document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+// 打字时（键盘弹出）藏起底部栏：iOS 键盘开着时往下拉，固定在底部的栏会被带到键盘上面（w 2026-11-07）
+const isField=e=>e&&e.matches&&e.matches('input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select');
+document.addEventListener('focusin',e=>{if(isField(e.target))document.body.classList.add('kb')});
+document.addEventListener('focusout',e=>{if(isField(e.target))setTimeout(()=>{if(!isField(document.activeElement))document.body.classList.remove('kb')},50)});
 function immSet(on){document.body.classList.toggle('imm',!!on);IMM.y=scrollY}
 const sheetOpen=()=>[...document.querySelectorAll('.sheet,.kp,.speedpop')].some(x=>!x.hidden&&x.offsetParent!==null);
 document.addEventListener('click',e=>{if(VIEW!=='reader'||!document.body.classList.contains('imm'))return;if(e.target.closest('.top,.player,.sheet,.restv,.mtv,.fin,.dlg,.kp'))return;
