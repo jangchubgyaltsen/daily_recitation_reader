@@ -134,16 +134,25 @@ section h2 .rep{margin-left:0}
 .lines .r-bo{font-family:'Jomolhari',var(--f-bo);font-size:calc(23px * var(--size) * var(--s-bo))}
 .lines .r-zh,.pw .c-gl{font-family:'WenKaiApp',var(--f-ph)}
 section h2{font-family:'BrushApp',var(--f-zh);font-weight:400;letter-spacing:.12em}
-.player{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--sheet);border-top:1px solid var(--rule);padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.player{position:fixed;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:15;background:var(--sheet);border-radius:26px;box-shadow:0 8px 28px rgba(20,25,40,.16);padding:12px 14px 10px 18px;max-width:640px;margin:0 auto}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .player{box-shadow:0 8px 28px rgba(0,0,0,.5);border:1px solid var(--rule)}}:root[data-theme="dark"] .player{box-shadow:0 8px 28px rgba(0,0,0,.5);border:1px solid var(--rule)}
+.player .player-in{display:block}.pmain{display:flex;align-items:center;gap:14px}.pinfo{flex:1;min-width:0;display:flex;flex-direction:column}
+.pinfo b{font:600 16px var(--f-ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pinfo small{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:1em}
+.ptools{display:flex;align-items:center;gap:8px;margin-top:8px}.psp{flex:1}
+.pchip{height:38px;padding:0 12px;border-radius:19px;border:0;background:var(--sl);color:var(--ink);display:inline-flex;align-items:center;gap:6px;font-size:14px;cursor:pointer;flex:none;white-space:nowrap}
+.pchip.on{background:var(--slf);color:var(--lapis);font-weight:600}.pchip[hidden]{display:none}
+.ptrk select{border:0;background:transparent;color:inherit;font:inherit;padding:0;appearance:none;-webkit-appearance:none;cursor:pointer}
+.ptrk::after{content:'▾';font-size:11px;color:var(--muted)}
 .player-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
 .pbtn{width:44px;height:44px;border-radius:50%;border:0;background:var(--lapis);color:var(--paper);font-size:18px;cursor:pointer;flex:none}
+#pplay{width:64px;height:64px;font-size:22px;box-shadow:0 4px 14px rgba(45,75,142,.35)}
 .pbtn.small{width:auto;height:44px;min-width:56px;border-radius:999px;padding:0 12px;font-size:13px;background:transparent;color:var(--lapis);border:1px solid var(--rule)}
-.player select{flex:1;min-width:0;background:transparent;border:1px solid var(--rule);border-radius:8px;padding:6px;color:var(--ink);font-size:14px}
-.pprog{position:absolute;left:0;right:0;top:-1px;height:3px;background:var(--rule)}
+
+.pprog{height:5px;border-radius:3px;background:var(--rule);overflow:hidden;margin-top:10px}
 #pbar{height:100%;background:var(--lapis);transform-origin:left;transform:scaleX(0)}
-.ptime{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
-body.has-audio .sheet{bottom:calc(60px + env(safe-area-inset-bottom,0px))}
-body.has-audio{padding-bottom:160px}
+.ptime{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:4px}
+body.has-audio .sheet{bottom:calc(var(--ph,150px) + 20px + env(safe-area-inset-bottom,0px))}
+body.has-audio{padding-bottom:calc(var(--ph,150px) + 60px)}
 .lbl{font-size:13px;color:var(--muted)}
 .player-in{position:relative}
 .speedpop{position:absolute;right:0;bottom:calc(100% + 14px);background:var(--sheet);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:12px;display:flex;flex-direction:column;gap:10px;width:min(320px,calc(100vw - 32px));box-sizing:border-box}
@@ -216,7 +225,7 @@ body:not(.v-reader) .top,body:not(.v-reader) #main,body:not(.v-reader) .player{d
 /* 阅读页全屏（w 2026-11-01）：进来只有经文，点一下出现上下的按钮，滑动或开始播放时再收起 */
 body.v-reader .top,body.v-reader .player{transition:transform .3s ease,opacity .3s ease}
 body.v-reader.imm .top{transform:translateY(calc(-100% - env(safe-area-inset-top,0px)));opacity:0;pointer-events:none}
-body.v-reader.imm .player{transform:translateY(100%);opacity:0;pointer-events:none}
+body.v-reader.imm .player{transform:translateY(calc(100% + 30px));opacity:0;pointer-events:none}
 .htop{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);display:flex;align-items:center;gap:8px;min-height:56px;border-bottom:1px solid var(--rule);margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:0 max(16px,env(safe-area-inset-left,0px))}
 .htop h1{margin:0;flex:1;font:600 20px var(--f-zh)}
 .htop .ttl{flex:1;text-align:center;font:600 17px var(--f-zh)}
@@ -420,7 +429,7 @@ body:not(.v-reader).has-audio .sheet{bottom:0}
 body.has-mini .view{padding-bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 
 /* 跟读版式（手机横屏时自动进入，也可以点播放条上的按钮切换）：当前一句大字，上一句、下一句只显示藏文并淡显；遍数浮在当前句右下角 */
-#pfull{display:inline-grid;place-items:center;width:40px;padding:0}#pfull svg{transition:transform .2s}body.land #pfull{color:var(--lapis);border-color:var(--lapis)}body.land #pfull svg{transform:rotate(90deg)}
+#pfull svg{transition:transform .2s}body.land #pfull{color:var(--lapis);background:var(--slf)}body.land #pfull svg{transform:rotate(90deg)}
 #lrep{display:none}
 body.land .top{padding-block:4px}body.land .top .iconbtn{width:34px;height:34px}body.land .kpwrap,body.land #ptrack{display:none}
 body.land .cbar{margin-top:4px}
@@ -441,7 +450,9 @@ body.land #main .line.lpn{--size:.8;opacity:.38;background:none;padding-block:2p
 body.land #main .line.lpn :is(.r-ph,.r-zh,.c-ph,.c-gl){display:none}body.land #main .line.lpn .num{visibility:hidden}#lrep[hidden]{display:none!important}body.land #main .line.lpn .cur{background:none}
 body.land #lrep{display:flex;position:absolute;right:12px;bottom:8px;align-items:center;gap:5px;font:13px var(--f-ui);color:var(--lapis);background:var(--paper);padding:3px 8px;border-radius:999px;font-variant-numeric:tabular-nums;pointer-events:none}
 #lrep i{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--lapis);box-sizing:border-box}#lrep i.on{background:var(--lapis)}#lrep b{font:600 20px/1 var(--f-zh)}
-body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land .player-in .ptime{margin-left:auto}
+body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}
+/* 横屏：播放卡片压成一行，少挡经文 */
+body.land .player{padding:8px 10px 8px 18px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}body.land .player .player-in{display:flex;align-items:center;gap:12px}body.land .pmain{display:contents}body.land .pinfo{order:1}body.land .ptools{order:2;margin-top:0}body.land #pplay{order:3;width:52px;height:52px}body.land .pinfo small{display:none}body.land .ptrk{display:none}
 /* 打开时的上师法相（只在网页版有图；每次随机一张，点一下跳过） */
 #splash{position:fixed;inset:0;z-index:100;background:var(--paper);overflow:hidden;transition:opacity .45s ease;cursor:pointer}
 #splash.out{opacity:0;pointer-events:none}
@@ -726,13 +737,19 @@ body.land .top-in,body.land .player-in,body.land .cbar{max-width:none}body.land 
   <div class="row"><button class="chip" id="openAlign">校对颜色对应</button></div>
 </div></div>
 
-<div class="player" id="player" hidden><div class="pprog" aria-hidden="true"><div id="pbar"></div></div><div class="player-in">
-  <button class="pbtn" id="pplay" aria-label="播放">▶</button>
-  <select id="ptrack" aria-label="音轨"></select>
-  <span class="ptime" id="ptime">0:00</span>
-  <button class="pbtn small" id="prest" hidden>结束安住</button>
-  <button class="pbtn small" id="pfull" aria-label="切换横屏跟读 / 竖屏全文" title="切换横屏跟读 / 竖屏全文"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg></button>
-  <button class="pbtn small" id="pspeed" aria-label="播放速度" aria-expanded="false">1.0×</button>
+<!-- 播放条（w 2026-11-07 选的方案三-1）：悬浮卡片，左边是这一句和进度，右边大播放键，下面一排音轨、速度、横屏；安住时换成 ＋1 分、结束安住 -->
+<div class="player" id="player" hidden><div class="player-in">
+  <div class="pmain"><div class="pinfo"><b id="pttl"></b><small id="psub"></small>
+    <div class="pprog" aria-hidden="true"><div id="pbar"></div></div><span class="ptime" id="ptime">0:00</span></div>
+    <button class="pbtn" id="pplay" aria-label="播放">▶</button></div>
+  <div class="ptools">
+    <label class="pchip ptrk"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><select id="ptrack" aria-label="音轨"></select></label>
+    <button class="pchip" id="pspeed" aria-label="播放速度" aria-expanded="false"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14l4-4"/><path d="M3.3 19a10 10 0 1 1 17.4 0"/></svg><span id="pspeedT">1.0×</span></button>
+    <button class="pchip" id="prestplus" hidden>＋1 分</button>
+    <button class="pchip on" id="prest" hidden>结束安住</button>
+    <span class="psp"></span>
+    <button class="pchip" id="pfull" aria-label="切换横屏跟读 / 竖屏全文" title="切换横屏跟读 / 竖屏全文"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="10" rx="2"/><path d="M18 11v2"/></svg><span>横屏</span></button>
+  </div>
   <div class="speedpop" id="speedpop" hidden>
     <div class="row" id="speeds" role="group" aria-label="播放速度"></div>
     <div class="row" id="tgaprow"><span class="lbl">木鱼句间</span><input type="range" id="tgap" min="0.5" max="2.5" step="0.1" aria-label="只有调子时，句与句之间停几拍"><span id="tgapval" class="lbl"></span></div>
@@ -1151,14 +1168,24 @@ async function syncPlayer(){
   const show=avail.length>0;$('player').hidden=!show;document.body.classList.toggle('has-audio',show);
   $('ptrack').innerHTML=avail.map(([k,n])=>`<option value="${k}">${n}</option>`).join('');$('ptrack').value=A.track;
   $('pplay').textContent=A.el.paused?'▶':'❚❚';$('pplay').setAttribute('aria-label',A.el.paused?'播放':'暂停');
-  {const r=curRate();$('pspeed').textContent=(Number.isInteger(r)?r.toFixed(1):String(+r.toFixed(2)))+'×'}
+  {const r=curRate();$('pspeedT').textContent=(Number.isInteger(r)?r.toFixed(1):String(+r.toFixed(2)))+'×'}
   $('ftrack').innerHTML=TRACKS.filter(x=>x[0]!=='tune').map(([k,n])=>`<option value="${k}">${n}</option>`).join('');$('ftrack').value=A.track;
   $('fstatus').textContent=A.has?(A.tm?`已有 ${A.order.length} 句的时间点。`:'录音已加载，还没有标注节拍。'):'还没有这一音轨的录音。';
   syncHist();
   $('hloff').value=S.hlOffset??0.15;$('hloffval').textContent=(S.hlOffset??0.15).toFixed(2)+' 秒';
   $('tgap').value=S.tgap??1.5;$('tgapval').textContent=(S.tgap??1.5).toFixed(1)+' 拍';
-  syncSpeeds();$('tgaprow').hidden=A.track!=='tune';showProgress();
+  syncSpeeds();$('tgaprow').hidden=A.track!=='tune';showProgress();drawPCard();
 }
+// 播放卡片的两行字：正在念第几句、第几遍；下面是接下来念什么（安住时换成安住还有多久）
+function drawPCard(){try{drawPCard_()}catch(e){}}
+function drawPCard_(){const R=RITUALS[S.rit]||RITUALS[0],x=qItem(),el=document.querySelector('#main .line.playing');let a,b='';
+  if(REST.on){a=REST.open?'安住 · 已 '+fmt(REST.el):'安住 · 还有 '+fmt(Math.ceil(REST.left));b=REST.paused?'已暂停':'点「结束安住」接着念'}
+  else{const tot=x?itemTotal(x.it):ritReps(R),r=x?S.q.r:(A.solo||1);a=(el?'第 '+el.dataset.id+' 句':R.meta['title.zh'])+(isFinite(tot)&&tot>1?' · 第 '+Math.min(r,tot)+' / '+tot+' 遍':'');
+    const nx=x&&x.c.items[S.q.i+1];b=nx?'接下来：'+(nx.rest?'安住':((ritById(nx.rid)||{meta:{}}).meta['title.zh']||'')):(el?R.meta['title.zh']:'')}
+  if($('pttl').textContent!==a)$('pttl').textContent=a;if($('psub').textContent!==b)$('psub').textContent=b;
+  $('prestplus').hidden=!REST.on||REST.open;$('ptrack').parentNode.hidden=REST.on;$('pspeed').hidden=REST.on;
+  const h=$('player').offsetHeight;if(h&&h!==drawPCard.h){drawPCard.h=h;document.body.style.setProperty('--ph',h+'px')}}
+$('prestplus').onclick=()=>{if(!REST.on)return;REST.left+=60;REST.tot+=60;drawRest()};
 const fmt=t=>{t=Math.max(0,t||0);return Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0')};
 function lineEnd(i){return i+1<A.order.length?A.tm[A.order[i+1].id][0]:(A.el.duration||Infinity)}
 function lineRange(id){if(!A.tm)return null;const i=A.order.findIndex(l=>l.id===id);if(i<0)return null;return [A.tm[id][0],lineEnd(i)]}
@@ -1191,7 +1218,7 @@ function paint(pos){
   document.querySelectorAll('.cur').forEach(x=>{if(!want.has(x))x.classList.remove('cur')});
   want.forEach(x=>{if(!x.classList.contains('cur'))x.classList.add('cur')});
   document.querySelectorAll('.line.playing').forEach(x=>{if(x!==el)x.classList.remove('playing')});
-  if(!el)return;if(!el.classList.contains('playing'))el.classList.add('playing');updKp();
+  if(!el)return;if(!el.classList.contains('playing'))el.classList.add('playing');updKp();drawPCard();
   if(LAND.on){lastLine=pos.id;landShow(el);return}
   if(pos.id!==lastLine){if(Date.now()-USR.t<3000)return;lastLine=pos.id;const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-160)el.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}}
 try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
@@ -1847,7 +1874,7 @@ function qAdvance(){const x=qItem();if(!x)return;
   if(TS.on&&TS.it===x.it&&TS.up){timedNext();return}
   if(S.q.r<itemTotal(x.it)){S.q.r++;S.q.done=[];A.sr={};save();drawQ();A.el.currentTime=repFrom();play();prepNext();return}
   if(S.q.i+1<x.c.items.length)gotoItem(S.q.i+1,true);else finishCombo()}
-function drawQ(){const x=qItem();const on=!!x&&RITUALS[S.rit]&&x.it&&ritById(x.it.rid)===RITUALS[S.rit];
+function drawQ(){drawPCard();const x=qItem();const on=!!x&&RITUALS[S.rit]&&x.it&&ritById(x.it.rid)===RITUALS[S.rit];
   $('chead').hidden=!on;$('pick').hidden=on;$('cbar').hidden=!on;if(!on){restMarks();return}
   const {q,c,it}=x,tot=itemTotal(it),R=RITUALS[S.rit];
   $('ctT').textContent=R.meta['title.zh']+' ▾';
@@ -1965,7 +1992,7 @@ function restTick(){if(!REST.on)return;const now=Date.now(),dt=(now-REST.last)/1
   if(REST.open){REST.el+=dt;drawRest();return}REST.left-=dt;if(REST.left<=0)endRest(true);else drawRest()}
 function endRest(ring){if(!REST.on)return;clearInterval(REST.iv);REST.on=false;restHide();const snd=ring&&REST.r.sound!=='none'?REST.r.sound:null;if(snd)bell(snd);
   keepAlive(TS.on&&TS.how==='self');const f=REST.then;drawRest();syncPlayer();setTimeout(()=>f&&f(),snd?(snd==='bowl'?3000:1500):0)}
-function drawRest(){$('prest').hidden=!REST.on;if(REST.on){const lbl=REST.open?'安住 '+fmt(REST.el):'安住 '+fmt(Math.ceil(REST.left));$('ptime').textContent=lbl;$('pplay').textContent=REST.paused?'▶':'❚❚';
+function drawRest(){setTimeout(drawPCard);if(!REST.on)showProgress();$('prest').hidden=!REST.on;if(REST.on){const lbl=REST.open?'安住 '+fmt(REST.el):'安住 '+fmt(Math.ceil(REST.left));$('ptime').textContent=lbl;$('pplay').textContent=REST.paused?'▶':'❚❚';
   $('rvLeft').textContent=REST.open?'已安住 '+fmt(REST.el):'还有 '+fmt(Math.ceil(REST.left));$('rvBar').style.width=REST.open?'0':Math.min(100,100*(1-REST.left/Math.max(1,REST.tot)))+'%';$('rvPlus').hidden=REST.open;mediaMeta(lbl)}drawMini()}
 $('restv').addEventListener('click',e=>{if(e.target.closest('button'))return;const v=$('restv');v.classList.add('ctl');clearTimeout(REST.ct);REST.ct=setTimeout(()=>v.classList.remove('ctl'),3000)});
 $('rvPlus').onclick=()=>{REST.left+=60;REST.tot+=60;drawRest();const v=$('restv');clearTimeout(REST.ct);REST.ct=setTimeout(()=>v.classList.remove('ctl'),3000)};
