@@ -993,7 +993,8 @@ document.addEventListener('click',e=>{
   const line=e.target.closest('.line');
   const w=e.target.closest('.w,.col');
   // w 2026-11-04：点一下是从点到的字开始念，一直念下去（不再只念这一句）；长按才看释义和读音
-  if(line&&e.target.closest('#main')){ if(!$('word').hidden)$('closeWord').onclick(); ac(); playFrom(line,w); return; }
+  if(line&&!w&&!$('word').hidden){$('closeWord').onclick();return}
+  if(line&&w&&e.target.closest('#main')){ if(!$('word').hidden)$('closeWord').onclick(); ac(); playFrom(line,w); return; }
   if(w&&line)showWord(line,w);
 });
 function playFrom(line,w){if(!A.has||A.marking)return;const id=line.dataset.id;let r=null;
@@ -2000,7 +2001,12 @@ const IMM={y:0};
 function immSet(on){document.body.classList.toggle('imm',!!on);IMM.y=scrollY}
 const sheetOpen=()=>[...document.querySelectorAll('.sheet,.kp,.speedpop')].some(x=>!x.hidden&&x.offsetParent!==null);
 document.addEventListener('click',e=>{if(VIEW!=='reader'||!document.body.classList.contains('imm'))return;if(e.target.closest('.top,.player,.sheet,.restv,.mtv,.fin,.dlg,.kp'))return;
-  e.stopPropagation();e.preventDefault();immSet(false);clearTimeout(IMM.t);IMM.t=setTimeout(()=>{if(VIEW==='reader'&&!A.el.paused&&!sheetOpen())immSet(true)},4000)},true);  // 全屏点一下只显示界面，不暂停（w 2026-11-07 撤回点一下暂停）
+  e.stopPropagation();e.preventDefault();immSet(false)},true);  // 全屏点一下只显示界面，不暂停（w 2026-11-07 撤回点一下暂停）
+// 界面显示着的时候，点空白处（不是字、不是按钮）再收起（w 2026-11-07：点一下出来，再点一下缩回去）
+document.addEventListener('pointerdown',()=>{IMM.busy=!$('word').hidden||sheetOpen()},true);
+document.addEventListener('click',e=>{if(VIEW!=='reader'||document.body.classList.contains('imm')||IMM.busy)return;
+  if(e.target.closest('button,a,input,select,label,textarea,.top,.player,.sheet,.restv,.mtv,.fin,.dlg,.kp,.speedpop,#word,#pullnext,.w,.col'))return;
+  immSet(true)});
 addEventListener('scroll',()=>{if(VIEW!=='reader'||document.body.classList.contains('imm')||Date.now()-USR.t>1500)return;  // 只有自己滑才收起，跟读自动滚动不算
   if(Math.abs(scrollY-IMM.y)>40&&!sheetOpen())immSet(true)},{passive:true});
 A.el.addEventListener('play',()=>{if(VIEW==='reader'&&!sheetOpen())setTimeout(()=>{if(!A.el.paused&&!sheetOpen())immSet(true)},800)});
