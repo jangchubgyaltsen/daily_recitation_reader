@@ -577,6 +577,39 @@ body.land .player{padding:8px 10px 8px 18px;bottom:calc(8px + env(safe-area-inse
 .mtbtns{display:flex;align-items:center;gap:8px;padding-top:12px;border-top:1px solid var(--rule);margin-top:12px}
 .mtbtns .chip{min-height:40px;padding:6px 14px;font-size:15px;color:var(--ink)}
 @media (prefers-reduced-motion: reduce){#splash{transition:none}}
+
+/* 密法（w 2026-11-07）：打开前的整页封面、组合里的底部弹窗、列表标签 */
+:root{--mi:#d23a26}
+.mitag{display:inline-block;flex:none;padding:0 6px;border:1px solid var(--mi);color:var(--mi);border-radius:6px;font:600 11px/17px var(--f-ui);margin-left:6px;vertical-align:2px;white-space:nowrap}
+.mifake{padding:64px 6px 0}.mifake i{display:block;margin:0 auto 16px;border-radius:8px;background:#c9c6be;filter:blur(7px);opacity:.75}
+.micover{position:fixed;inset:0;z-index:200;background:var(--paper);display:flex;flex-direction:column;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 6px) 28px calc(env(safe-area-inset-bottom,0px) + 22px);transition:opacity .6s ease;font-family:var(--f-ui)}
+.micover .mback{align-self:flex-start;border:0;background:none;color:var(--lapis);font-size:16px;padding:8px 0;cursor:pointer}
+.miseal{position:relative;width:128px;height:128px;margin-top:8vh;flex:none;transition:transform .7s cubic-bezier(.2,.7,.2,1),opacity .6s ease .1s}
+.miseal i{position:absolute;inset:0;border:2px solid var(--mi);border-radius:50%;transform:scale(calc(1 + var(--p,0)*.04))}
+.miseal i+i{inset:9px;border-width:1.2px;transform:none}
+.miseal span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-bottom:8px;color:var(--mi);font:58px/1 var(--f-bo);transform:rotate(calc(var(--p,0)*-18deg));transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.micover .mit{margin:38px 0 0;color:var(--mi);font-size:22px;font-weight:700;letter-spacing:.06em;text-align:center;line-height:1.7}
+.micover .min{margin:10px 0 0;color:var(--muted);font-size:14px;text-align:center}
+.micover .misp{flex:1}.micover .mibot{width:100%;display:flex;flex-direction:column;align-items:center;flex:0 0 auto;margin-bottom:6vh}
+.micover .mit,.micover .min,.micover .mibot,.micover .mback{transition:opacity .45s ease}
+.mihold{position:relative;overflow:hidden;width:100%;max-width:420px;border:0;border-radius:999px;background:var(--mi);color:#fff;box-shadow:0 4px 14px rgba(210,58,38,.25);padding:16px 10px;font:600 16px var(--f-ui);letter-spacing:.03em;cursor:pointer;touch-action:none;-webkit-touch-callout:none;transform:scale(calc(1 - var(--hp,0)*.02))}
+.mihold .mifill{position:absolute;inset:0;background:#9c2414;transform-origin:left;transform:scaleX(var(--p,0))}
+.mihold b{position:relative;font-weight:600}
+.micover .mihint{margin:10px 0 0;color:var(--muted);font-size:13px}
+.micover .mino{margin-top:14px;border:0;background:none;color:#555;font-size:15px;padding:6px;cursor:pointer}
+.micover.open .miseal{transform:scale(1.18) rotate(30deg);opacity:0}
+.micover.open .miseal span{transform:rotate(-40deg)}
+.micover.open .mit,.micover.open .min,.micover.open .mibot,.micover.open .mback{opacity:0}
+.micover.gone{opacity:0;pointer-events:none}
+#main.mifade{opacity:0;transform:translateY(10px)}#main.mifadein{transition:opacity .6s ease,transform .6s ease}
+.midim{position:fixed;inset:0;z-index:199;background:rgba(20,22,28,.42);transition:opacity .35s ease}
+.misheet{position:fixed;left:0;right:0;bottom:0;z-index:201;background:var(--paper);border-radius:20px 20px 0 0;padding:10px 22px calc(env(safe-area-inset-bottom,0px) + 22px);box-shadow:0 -6px 24px rgba(0,0,0,.12);text-align:center;font-family:var(--f-ui);transition:transform .35s cubic-bezier(.2,.7,.2,1);max-width:560px;margin:0 auto}
+.misheet .grab{width:38px;height:5px;border-radius:3px;background:var(--rule);margin:0 auto 16px}
+.misheet .mis{margin:0 0 4px;color:var(--muted);font-size:13px}.misheet .mittl{margin:0 0 18px;font-size:17px;color:var(--ink)}
+.misheet .mit{margin:0 0 22px;color:var(--mi);font-size:19px;font-weight:700;letter-spacing:.04em}
+.misheet .mipill{display:block;width:100%;border:0;border-radius:999px;background:var(--mi);color:#fff;font:600 16px var(--f-ui);padding:15px 10px;letter-spacing:.03em;cursor:pointer}
+.misheet .miskip{display:block;width:100%;border:0;background:none;color:var(--lapis);font-size:15px;padding:14px 0 4px;cursor:pointer}
+.misheet.out{transform:translateY(105%)}.midim.out{opacity:0}
 </style>
 
 <div id="splash" aria-hidden="true"><img class="sp-bg" alt=""><img class="sp-fg" alt=""></div>
@@ -833,6 +866,42 @@ const LAYERS=[['bo','藏文'],['ph','汉文音译'],['zh','汉文'],['gl','意�
 const ONE={bo:'藏',ph:'音',zh:'汉',gl:'意'};
 const DEF={bo:1,ph:1,zh:1,gl:0,color:0,size:1,mpad:0,rit:0,split:'beat',s_bo:1,s_ph:1,s_zh:1,s_gl:1,lgap:22};
 let S=Object.assign({},DEF);
+// 密法（w 2026-11-07）：@restriction 不是 public 的篇目，确认前正文、录音都不放进页面（render 和 loadTrack 在最前面就挡住）。
+// 从仪轨库等处打开：整页封面，长按红色按钮解锁；组合连念轮到它：前一篇照常念完，再铺假模糊页（只有色块）并从底部弹出。
+// 确认按部记在本机（localStorage 的 mi-ok），不进备份。
+const MI={ok:new Set((()=>{try{return JSON.parse(localStorage.getItem('mi-ok')||'[]')}catch(e){return []}})())};
+const sealed=R=>!!R&&!!R.meta.restriction&&R.meta.restriction!=='public';
+const locked=R=>sealed(R)&&!MI.ok.has(R.meta.id);
+const MITAG=R=>sealed(R)?'<span class="mitag">需灌顶</span>':'';
+function miUnlock(R){MI.ok.add(R.meta.id);try{localStorage.setItem('mi-ok',JSON.stringify([...MI.ok]))}catch(e){}}
+const MIFAKE='<div class="mifake" aria-hidden="true"><i style="width:62%;height:30px"></i><i style="width:44%;height:26px;margin-bottom:46px"></i>'+[86,72,80,66,84,70,78].map((w,k)=>`<i style="width:${w}%;height:22px;margin-bottom:8px"></i><i style="width:${[58,50,62,46,60,52,56][k]}%;height:16px;margin-bottom:30px"></i>`).join('')+'</div>';
+function miClear(all){document.querySelectorAll('#micover,#misheet,#midim').forEach(e=>{if(all||!e.classList.contains('leaving'))e.remove()})}
+function miBlock(R){$('main').innerHTML=MIFAKE;const x=qItem();if(x&&x.it&&ritById(x.it.rid)===R)miSheet(R,x);else miCover(R)}
+function miCover(R){miClear(true);const d=document.createElement('div');d.id='micover';d.className='micover';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');
+  d.innerHTML=`<button class="mback" data-mi="back">‹ 返回</button><div class="miseal" aria-hidden="true"><i></i><i></i><span lang="bo">རྒྱ</span></div><p class="mit">须得受过密法灌顶，<br>方能阅读此文。</p><p class="min">${esc(R.meta['title.zh'])}</p><div class="misp"></div>
+  <div class="mibot"><button class="mihold" data-mi="hold"><span class="mifill"></span><b>我已经达到该次第，让我继续阅读</b></button><p class="mihint">长按按钮解锁</p><button class="mino" data-mi="back">我还没有受过灌顶，返回</button></div>`;
+  document.body.appendChild(d);
+  d.addEventListener('click',e=>{if(e.target.closest('[data-mi="back"]')){miClear(true);goBack()}});
+  const hb=d.querySelector('.mihold'),HOLD=1100;let t0=0,p=0,raf=0,done=false;
+  const set=v=>{p=v;d.style.setProperty('--p',v);hb.style.setProperty('--hp',v>0?1:0)};
+  const down=e=>{if(done)return;e.preventDefault();t0=performance.now()-p*HOLD;cancelAnimationFrame(raf);
+    const f=()=>{const v=Math.min(1,(performance.now()-t0)/HOLD);set(v);if(v<1){raf=requestAnimationFrame(f);return}done=true;try{navigator.vibrate&&navigator.vibrate(20)}catch(x){}miOpen(d,R)};f()};
+  const up=()=>{if(done)return;cancelAnimationFrame(raf);const p0=p,t1=performance.now();const f=()=>{const v=Math.max(0,p0-(performance.now()-t1)/350);set(v);if(v>0)raf=requestAnimationFrame(f);else hb.style.setProperty('--hp',0)};f()};
+  hb.addEventListener('pointerdown',down);['pointerup','pointerleave','pointercancel'].forEach(k=>hb.addEventListener(k,up));hb.addEventListener('contextmenu',e=>e.preventDefault());
+  hb.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat)down(e)});hb.addEventListener('keyup',up)}
+// 解锁：印转开淡去 → 这时才把正文放进页面，封面淡出、正文淡入
+function miOpen(d,R){d.classList.add('open','leaving');setTimeout(()=>{miUnlock(R);const m=$('main');m.classList.add('mifade');render();loadTrack();
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{m.classList.add('mifadein');m.classList.remove('mifade');d.classList.add('gone')}));
+  setTimeout(()=>{d.remove();m.classList.remove('mifadein')},700)},480)}
+function miSheet(R,x){miClear(true);const n=x.c.items.filter(it=>!it.rest).length,k=x.c.items.slice(0,x.q.i+1).filter(it=>!it.rest).length;
+  const dim=document.createElement('div');dim.id='midim';dim.className='midim out';const s=document.createElement('div');s.id='misheet';s.className='misheet out';s.setAttribute('role','dialog');s.setAttribute('aria-modal','true');
+  s.innerHTML=`<div class="grab"></div><p class="mis">${esc(x.c.name||'')} · 下一篇（第 ${k} / ${n} 部）</p><p class="mittl">${esc(R.meta['title.zh'])}</p><p class="mit">须得受过密法灌顶，方能阅读此文。</p><button class="mipill" data-mi="go">我已经达到该次第，让我继续阅读</button><button class="miskip" data-mi="skip">跳过这一篇，念下一篇</button>`;
+  document.body.append(dim,s);requestAnimationFrame(()=>requestAnimationFrame(()=>{dim.classList.remove('out');s.classList.remove('out')}));
+  s.addEventListener('click',e=>{const b=e.target.closest('[data-mi]');if(!b)return;const y=qItem();if(!y)return miClear(true);
+    s.classList.add('out','leaving');dim.classList.add('out','leaving');setTimeout(()=>{s.remove();dim.remove()},380);
+    if(b.dataset.mi==='go'){miUnlock(R);const m=$('main');m.classList.add('mifade');gotoItem(y.q.i,true).then(()=>{requestAnimationFrame(()=>{m.classList.add('mifadein');m.classList.remove('mifade');setTimeout(()=>m.classList.remove('mifadein'),700)})})}
+    else gotoItem(y.q.i+1,true)})}
+
 try{Object.assign(S,JSON.parse(localStorage.getItem('reader')||'{}'))}catch(e){}
 if(S.trackV!==2){delete S.track;S.trackV=2}
 if(S.lookV!==5){S.color=0;S.lookV=5}  // 念诵页新版式只用一种颜色；颜色对照还能在设置里打开
@@ -922,6 +991,8 @@ function rubricHTML(o,k,cls){
 function shortSec(t){t=t||'';const i=t.lastIndexOf(' · ');return i<0?t:t.slice(i+3)}
 function render(){
   const R=RITUALS[S.rit]||RITUALS[0]; const m=R.meta;
+  if(locked(R)){miBlock(R);return}  // 密法：确认前一个字也不画
+  miClear();
   applyLook();
   const tw=m.title_words, tsy=m.title_syllables||[];
   const titleBo=tw?`<div class="il tl ${S.color?'color':''}"><span class="yig" lang="bo" aria-hidden="true">༄༅། །</span>`+tw.map((w,k)=>`<div class="col" data-t="${k}" data-c="${k%5}"><span class="c-bo">${esc(w.syl.map(i=>tsy[i].bo).join('་'))}</span>${S.gl&&w.zh?`<span class="c-gl">${esc(w.zh)}</span>`:''}</div>`).join('')+'</div>'
@@ -1183,7 +1254,7 @@ async function trackURL(t,R){R=R||RITUALS[S.rit]||RITUALS[0];if(t==='tune')retur
   const u=R.meta['audio.'+t];return u?await fetchBlobURL(u):null}
 // track choice: what the user picked if this ritual has it, else 藏文念诵, then 中文念诵, 字鱼相随 last
 async function pickTrack(R){for(const t of [...new Set([S.track,'bo','zh','tune'].filter(Boolean))]){const u=await trackURL(t,R);if(u)return [t,u]}return ['tune','tune:']}
-async function loadTrack(keep){if(!keep)A.el.pause();A.rdone=[];A.sr={};A.solo=1;if(typeof E!=='undefined')E.peaks=null;const [t,url]=await pickTrack();A.track=t;A.has=true;
+async function loadTrack(keep){if(locked(RITUALS[S.rit]||RITUALS[0])){A.el.pause();A.has=false;$('player').hidden=true;document.body.classList.remove('has-audio');return}if(!keep)A.el.pause();A.rdone=[];A.sr={};A.solo=1;if(typeof E!=='undefined')E.peaks=null;const [t,url]=await pickTrack();A.track=t;A.has=true;
   if(t==='tune')A.el.virt(yu(RITUALS[S.rit]||RITUALS[0]).dur);else A.el.real(url);
   refreshTiming();await syncPlayer()}
 async function syncPlayer(){
@@ -1541,7 +1612,7 @@ function drawHome(){apDraw();
   $('rcats').innerHTML=catBar(rq,RCAT,'data-rc');
   $('ritCount').textContent=$('ritCount2').textContent=RITUALS.length+' 部';
   $('rits').innerHTML=rs.length?rs.map(R=>{const m=R.meta,sub=ritSub(R);
-    return `<div class="rrow"><button class="rbody" data-open="${esc(m.id)}">${m['title.bo']?`<span class="rbo" lang="bo">${esc(m['title.bo'])}</span>`:''}<span class="rzh"><span>${esc(m['title.zh'])}</span>${m['audio.bo']?SPKI:''}${m.kind==='practice'?'<span class="tag">修法</span>':''}</span><span class="rsub">${esc([RCAT?'':catsOf(R).join('、'),sub].filter(Boolean).join(' · '))}</span></button>
+    return `<div class="rrow"><button class="rbody" data-open="${esc(m.id)}">${m['title.bo']?`<span class="rbo" lang="bo">${esc(m['title.bo'])}</span>`:''}<span class="rzh"><span>${esc(m['title.zh'])}</span>${MITAG(R)}${m['audio.bo']?SPKI:''}${m.kind==='practice'?'<span class="tag">修法</span>':''}</span><span class="rsub">${esc([RCAT?'':catsOf(R).join('、'),sub].filter(Boolean).join(' · '))}</span></button>
       <button class="ibtn fav${isFav(m.id)?' on':''}" data-fav="${esc(m.id)}" aria-pressed="${isFav(m.id)}" aria-label="${isFav(m.id)?'从常用移除':'加到常用'} ${esc(m['title.zh'])}">${STARI}</button>
       <button class="ibtn ring" data-tc="${esc(m.id)}" aria-label="把${esc(m['title.zh'])}加入组合">＋</button></div>`}).join('')
     :`<p class="empty">${RCAT&&rq.length?`「${esc(RCAT)}」里没有找到，<button class="link" data-rc="">看全部分类</button>`:'没有找到这部仪轨。'}</p>`;
@@ -1604,7 +1675,7 @@ function drawCombo(){const c=ED();if(!c)return;CUR_C=c;
     if(it.rest)return row(i,' isrest',!(it.sec>60),`<span class="cn">安住</span><button class="qcap" data-q="${i}">${esc(stepLabel(it))}</button>`,!it.sec);
     const R=ritById(it.rid);if(!R)return row(i,'',true,'<span class="cn lbl">（这部仪轨已不在库里）</span>',true);
     const q=stepQ(it);
-    return row(i,'',q==='free'||(q==='n'&&it.n<=1)||(q==='time'&&(it.min||10)<=5),`<span class="cn">${esc(R.meta['title.zh'])}${isPractice(R)?' <span class="tag">修法</span>':''}</span><button class="qcap ${q}" data-q="${i}">${esc(stepLabel(it))}</button>${canRest(R)?`<button class="xopen" data-open-i="${i}" aria-expanded="${!!it.open}">${it.open?'收起段落 ▴':'展开段落，加安住 ▾'}</button>`:''}`,q==='free',restsHTML(it,i))}).join('')
+    return row(i,'',q==='free'||(q==='n'&&it.n<=1)||(q==='time'&&(it.min||10)<=5),`<span class="cn">${esc(R.meta['title.zh'])}${MITAG(R)}${isPractice(R)?' <span class="tag">修法</span>':''}</span><button class="qcap ${q}" data-q="${i}">${esc(stepLabel(it))}</button>${canRest(R)?`<button class="xopen" data-open-i="${i}" aria-expanded="${!!it.open}">${it.open?'收起段落 ▴':'展开段落，加安住 ▾'}</button>`:''}`,q==='free',restsHTML(it,i))}).join('')
     :'<p class="empty">还没有仪轨。点下面的按钮加进来。</p>';
   const L=comboLen(c);$('ctotal').innerHTML=c.items.length?`<b>共约 ${Math.max(1,Math.round(L.s/60))} 分</b><span>现在开始约 ${hm(Date.now()+L.s*1000)} 念完</span>`:'';
   $('cplay').disabled=!c.items.length}
@@ -1665,12 +1736,12 @@ function landRep(){const R=RITUALS[S.rit]||RITUALS[0],x=qItem(),tot0=x?itemTotal
 new MutationObserver(()=>{if(LAND.on){LAND.k=null;landSync()}}).observe($('settings'),{attributes:true,attributeFilter:['hidden']});
 $('pfull').onclick=()=>{LAND.force=!LAND.on;landSync()};
 (LQ.addEventListener?LQ.addEventListener('change',landSync):LQ.addListener(landSync));addEventListener('resize',()=>{if(LAND.on)landSync()});
-function show(v){if(v==='reader'&&VIEW!=='reader')setTimeout(()=>typeof immSet==='function'&&immSet(true));else if(v!=='reader')document.body.classList.remove('imm');VIEW=v;setTimeout(()=>typeof landSync==='function'&&landSync());document.body.classList.toggle('v-home',v==='home');document.body.classList.toggle('v-reader',v==='reader');document.body.classList.toggle('v-combo',v==='combo');document.body.classList.toggle('v-calset',v==='calset'||v==='prefs');
+function show(v){if(v==='reader'&&VIEW!=='reader')setTimeout(()=>typeof immSet==='function'&&immSet(true));else if(v!=='reader')document.body.classList.remove('imm');if(v!=='reader')document.querySelectorAll('#micover').forEach(e=>e.remove());VIEW=v;setTimeout(()=>typeof landSync==='function'&&landSync());document.body.classList.toggle('v-home',v==='home');document.body.classList.toggle('v-reader',v==='reader');document.body.classList.toggle('v-combo',v==='combo');document.body.classList.toggle('v-calset',v==='calset'||v==='prefs');
   $('home').hidden=v!=='home';$('combo').hidden=v!=='combo';$('calset').hidden=v!=='calset';$('prefs').hidden=v!=='prefs';
   ['settings','tools','word','mark','edit','align','addsheet','tocombo','speedpop','qsheet','rpick','cxsheet','savesheet','stepsheet','hdsheet'].forEach(id=>$(id).hidden=true);
   if(typeof drawMini==='function')drawMini()}
 function route(){const h=decodeURIComponent(CUR);let m;
-  if(m=h.match(/^#\/r\/(.+)$/)){const i=RITUALS.findIndex(r=>r.meta.id===m[1]);if(i>=0){show('reader');if(S.rit!==i||!$('main').innerHTML){S.rit=i;save();render();loadTrack();scrollTo(0,0)}$('pick').value=S.rit;drawQ();return}}
+  if(m=h.match(/^#\/r\/(.+)$/)){const i=RITUALS.findIndex(r=>r.meta.id===m[1]);if(i>=0){show('reader');if(S.rit!==i||!$('main').innerHTML||locked(RITUALS[i])){S.rit=i;save();render();loadTrack();scrollTo(0,0)}$('pick').value=S.rit;drawQ();return}}
   if(m=h.match(/^#\/c\/(.+)$/)){if(comboById(m[1])){S.ed=m[1];edOpen(m[1]);show('combo');drawCombo();scrollTo(0,0);return}}
   if(h==='#/cal'){show('calset');drawCalSet();scrollTo(0,0);return}
   if(h==='#/set'){show('prefs');drawPrefs();scrollTo(0,0);return}
@@ -1824,7 +1895,7 @@ function openAdd(title,cb){SEL=[];ADDTO=cb;$('addTitle').textContent=title||'加
 function drawAdd(){const q=norm($('aq').value);const rq=sortRits().filter(R=>!q||matchR(R,q)),rs=rq.filter(R=>!ACAT||catsOf(R).includes(ACAT));
   $('acats').innerHTML=catBar(rq,ACAT,'data-ac');
   $('alist').innerHTML=rs.length?rs.map(R=>{const id=R.meta.id,k=SEL.findIndex(x=>x.rid===id),s=SEL[k];
-    return `<div class="arow${s?' sel':''}"><span class="num" aria-hidden="true">${s?k+1:''}</span><button class="ab" data-add="${esc(id)}" aria-pressed="${!!s}">${esc(R.meta['title.zh'])}${R.meta['audio.bo']?SPKI:''}<span class="lbl">${esc(ritSub(R))}</span></button>${s?`<div class="step"><button data-an="${esc(id)}" data-d="-1" aria-label="少一遍">−</button><span>×${s.n}</span><button data-an="${esc(id)}" data-d="1" aria-label="多一遍">＋</button></div>`:''}</div>`}).join(''):'<p class="empty">没有找到。</p>';
+    return `<div class="arow${s?' sel':''}"><span class="num" aria-hidden="true">${s?k+1:''}</span><button class="ab" data-add="${esc(id)}" aria-pressed="${!!s}">${esc(R.meta['title.zh'])}${MITAG(R)}${R.meta['audio.bo']?SPKI:''}<span class="lbl">${esc(ritSub(R))}</span></button>${s?`<div class="step"><button data-an="${esc(id)}" data-d="-1" aria-label="少一遍">−</button><span>×${s.n}</span><button data-an="${esc(id)}" data-d="1" aria-label="多一遍">＋</button></div>`:''}</div>`}).join(''):'<p class="empty">没有找到。</p>';
   const L=SEL.reduce((a,it)=>a+(stepSec(it)||0),0);$('addGo').disabled=!SEL.length;$('addGo').textContent=SEL.length?`按顺序加入 ${SEL.length} 部 · 共约 ${Math.max(1,Math.round(L/60))} 分`:'点选要加的仪轨（可多选）'}
 $('closeAdd').onclick=()=>$('addsheet').hidden=true;
 $('aq').oninput=drawAdd;
@@ -1902,7 +1973,7 @@ function earlyEnd(t){if(A.track==='tune'||A.marking||A.stopAt!=null||REST.on||A.
   if(!isFinite(d)||t<0.5||performance.now()-(A.endT||0)<1500)return false;
   const X=Math.min(xfLead(d),d/3);if(d-t>(X||0.1)*r||!willGoOn(X>0))return false;A.endT=performance.now();onEnd();return true}
 // 组合里提前载好下一部的录音
-async function prepNext(){const x=qItem();if(!x||S.q.r<itemTotal(x.it))return;const it=x.c.items[S.q.i+1];if(!it)return;const R=ritById(it.rid);if(!R||R===RITUALS[S.rit])return;
+async function prepNext(){const x=qItem();if(!x||S.q.r<itemTotal(x.it))return;const it=x.c.items[S.q.i+1];if(!it)return;const R=ritById(it.rid);if(!R||R===RITUALS[S.rit]||locked(R))return;
   const key=it.rid+'@'+S.q.i;if(A.preK===key)return;A.preK=key;const [t,url]=await pickTrack(R);if(t==='tune'){A.pre=null;return}A.pre={rid:it.rid,t,url};A.el.prep(url)}
 A.el.addEventListener('play',()=>{prepNext();loadTail(A.el.src)});
 function onEnd(){if(A.marking)return drawMini();if(A.stopAt!=null){A.stopAt=null;return drawMini()}
@@ -2009,8 +2080,8 @@ const isField=e=>e&&e.matches&&e.matches('input:not([type=checkbox]):not([type=r
 document.addEventListener('focusin',e=>{if(isField(e.target))document.body.classList.add('kb')});
 document.addEventListener('focusout',e=>{if(isField(e.target))setTimeout(()=>{if(!isField(document.activeElement))document.body.classList.remove('kb')},50)});
 function immSet(on){document.body.classList.toggle('imm',!!on);IMM.y=scrollY}
-const sheetOpen=()=>[...document.querySelectorAll('.sheet,.kp,.speedpop')].some(x=>!x.hidden&&x.offsetParent!==null);
-document.addEventListener('click',e=>{if(VIEW!=='reader'||!document.body.classList.contains('imm'))return;if(e.target.closest('.top,.player,.sheet,.restv,.mtv,.fin,.dlg,.kp'))return;
+const sheetOpen=()=>[...document.querySelectorAll('.sheet,.kp,.speedpop,.misheet')].some(x=>!x.hidden&&x.offsetParent!==null);
+document.addEventListener('click',e=>{if(VIEW!=='reader'||!document.body.classList.contains('imm'))return;if(e.target.closest('.top,.player,.sheet,.restv,.mtv,.fin,.dlg,.kp,.misheet,.micover'))return;
   e.stopPropagation();e.preventDefault();immSet(false);immLater()},true);  // 全屏点一下只显示界面，不暂停（w 2026-11-07 撤回点一下暂停）
 // 播放中界面出来后 3 秒没操作自动收起（w 2026-11-07）；点到界面上的东西就重新计时
 function immLater(){clearTimeout(IMM.t);IMM.t=setTimeout(()=>{const playing=!A.el.paused||(REST.on&&!REST.paused);if(VIEW==='reader'&&!document.body.classList.contains('imm')&&playing&&!sheetOpen()&&$('word').hidden)immSet(true)},3000)}
@@ -2091,8 +2162,8 @@ let CG='',COPEN='';
 function drawCommon(){const all=commons();const groups=[...new Set(all.map(R=>R.meta['common.group']).filter(Boolean))];
   $('cgroups').innerHTML=groups.length?['',...groups].map(g=>`<button class="pill${g===CG?' on':''}" data-cg="${esc(g)}" aria-pressed="${g===CG}">${esc(g||'全部')}</button>`).join(''):'';
   const rs=all.filter(R=>!CG||R.meta['common.group']===CG);
-  $('clist').innerHTML=rs.length?rs.map(R=>{const id=R.meta.id,n=S.cnt[id]||ritReps(R),op=COPEN===id;const L=allLinesOf(R);
-    return `<div class="ccard2${op?' open':''}"><div class="chead2"><button class="cbody" data-cx="${esc(id)}"><span class="cname">${esc(R.meta['title.zh'])}</span>${R.meta['title.bo']?`<span class="rbo" lang="bo">${esc(R.meta['title.bo'])}</span>`:''}</button>
+  $('clist').innerHTML=rs.length?rs.map(R=>{const id=R.meta.id,n=S.cnt[id]||ritReps(R),op=COPEN===id&&!locked(R);const L=allLinesOf(R);
+    return `<div class="ccard2${op?' open':''}"><div class="chead2"><button class="cbody" data-cx="${esc(id)}"><span class="cname">${esc(R.meta['title.zh'])}${MITAG(R)}</span>${R.meta['title.bo']?`<span class="rbo" lang="bo">${esc(R.meta['title.bo'])}</span>`:''}</button>
       <span class="lbl">${n>1?n+' 遍':''}</span><button class="ibtn fav on" data-fav="${esc(id)}" aria-pressed="true" aria-label="从常用移除 ${esc(R.meta['title.zh'])}">${STARI}</button><button class="ibtn ring" data-cp="${esc(id)}" aria-label="念诵 ${esc(R.meta['title.zh'])}">${PLAYI}</button></div>
       ${op?`<div class="cfull">${L.map(ln=>`<div class="cl"><div class="r-bo" lang="bo">${esc(ln.bo)}</div><div class="r-ph">${esc(ln.zh_ph||(ln.syllables||[]).map(s=>s.zh_ph).join(''))}</div>${ln.zh?`<div class="r-zh">${esc(ln.zh)}</div>`:''}</div>`).join('')}
         <div class="row" style="margin-top:8px"><span class="lbl">念</span><div class="step"><button data-cdec="${esc(id)}" aria-label="少念一遍">−</button><span>${n}</span><button data-cinc="${esc(id)}" aria-label="多念一遍">＋</button></div><span class="lbl">遍</span><span style="flex:1"></span><button class="link" data-tc="${esc(id)}">＋ 加入组合</button><button class="link" data-open="${esc(id)}">打开全文</button></div></div>`:''}</div>`}).join('')
