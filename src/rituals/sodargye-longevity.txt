@@ -1,0 +1,41 @@
+# 索达吉堪布长久住世祈祷文：只有汉文（w 2026-11-02：「直接加」）。没有藏文和汉文音译，以后有了再补。
+
+@id: sodargye-longevity
+@title.bo: 
+@title.zh: 索达吉堪布长久住世祈祷文
+@title.zh_ph:
+@restriction: public
+@common: true
+@common.group: 祈祷
+# w 2026-11-02 要求单独加入
+@status: draft
+@source.zh: w 2026-11-02 提供
+@author.zh: 晋美彭措法王 造
+@gloss.status: draft（节拍释义和颜色对应由 Claude 起草，待校对）
+
+== prayer
+title.zh: 索达吉堪布长久住世祈祷文
+
+-- 1
+bo:
+zh: 具德上师加持入心间
+
+-- 2
+bo:
+zh: 不偏众生普降大法雨
+
+-- 3
+bo:
+zh: 三学之藏索朗达吉尊
+
+-- 4
+bo:
+zh: 祈请身寿不变久住世
+
+-- 5
+bo:
+zh: 愿以发心皓月之光明
+
+-- 6
+bo:
+zh: 五浊黑暗消于法界中

@@ -6,7 +6,7 @@
 
 @id: longchenpa-prayer
 @title.bo: ཀུན་མཁྱེན་ཀློང་ཆེན་རབ་འབྱམས་ཀྱི་གསོལ་འདེབས།
-@title.zh: 全知无垢光尊者祈祷文
+@title.zh: 全知无垢光尊者祈祷文（一）
 @title.zh_ph:
 @restriction: public
 @common: true
