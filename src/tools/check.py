@@ -131,6 +131,18 @@ def check(r):
     for key in sorted({k for ln in lines for k in ln if k.startswith('t.')}):
         miss = [ln['id'] for ln in lines if key not in ln]
         if miss: errs.append(f"{key}：这些句子没有时间点：{'、'.join(miss)}")
+    # 安住、持咒（w 2026-11-08）：段落 rest: 秒数 / rest.allow: yes；咒语句 chant: 遍数或 yes / chant.min: 分钟
+    for sec in r['sections']:
+        if 'rest.allow' in sec and sec['rest.allow'] not in ('yes', 'no'):
+            errs.append(f"段落 {sec['id']}：rest.allow 只能写 yes 或 no")
+        if 'rest' in sec and not str(sec['rest']).isdigit():
+            errs.append(f"段落 {sec['id']}：rest 应该是秒数")
+        for ln in sec['lines']:
+            c = ln.get('chant')
+            if c is not None and not (c == 'yes' or str(c).isdigit() and int(c) > 0):
+                errs.append(f"{sec['id']} 第{ln['id']}句：chant 应该是遍数或 yes")
+            if 'chant.min' in ln and not str(ln['chant.min']).replace('.', '', 1).isdigit():
+                errs.append(f"{sec['id']} 第{ln['id']}句：chant.min 应该是分钟数")
     for sec in r['sections']:
         for k in [k for k in sec if k.startswith('t.')]:
             errs.append(f"段落 {sec['id']} 里有 {k}，应该放在某一句下面")
