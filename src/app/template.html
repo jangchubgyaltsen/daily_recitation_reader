@@ -467,28 +467,29 @@ body.land .player{padding:8px 10px 8px 18px;bottom:calc(8px + env(safe-area-inse
 #splash .sp-fg{object-fit:contain;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);box-sizing:border-box}
 
 /* ---------- 今天页（w 2026-11-01 定稿：C-3 当下放大；常用放在下方） ---------- */
-.tdsub{margin:10px 2px 14px;color:var(--muted);font-size:14px}
+.tdsub{margin:6px 2px 8px;color:var(--muted);font-size:14px}
 .tdsub b{color:#a0402c;font-weight:600}
-.tdk{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:6px 40px 16px;scrollbar-width:none;overscroll-behavior-x:contain}.tdk::-webkit-scrollbar{display:none}
+.tdk{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:0 40px 8px;scrollbar-width:none;overscroll-behavior-x:contain}.tdk::-webkit-scrollbar{display:none}
 .tdk.one{padding-inline:16px}
-.tcard{flex:0 0 100%;scroll-snap-align:center;box-sizing:border-box;border-radius:24px;padding:18px 20px 14px;background:var(--sheet);border:1px solid var(--rule);box-shadow:0 6px 20px rgba(20,25,40,.06);display:flex;flex-direction:column;gap:12px}
+.tcard{flex:0 0 100%;min-width:0;scroll-snap-align:center;box-sizing:border-box;border-radius:20px;padding:14px 16px 10px;background:var(--sheet);border:1px solid var(--rule);display:flex;flex-direction:column;gap:10px}
+.tdk .tcard{margin-top:0}.tmeta{font-size:13.5px;margin-top:4px;opacity:.85;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tmeta b{font-weight:600}
 .tch{display:flex;align-items:center;gap:12px}.tct{flex:1;min-width:0;display:flex;flex-direction:column}
 .tcard .tk{font-size:12.5px;color:#a0402c;font-weight:600}
-.tcard .tn{font:400 34px/1.15 'BrushApp',var(--f-zh);color:var(--lapis);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tplay{flex:none;width:56px;height:56px;border-radius:50%;border:0;background:var(--lapis);color:var(--paper);display:grid;place-items:center;cursor:pointer}
+.tcard .tn{font:400 28px/1.15 'BrushApp',var(--f-zh);color:var(--lapis);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tplay{flex:none;width:50px;height:50px;border-radius:50%;border:0;background:var(--lapis);color:var(--paper);display:grid;place-items:center;cursor:pointer}
 .tst{display:flex;text-align:center}.tst>div{flex:1;display:flex;flex-direction:column}.tst>div+div{border-left:1px solid var(--rule)}
 .tst b{font:600 22px/1.2 var(--f-ui);font-variant-numeric:tabular-nums}.tst small{font-size:12px;color:var(--muted)}
-.tft{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--rule);padding-top:10px}
+.tft{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--rule);padding-top:8px}
 .tfrom{font-size:14px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tfrom .lbl{color:var(--muted)}
-.tadj{flex:none;display:inline-flex;align-items:center;gap:5px;min-height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--rule);background:none;color:var(--muted);font-size:13px;cursor:pointer}
+.tadj{flex:none;display:inline-flex;align-items:center;gap:5px;min-height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--rule);background:none;color:var(--muted);font-size:13px;cursor:pointer}
 .tdone{display:flex;align-items:center;gap:8px;font:600 20px var(--f-ui);color:var(--w2);padding:4px 0}
 .tdone .ck{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--w2);color:var(--paper);font-size:14px}
 .tcard.done{opacity:.8}.tcard.done .tplay{background:none;color:var(--lapis);border:1.5px solid var(--rule);width:48px;height:48px}
-.tcard.n{background:#1d2027;color:#f4f2ec;border-color:#2e333d;box-shadow:0 10px 26px rgba(0,0,0,.22)}.tcard.n .tn{color:#f4f2ec}.tcard.n .tplay{background:#f4f2ec;color:#1d2027}
+.tcard.n{background:#1d2027;color:#f4f2ec;border-color:#2e333d}.tcard.n .tn{color:#f4f2ec}.tcard.n .tplay{background:#f4f2ec;color:#1d2027}
 .tcard.n .tst>div+div,.tcard.n .tft{border-color:#353a45}.tcard.n .tst small,.tcard.n .tfrom .lbl,.tcard.n .tadj{color:#a6aab3}.tcard.n .tadj{border-color:#40454f}.tcard.n .tk{color:#f0957f}
 .tcard.n.done .tplay{background:none;color:#f4f2ec;border-color:#40454f}.tcard.n .tdone{color:#79cfa6}.tcard.n .tdone .ck{background:#79cfa6;color:#1d2027}
-.tdots{display:flex;justify-content:center;gap:6px;margin-top:-4px}.tdots i{width:7px;height:7px;border-radius:4px;background:var(--rule);transition:width .2s,background .2s}.tdots i.ok{background:var(--w2);opacity:.6}.tdots i.on{width:20px;background:var(--lapis);opacity:1}
-.tdh{align-items:center}.tall{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:0 12px 0 10px;border-radius:999px;border:0;background:var(--hl);color:var(--lapis);font:600 13px var(--f-ui);cursor:pointer}
+.tdots{display:flex;justify-content:center;gap:6px;margin-top:0}.tdots i{width:7px;height:7px;border-radius:4px;background:var(--rule);transition:width .2s,background .2s}.tdots i.ok{background:var(--w2);opacity:.6}.tdots i.on{width:20px;background:var(--lapis);opacity:1}
+.hsec.tdh{align-items:center;padding-top:12px}.tall{display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:0 12px 0 10px;border-radius:999px;border:0;background:var(--hl);color:var(--lapis);font:600 13px var(--f-ui);cursor:pointer}
 .tbig2{background:#1d2027;color:#f4f2ec;border-radius:22px;padding:18px 18px 14px;display:flex;flex-direction:column;gap:10px}
 .tbig2 .tk{font-size:13px;opacity:.7}
 .tbig2 .tn{font:600 30px/1.2 var(--f-zh);letter-spacing:.04em}
@@ -1705,9 +1706,9 @@ function drawToday(){const h=new Date().getHours(),wk='日一二三四五六'[ne
   const card=m=>{const c=m.c,items=c?c.items:m.items,qx=qItem(),inq=qx&&(c?S.q.cid===c.id:qx.c.hidden&&qx.c.name===m.name),qi=inq?S.q.i:0;
     const nr=items.slice(qi).filter(it=>!it.rest).length,sec=items.slice(qi).reduce((a,it)=>a+(stepSec(it)||0),0),first=items.slice(qi).find(it=>!it.rest);
     const fn=first?((ritById(first.rid)||{meta:{}}).meta['title.zh']||''):'',name=c?c.name:m.name,go=c?`data-tgo="${esc(c.id)}"`:'data-tadd="1"';
-    return `<div class="tcard${night?' n':''}${m.done?' done':''}" data-k="${esc(m.k)}"><div class="tch"><div class="tct">${m.kick?`<span class="tk">${esc(m.kick)}</span>`:''}<b class="tn">${esc(name)}</b></div>
+    return `<div class="tcard${night?' n':''}${m.done?' done':''}" data-k="${esc(m.k)}"><div class="tch"><div class="tct">${m.kick?`<span class="tk">${esc(m.kick)}</span>`:''}<b class="tn">${esc(name)}</b>${m.done?'':`<span class="tmeta"><b>${nr}</b> 部 · 约 <b>${Math.max(1,Math.round(sec/60))}</b> 分钟 · <b>${hm(Date.now()+sec*1000)}</b> 念完</span>`}</div>
       <button class="tplay" ${go} aria-label="念${esc(name)}"${items.length?'':' disabled'}>${PLAYI}</button></div>
-      ${m.done?`<div class="tdone"><span class="ck" aria-hidden="true">✓</span>${hm(m.done)}</div>`:`<div class="tst"><div><b>${nr}</b><small>部</small></div><div><b>${Math.max(1,Math.round(sec/60))}</b><small>分钟</small></div><div><b>${hm(Date.now()+sec*1000)}</b><small>念完</small></div></div>`}
+      ${m.done?`<div class="tdone"><span class="ck" aria-hidden="true">✓</span>${hm(m.done)}</div>`:''}
       <div class="tft"><span class="tfrom">${fn?`<span class="lbl">${inq?'接着':'从'}</span> ${esc(fn)}`:''}</span>${c?`<button class="tadj" data-edit="${esc(c.id)}">${ADJI}调整</button>`:''}</div></div>`};
   let html;
   if(!ord.length)html=`<div class="tbig2 empty"><span class="tk">早课</span><span class="ts">还没有设定早课或晚课。在仪轨库里打开一个组合，点「设为早课」或「设为晚课」，它就会出现在这里。</span><div class="tfoot"><button class="link" data-gotab="lib">去仪轨库 ›</button></div></div>`;
