@@ -1804,19 +1804,24 @@ function landRep(){const R=RITUALS[S.rit]||RITUALS[0],x=qItem(),tot0=x?itemTotal
 new MutationObserver(()=>{if(LAND.on){LAND.k=null;landSync()}}).observe($('settings'),{attributes:true,attributeFilter:['hidden']});
 $('pfull').onclick=()=>{LAND.force=!LAND.on;landSync()};
 (LQ.addEventListener?LQ.addEventListener('change',landSync):LQ.addListener(landSync));addEventListener('resize',()=>{if(LAND.on)landSync()});
-function show(v){if(v==='reader'&&VIEW!=='reader')setTimeout(()=>typeof immSet==='function'&&immSet(true));else if(v!=='reader')document.body.classList.remove('imm');if(v!=='reader')document.querySelectorAll('#micover').forEach(e=>e.remove());VIEW=v;setTimeout(()=>typeof landSync==='function'&&landSync());document.body.classList.toggle('v-home',v==='home');document.body.classList.toggle('v-reader',v==='reader');document.body.classList.toggle('v-combo',v==='combo');document.body.classList.toggle('v-calset',v==='calset'||v==='prefs');
+// 离开首页、阅读页时记住各自滚到哪里，回来时接着（不然会带着上一页的滚动位置，今天页的卡片被顶出屏幕）
+var HOMEY=0,READY=0;
+function show(v){if(VIEW==='home'&&v!=='home')HOMEY=scrollY;if(VIEW==='reader'&&v!=='reader')READY=scrollY;if(v==='reader'&&VIEW!=='reader')setTimeout(()=>typeof immSet==='function'&&immSet(true));else if(v!=='reader')document.body.classList.remove('imm');if(v!=='reader')document.querySelectorAll('#micover').forEach(e=>e.remove());VIEW=v;setTimeout(()=>typeof landSync==='function'&&landSync());document.body.classList.toggle('v-home',v==='home');document.body.classList.toggle('v-reader',v==='reader');document.body.classList.toggle('v-combo',v==='combo');document.body.classList.toggle('v-calset',v==='calset'||v==='prefs');
   $('home').hidden=v!=='home';$('combo').hidden=v!=='combo';$('calset').hidden=v!=='calset';$('prefs').hidden=v!=='prefs';
   ['settings','tools','word','mark','edit','align','addsheet','tocombo','speedpop','qsheet','rpick','cxsheet','savesheet','stepsheet','hdsheet','npad'].forEach(id=>$(id).hidden=true);
   if(typeof lpHide==='function')lpHide();if(typeof cvSync==='function')cvSync();
   if(typeof drawMini==='function')drawMini()}
 function route(){const h=decodeURIComponent(CUR);let m;
-  if(m=h.match(/^#\/r\/(.+)$/)){const i=RITUALS.findIndex(r=>r.meta.id===m[1]);if(i>=0){show('reader');if(S.rit!==i||!$('main').innerHTML||locked(RITUALS[i])){S.rit=i;save();render();loadTrack();scrollTo(0,0)}$('pick').value=S.rit;drawQ();return}}
+  if(m=h.match(/^#\/r\/(.+)$/)){const i=RITUALS.findIndex(r=>r.meta.id===m[1]);if(i>=0){const was=VIEW;show('reader');if(S.rit!==i||!$('main').innerHTML||locked(RITUALS[i])){S.rit=i;save();render();loadTrack();scrollTo(0,0)}
+    // 从迷你播放条、今天页回到正在念的这一部：直接停在正在念的那一句
+    else if(was!=='reader'){const pl=document.querySelector('#main .line.playing');if(pl&&(!A.el.paused||Q()))pl.scrollIntoView({block:'center'});else scrollTo(0,READY)}
+    $('pick').value=S.rit;drawQ();return}}
   if(m=h.match(/^#\/c\/(.+)$/)){if(comboById(m[1])){S.ed=m[1];edOpen(m[1]);show('combo');drawCombo();scrollTo(0,0);return}}
   if(h==='#/cal'){show('calset');drawCalSet();scrollTo(0,0);return}
   if(h==='#/set'){show('prefs');drawPrefs();scrollTo(0,0);return}
-  const all=h==='#/all';if(all!==ALLV){ALLV=all;if(all)S.tab='lib';scrollTo(0,0)}
+  const all=h==='#/all',back=VIEW!=='home'&&all===ALLV;if(all!==ALLV){ALLV=all;if(all)S.tab='lib';scrollTo(0,0)}
   if(h==='#/'||h==='')DRAFT=null;
-  show('home');drawHome()}
+  show('home');drawHome();if(back)scrollTo(0,HOMEY)}
 let ALLV=false;  // 是否在「全部仪轨」子页面
 // 路由自己记一个返回栈：在 claude.ai 的预览框里 history.back() 不可靠（会退到外层或没反应），所以返回不靠浏览器历史
 let CUR=location.hash||'#/';const STACK=[];
@@ -1850,7 +1855,9 @@ $('prefs').addEventListener('click',e=>{let b;if(b=e.target.closest('[data-pr]')
 $('pfCal').onclick=()=>go('#/cal');$('pfBack').onclick=()=>goBack();
 $('home').addEventListener('click',e=>{let b;
   if(b=e.target.closest('[data-edit]'))return go('#/c/'+b.dataset.edit);
-  if(b=e.target.closest('[data-tgo]')){const id=b.dataset.tgo;if(S.q&&S.q.cid===id&&qItem()){ac();cancelRest();gotoItem(S.q.i,true)}else playCombo(id);return}
+  if(b=e.target.closest('[data-tgo]')){const id=b.dataset.tgo;if(S.q&&S.q.cid===id&&qItem()){const x=qItem();
+    // 正在念这个组合时点卡片上的播放：只回到阅读页，不从头重念这一部
+    if(!x.it.rest&&ritById(x.it.rid)===RITUALS[S.rit]&&!A.el.paused&&!REST.on)return go('#/r/'+encodeURIComponent(rid()));ac();cancelRest();gotoItem(S.q.i,true)}else playCombo(id);return}
   if(b=e.target.closest('[data-gotab]')){S.tab=b.dataset.gotab;save();drawHome();scrollTo(0,0);return}
   if(b=e.target.closest('[data-tadd]')){const ti=todayInfo(),nm=ti&&((ti.di.names[0]||'殊胜日')+'加念'),qx=qItem();if(qx&&qx.c.hidden&&qx.c.name===nm){ac();cancelRest();gotoItem(S.q.i,true);return}if(ti&&ti.add)playItems(ti.add.items.filter(it=>ritById(it.rid)),(ti.di.names[0]||'殊胜日')+'加念');return}
   if(b=e.target.closest('[data-pin]')){const c=comboById(b.dataset.pin);c.pin=c.pin?0:Date.now();save();drawHome();toast(c.pin?'已置顶':'已取消置顶');return}
@@ -1872,9 +1879,11 @@ $('tclist').onclick=e=>{const b=e.target.closest('button');if(!b)return;const ri
 let DRAFT=null,DORIG='',SWIPED=0,DRAGGING=false,UNDO=[],AFTER=null;
 const ED=()=>DRAFT;
 const edClean=c=>JSON.stringify(c,(k,v)=>k==='open'?undefined:v);
-function edOpen(id){if(DRAFT&&DRAFT.id===id)return;const c=comboById(id);DRAFT=JSON.parse(JSON.stringify(c));DRAFT._morn=S.morning===id;DRAFT._eve=S.evening===id;DORIG=edClean(DRAFT);UNDO=[];$('undo').hidden=true}
+function edOpen(id){if(DRAFT&&DRAFT.id===id)return;const c=comboById(id);DRAFT=JSON.parse(JSON.stringify(c));DRAFT.items.forEach((it,k)=>it._o=k);DRAFT._morn=S.morning===id;DRAFT._eve=S.evening===id;DORIG=edClean(DRAFT);UNDO=[];$('undo').hidden=true}
 const isDirty=()=>!!DRAFT&&(edClean(DRAFT)!==DORIG||!!DRAFT.fresh);
-function edCommit(asNew){const d=JSON.parse(JSON.stringify(DRAFT));const morn=d._morn,eve=d._eve;delete d._morn;delete d._eve;delete d.fresh;d.items.forEach(it=>delete it.open);if(!d.name.trim())d.name='未命名组合';
+function edCommit(asNew){const d=JSON.parse(JSON.stringify(DRAFT));const morn=d._morn,eve=d._eve;delete d._morn;delete d._eve;delete d.fresh;// 正在念这个组合时改了顺序或删了前面的：让「念到第几部」跟着这一部走，不错位
+  if(!asNew&&S.q&&S.q.cid===d.id){const k=d.items.findIndex(it=>it._o===S.q.i);if(k>=0)S.q.i=k}
+  d.items.forEach(it=>{delete it.open;delete it._o});if(!d.name.trim())d.name='未命名组合';
   const o=comboById(d.id);let id=d.id;
   if(asNew){id=uid();Object.assign(d,{id,pin:0,at:Date.now()});if(o&&o.name===d.name)d.name+=' 副本';S.combos.push(d)}
   else{const k=S.combos.findIndex(x=>x.id===d.id);if(k>=0)S.combos[k]=d;else S.combos.push(d)}
