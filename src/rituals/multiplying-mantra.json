@@ -14,6 +14,7 @@
   "source.en": "Larung Daily Chant Book 2021, p. 1",
   "note.zh": "关于此咒功德，《噶当问答录》中云：“诵前加此咒，佛说千万倍。”",
   "audio.bo": "audio/multiplying-mantra.bo.mp3",
+  "audio.bo.reps": "yes",
   "audio.bo.credit": "藏语念诵：慈诚罗珠堪布",
   "title_syllables": [
    {
@@ -49,6 +50,7 @@
      "mantra.zh": "加倍咒",
      "bo": "ཨོཾ་སམྦྷ་ར་སམྦྷ་ར་བྷི་མ་ན་ས་ར་མ་ཧཱ་ཛམྦྷ་བ་ཧཱུྃ་ཕཊ་སྭཱ་ཧཱ།",
      "t.bo": "0",
+     "rep.bo": "7.84 15.31",
      "zh_ph": "嗡桑巴Ra桑巴Ra 波玛那萨Ra 玛哈藏巴巴吽啪的索哈",
      "en_ph": "om sambhara sambhara vimana sara maha dzambha bha hung phat svaha!",
      "note": "嗡：读 Ong（书中脚注）",

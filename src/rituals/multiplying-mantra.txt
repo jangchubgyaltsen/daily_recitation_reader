@@ -14,8 +14,10 @@
 @note.zh: 关于此咒功德，《噶当问答录》中云：“诵前加此咒，佛说千万倍。”
 # 咒语不做逐音节对齐，只整句高亮
 
-# 录音：w 在对齐工具里逐句校对（2026-11-08）。来源：05_加倍咒-慈诚罗珠堪布亲诵.mp3 的第一遍（app 自己念 3 遍），转成 64 kbps 单声道；原来的堪姆版和时间点存在项目文件 catalog/backup/2026-11-08/
+# 录音：w 在对齐工具里逐句校对（2026-11-08）。来源：05_加倍咒-慈诚罗珠堪布亲诵.mp3，转成 64 kbps 单声道。w 2026-11-10：录音里本来就念了 3 遍，改回整段录音直接放（不再只留第一遍让 app 重复）；第 2、3 遍开始的时间（rep.bo）由 Claude 用声音比对自动找出；只留第一遍的旧录音存在 backup/2026-11-10-reps-before/；原来的堪姆版和时间点存在项目文件 catalog/backup/2026-11-08/
 @audio.bo: audio/multiplying-mantra.bo.mp3
+# 录音里已经念了全部遍数（段落 repeat / 整部遍数）：app 直接放整段录音，不跳回去重复；rep.bo 是这一句第 2、3… 遍在录音里开始的时间
+@audio.bo.reps: yes
 @audio.bo.credit: 藏语念诵：慈诚罗珠堪布
 
 == mantra
@@ -27,6 +29,7 @@ repeat: 3
 mantra.zh: 加倍咒
 bo: ཨོཾ་སམྦྷ་ར་སམྦྷ་ར་བྷི་མ་ན་ས་ར་མ་ཧཱ་ཛམྦྷ་བ་ཧཱུྃ་ཕཊ་སྭཱ་ཧཱ།
 t.bo: 0
+rep.bo: 7.84 15.31
 zh_ph: 嗡桑巴Ra桑巴Ra 波玛那萨Ra 玛哈藏巴巴吽啪的索哈
 en_ph: om sambhara sambhara vimana sara maha dzambha bha hung phat svaha!
 note: 嗡：读 Ong（书中脚注）
