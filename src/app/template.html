@@ -108,10 +108,12 @@ section.flat .line:last-child{border-bottom:0}
 .il.tl.color .col[data-c="4"] .c-bo,.il.tl.color .col[data-c="4"] .c-gl{color:var(--w4)}
 .w.cur,.col.cur{background:var(--cur);border-radius:4px}
 .line.playing{background:var(--play)}
-.line{scroll-margin-top:100px}
+.line,#main .lines>section{scroll-margin-top:100px}
 /* 念诵页（念诵五，w 定稿）：每句居中；藏文整行在上，注音按词分开、每个词下面一行小字意译，最后整句汉文。
    只用一种颜色：意译打开时意译用主题蓝、汉文墨色；意译关掉时汉文用主题蓝。 */
 .lines .line .body{align-items:center;text-align:center}
+/* 长仪轨（如前行）有上万个元素：屏幕外的段落先不排版，打开和换字号快很多；排过一次就记住真实高度 */
+#main .lines>section{content-visibility:auto;contain-intrinsic-size:auto 700px}
 .lines .r-bo{font-size:calc(21px * var(--size) * var(--s-bo));margin-bottom:-.15em}
 .lines .r-ph{color:var(--ink)}
 .pw{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 16px;margin-top:2px}
@@ -963,8 +965,9 @@ function applyLook(){
   st.setProperty('--lgap',S.lgap+'px');st.setProperty('--mpadp',Math.max(0,S.mpad||0)+'px');st.setProperty('--mpadn',Math.min(0,S.mpad||0)+'px');
   if(typeof cvFit==='function')cvFit();
 }
-function syncLook(){
-  document.querySelectorAll('#settings .psl').forEach(drawPsl);
+// 设置面板关着就不画（打开时会再调一次）；先一次读完宽度再写，不然每个滑条都要把整页重新排版一遍（长仪轨上要几百毫秒）
+function syncLook(){if($('settings').hidden)return;
+  const els=[...document.querySelectorAll('#settings .psl')],ws=els.map(el=>el.clientWidth);els.forEach((el,i)=>drawPsl(el,ws[i]));
 }
 // 偈颂体段落（如功德颂）：藏文连成一段；汉文按句排整齐，两句一行
 function verseBlock(bo,zh){
@@ -1160,9 +1163,9 @@ $('closeWord').onclick=()=>{$('word').hidden=true;document.querySelectorAll('.on
 document.addEventListener('click',e=>{if($('word').hidden||e.target.closest('#word,.w,.col,.player,.top,#main .line'))return;e.stopPropagation();e.preventDefault();$('closeWord').onclick()},true);
 /* 胶囊滑条：拖圆钮或点轨道，圆钮上写当前值（w 给的样子） */
 const PSL_LABEL={han:()=>'汉',mpad:()=>'边距',lgap:()=>'行距',s_bo:()=>'藏',s_ph:()=>'音',s_zh:()=>'文',s_gl:()=>'意'};
-function drawPsl(el){const k=el.dataset.k,mn=+el.dataset.min,mx=+el.dataset.max,v=k==='han'?S.s_zh:S[k]??DEF[k]??mn;
+function drawPsl(el,w0){const k=el.dataset.k,mn=+el.dataset.min,mx=+el.dataset.max,v=k==='han'?S.s_zh:S[k]??DEF[k]??mn;
   if(!el.querySelector('.th')){el.insertAdjacentHTML('afterbegin','<i class="fill"></i>');el.insertAdjacentHTML('beforeend','<b class="th"></b>');el.tabIndex=0;el.setAttribute('role','slider')}
-  const f=Math.min(1,Math.max(0,(v-mn)/(mx-mn))),w=el.clientWidth||300,th=48,x=f*(w-th);
+  const f=Math.min(1,Math.max(0,(v-mn)/(mx-mn))),w=(w0??el.clientWidth)||300,th=48,x=f*(w-th);
   el.querySelector('.th').style.left=x+'px';el.querySelector('.th').textContent=PSL_LABEL[k]();el.querySelector('.fill').style.width=(x+th)+'px';
   el.setAttribute('aria-valuemin',mn);el.setAttribute('aria-valuemax',mx);el.setAttribute('aria-valuenow',v)}
 function setPsl(el,v){const k=el.dataset.k,mn=+el.dataset.min,mx=+el.dataset.max,st=+el.dataset.step;v=Math.min(mx,Math.max(mn,Math.round((v-mn)/st)*st+mn));v=+v.toFixed(3);if(k==='han'){if(S.s_zh===v)return;S.s_ph=S.s_zh=S.s_gl=v;applyLook();syncLook();save();return}if(S[k]===v)return;S[k]=v;applyLook();drawPsl(el);save()}
@@ -1600,7 +1603,7 @@ function use(k){const now=Date.now(),a=(S.use[k]||[]).filter(t=>now-t<30*864e5);
 function score(k){const now=Date.now();return (S.use[k]||[]).filter(t=>now-t<30*864e5).length}
 const lastUse=k=>{const a=S.use[k]||[];return a.length?a[a.length-1]:0};
 // 仪轨库按名称排（w 2026-11-07：不按点得多少排）；置顶的组合仍在最前
-const nk=s=>s.replace(/（([一二三四五六七八九十])）/g,(m,c)=>'（'+'0123456789'['一二三四五六七八九十'.indexOf(c)]+'）'),byName=(x,y)=>nk(x).localeCompare(nk(y),'zh-Hans-CN',{numeric:true});  // （一）（二）按数字排
+const nk=s=>s.replace(/（([一二三四五六七八九十])）/g,(m,c)=>'（'+'0123456789'['一二三四五六七八九十'.indexOf(c)]+'）'),ZHC=new Intl.Collator('zh-Hans-CN',{numeric:true}),byName=(x,y)=>ZHC.compare(nk(x),nk(y));  // （一）（二）按数字排
 function sortCombos(){return S.combos.filter(c=>!c.hidden&&!c.fresh).sort((a,b)=>(b.pin||0)-(a.pin||0)||byName(a.name,b.name)||b.at-a.at)}
 function sortRits(){return RITUALS.slice().sort((a,b)=>byName(a.meta['title.zh']||'',b.meta['title.zh']||'')||RITUALS.indexOf(a)-RITUALS.indexOf(b))}
 // 时长：读录音的长度，算一次存起来
@@ -1646,16 +1649,17 @@ function ritSub(R){const d=ritDur(R),n=ritReps(R);return [d!=null?fmt(d*n):'',n>
 // 离线音频包（w）：Pages 版把全部录音、词库发音按原样一次存进手机，存好后不联网也能播。网页版音频已在页面里，不显示
 const APACK=/*APACK*/[];
 const APK=APACK.reduce((a,[,n])=>a+n,0),apMB=b=>(b/1048576).toFixed(b<1048576*10?1:0)+' MB';
-async function apHave(){const c=await caches.open('recite-audio');let n=0,b=0;for(const [f,sz] of APACK)if(await c.match(f,{ignoreSearch:true})){n++;b+=sz}return {c,n,b}}
+async function apHave(){const c=await caches.open('recite-audio'),have=new Set((await c.keys()).map(r=>new URL(r.url).pathname.split('/').pop()));let n=0,b=0;const miss=[];for(const [f,sz] of APACK)if(have.has(f.split('/').pop())){n++;b+=sz}else miss.push([f,sz]);return {c,n,b,miss}}
 async function apDraw(){if(!APACK.length||!('caches' in window))return;const el=$('apack');el.hidden=$('aphd').hidden=false;if(A.apBusy)return;
   try{const {n}=await apHave();const done=n>=APACK.length;el.classList.toggle('done',done);
     $('apsub').textContent=done?`已下载 ${APACK.length} 个文件，可离线使用`:n?`已存 ${n} / ${APACK.length} 个 · 共 ${apMB(APK)}`:`${APACK.length} 个文件 · ${apMB(APK)} · 原始音质`;
     $('apbtn').textContent=n?'继续下载':'下载'}catch(e){el.hidden=$('aphd').hidden=true}}
 $('apbtn').onclick=async()=>{if(A.apBusy)return;A.apBusy=true;const b=$('apbtn');b.disabled=true;let fail=0;
-  try{const {c,n,b:got}=await apHave();let k=n,bytes=got;
-    for(const [f,sz] of APACK){if(await c.match(f,{ignoreSearch:true}))continue;
+  try{const {c,n,b:got,miss}=await apHave();let k=n,bytes=got,q=0;
+    const one=async()=>{while(q<miss.length){const [f,sz]=miss[q++];
       try{const r=await fetch(f,{cache:'no-store'});if(!r.ok)throw 0;await c.put(f,r);k++;bytes+=sz}catch(e){fail++}
-      $('apsub').textContent=`下载中 ${k} / ${APACK.length} · ${apMB(bytes)} / ${apMB(APK)}`}
+      $('apsub').textContent=`下载中 ${k} / ${APACK.length} · ${apMB(bytes)} / ${apMB(APK)}`}};
+    await Promise.all(Array.from({length:6},one));
     try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}}catch(e){fail++}
   A.apBusy=false;b.disabled=false;await apDraw();if(fail)toast(`有 ${fail} 个文件没下载成功，联网后点“继续下载”`)};
 function drawHome(){
@@ -1823,6 +1827,9 @@ function goBack(){CUR=STACK.length?STACK.pop():'#/';setURL(CUR,false);route()}
 // 手机的系统返回手势仍然走浏览器历史
 addEventListener('popstate',()=>{const h=location.hash||'#/';if(h===CUR)return;if(STACK.length&&STACK[STACK.length-1]===h)STACK.pop();CUR=h;route()});
 addEventListener('hashchange',()=>{const h=location.hash||'#/';if(h!==CUR){CUR=h;route()}});
+// 段落目录（目录 N 段）的链接是 #<仪轨>-<段>：不能让它改地址栏，否则路由认不得这个地址，直接跳回首页；这里自己滚过去
+document.addEventListener('click',e=>{const a=e.target.closest('.toc a[href^="#"]');if(!a)return;e.preventDefault();
+  const t=document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));if(t)t.scrollIntoView({block:'start'})});
 function openRit(id){use('r:'+id);cancelRest();S.q=null;save();go('#/r/'+encodeURIComponent(id))}
 function toast(t){const el=$('toast');el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,1800)}
 function ask(title,yes){return new Promise(res=>{$('dlgT').textContent=title;$('dlgYes').textContent=yes||'移除';$('dlg').hidden=false;$('dlgNo').focus();
