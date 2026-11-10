@@ -231,6 +231,9 @@ body:not(.v-reader) .top,body:not(.v-reader) #main,body:not(.v-reader) .player{d
 body.v-reader .top,body.v-reader .player{transition:transform .3s ease,opacity .3s ease}
 body.v-reader.imm .top{transform:translateY(calc(-100% - env(safe-area-inset-top,0px)));opacity:0;pointer-events:none}
 body.v-reader.imm .player{transform:translateY(calc(100% + 30px));opacity:0;pointer-events:none}
+#imline{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);height:3px;z-index:20;pointer-events:none;opacity:0;transition:opacity .3s ease}
+#imline i{position:absolute;inset:0;background:var(--lapis);opacity:.55;transform-origin:left;transform:scaleX(0)}
+body.v-reader.imm:not(.land) #imline{opacity:1}
 .htop{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);display:flex;align-items:center;gap:8px;min-height:56px;border-bottom:1px solid var(--rule);margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:0 max(16px,env(safe-area-inset-left,0px))}
 .htop h1{margin:0;flex:1;font:600 20px var(--f-zh)}
 .htop .ttl{flex:1;text-align:center;font:600 17px var(--f-zh)}
@@ -373,7 +376,7 @@ body:not(.v-reader).has-audio .sheet{bottom:0}
 .ones button{width:42px;height:42px;border-radius:50%;border:1px solid var(--rule);background:transparent;color:var(--ink);font:16px var(--f-zh);cursor:pointer;padding:0}
 .ones button[aria-pressed=true]{background:var(--lapis);border-color:var(--lapis);color:var(--paper)}
 .ones .gap{width:1px;background:var(--rule);margin:6px 2px}
-.ones .zvt{border-style:dashed;color:var(--lapis)}
+.ones .zvt{border-style:dashed;color:var(--lapis)}.ones .zvt[aria-pressed=true]{border-style:solid;color:var(--paper)}
 .crect{height:42px;padding:0 14px;border-radius:10px;border:1px solid var(--rule);background:transparent;color:var(--ink);font:14px var(--f-ui);cursor:pointer;white-space:nowrap}
 .crect[aria-pressed=true]{background:var(--lapis);border-color:var(--lapis);color:var(--paper)}
 .psl{position:relative;height:48px;border-radius:24px;background:var(--sl);touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;flex:none;min-width:0;overflow:visible}
@@ -433,6 +436,8 @@ body:not(.v-reader).has-audio .sheet{bottom:0}
 .mini-in .mt b{font:600 15px var(--f-zh);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mini-in .mt small{font-size:12px;color:var(--muted)}
 body.has-mini .view{padding-bottom:calc(162px + env(safe-area-inset-bottom,0px))}
+body.has-mini:not(.v-reader) .toast{bottom:calc(158px + env(safe-area-inset-bottom,0px))}
+.csaveas{display:block;margin:18px auto 0}
 
 /* 跟读版式（手机横屏时自动进入，也可以点播放条上的按钮切换）：当前一句大字，上一句、下一句只显示藏文并淡显；遍数浮在当前句右下角 */
 #pfull svg{transition:transform .2s}body.land #pfull{color:var(--lapis);background:var(--slf)}body.land #pfull svg{transform:rotate(90deg)}
@@ -486,6 +491,10 @@ body.land .player{padding:8px 10px 8px 18px;bottom:calc(8px + env(safe-area-inse
 .tadj{flex:none;display:inline-flex;align-items:center;gap:5px;min-height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--rule);background:none;color:var(--muted);font-size:13px;cursor:pointer}
 .tdone{display:flex;align-items:center;gap:8px;font:600 20px var(--f-ui);color:var(--w2);padding:4px 0}
 .tdone .ck{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--w2);color:var(--paper);font-size:14px}
+.nowi{display:flex;align-items:flex-end;gap:3px;height:18px}.nowi i{width:3px;height:100%;background:currentColor;border-radius:2px;animation:nowb 1s ease-in-out infinite;transform-origin:bottom}.nowi i:nth-child(2){animation-delay:-.35s}.nowi i:nth-child(3){animation-delay:-.7s}
+@keyframes nowb{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+@media (prefers-reduced-motion: reduce){.nowi i{animation:none;transform:scaleY(.7)}}
+.tdhint{margin:10px 2px 0;font-size:13px;color:var(--muted);line-height:1.6}.tdhint .link{font-size:13px;min-height:0;padding:0 2px}
 .tcard.done{opacity:.8}.tcard.done .tplay{background:none;color:var(--lapis);border:1.5px solid var(--rule);width:48px;height:48px}
 .tcard.n{background:#1d2027;color:#f4f2ec;border-color:#2e333d}.tcard.n .tn{color:#f4f2ec}.tcard.n .tplay{background:#f4f2ec;color:#1d2027}
 .tcard.n .tst>div+div,.tcard.n .tft{border-color:#353a45}.tcard.n .tst small,.tcard.n .tfrom .lbl,.tcard.n .tadj{color:#a6aab3}.tcard.n .tadj{border-color:#40454f}.tcard.n .tk{color:#f0957f}
@@ -664,6 +673,7 @@ body.land .player{padding:8px 10px 8px 18px;bottom:calc(8px + env(safe-area-inse
 </div>
 
 <main id="main"></main>
+<div id="imline" aria-hidden="true"><i></i></div>
 <div id="lrep" aria-live="polite"></div>
 
 <div class="view" id="home" hidden>
@@ -672,7 +682,7 @@ body.land .player{padding:8px 10px 8px 18px;bottom:calc(8px + env(safe-area-inse
     <p class="tdsub" id="tdSub"></p>
     <div id="tdMain"></div>
     <div id="tdAdd"></div>
-    <div class="hsec tdh"><h2>佛法融入生活</h2><button class="tall" id="tdAll"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h6v14H4zM14 5h6v14h-6z"/></svg>全部仪轨 ›</button></div>
+    <div class="hsec tdh"><h2>佛法融入生活</h2><button class="tall" id="tdAll"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg>全部仪轨 ›</button></div>
     <div id="cgroups"></div><div id="clist"></div>
   </div>
   <div class="hpane" id="pane-lib" hidden>
@@ -711,6 +721,7 @@ body.land .player{padding:8px 10px 8px 18px;bottom:calc(8px + env(safe-area-inse
   <!-- w 2026-11-08：底部三个加号并排；删除组合挪到最下面做成一行红字；总时长只写「共约 N 分」 -->
   <div class="addrow"><button class="addbtn" id="cadd">＋ 加仪轨</button><button class="addbtn" id="crest">＋ 加安住</button><button class="addbtn chadd" id="cchant">＋ 加持咒</button></div>
   <div class="ctotal" id="ctotal"></div>
+  <button class="link csaveas" id="csaveas">另存为新组合</button>
   <button class="cdelrow" id="cdel">删除这个组合</button>
   <div class="undo" id="undo" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg><span id="undoT"></span><button class="link" id="undoBtn">撤销</button></div>
   <div class="cfoot"><div class="cfoot-in"><button class="pill main" id="cplay">开始念诵</button></div></div>
@@ -739,7 +750,7 @@ body.land .player{padding:8px 10px 8px 18px;bottom:calc(8px + env(safe-area-inse
   <h3 class="psec">关于</h3>
   <div class="plist">
     <div class="pitem col"><span>数据来源与致谢</span><small class="lbl">藏历和日月食：stonelf/zangli（《藏历、公历、农历对照百年历书》，NASA 日月食表）。钵声：BigSoundBank《Tibetan bowl struck》（CC0）。念诵页字体：Jomolhari、霞鹜文楷、马善政（均为 SIL OFL）。经文以喇荣课诵（中文版）为准。</small></div>
-    <div class="pitem"><span>版本</span><span class="lbl">2026.10</span></div>
+    <div class="pitem"><span>版本</span><span class="lbl">2026.11</span></div>
   </div>
 </div>
 <div class="view" id="calset" hidden>
@@ -1090,7 +1101,7 @@ function render(){
 function syncControls(){
   const vs=versions(RITUALS[S.rit]||RITUALS[0]),cur=zk(),ci=Math.max(0,vs.findIndex(v=>v[0]===cur)),vn=n=>/新/.test(n)?'新':/旧/.test(n)?'旧':n.slice(0,1);
   $('layers').innerHTML=['bo','gl','ph','zh'].map(k=>`<button class="chip" data-k="${k}" aria-pressed="${!!S[k]}" aria-label="${LAYERS.find(x=>x[0]===k)[1]}">${ONE[k]}</button>`).join('')+
-    (vs.length>1?`<span class="gap"></span><button class="zvt" data-zv="${esc(vs[(ci+1)%vs.length][0])}" aria-label="汉文版本：${esc(vs[ci][1])}，点一下换成${esc(vs[(ci+1)%vs.length][1])}">${vn(vs[ci][1])}</button>`:'');
+    (vs.length>1?'<span class="gap"></span>'+vs.map((v,k)=>`<button class="zvt" data-zv="${esc(v[0])}" aria-pressed="${k===ci}" aria-label="汉文版本：${esc(v[1])}">${vn(v[1])}</button>`).join(''):'');
   $('colorBtn').setAttribute('aria-pressed',String(!!S.color));document.querySelectorAll('[data-lm]').forEach(b=>b.setAttribute('aria-pressed',String((S.landMode||'one')===b.dataset.lm)));
 
   syncLook();
@@ -1348,6 +1359,11 @@ let kpq=0;addEventListener('scroll',()=>{if(!kpq){kpq=1;requestAnimationFrame(()
 const USR={t:0,iv:0};
 function userMoved(){if(VIEW!=='reader')return;USR.t=Date.now();clearTimeout(USR.iv);USR.iv=setTimeout(()=>{if(VIEW==='reader'&&!A.el.paused&&!LAND.on){lastLine='';lastKey='';A.lastT=null}},3050)}
 ['wheel','touchmove'].forEach(ev=>addEventListener(ev,userMoved,{passive:true}));
+// 手指按着、松手后的惯性滚动都算自己在滑：一直重新计时，停下来 3 秒才回到当前这一句（w 2026-11-10）
+// 跟读自己的自动滚动不会接上：它要在上一次手动 3 秒之后才开始，这里只接 1 秒内连着的滚动
+addEventListener('touchstart',()=>{USR.down=1;USR.mv=0},{passive:true});addEventListener('touchmove',()=>{USR.mv=1},{passive:true});
+['touchend','touchcancel'].forEach(ev=>addEventListener(ev,e=>{if(!e.touches||!e.touches.length)USR.down=0;if(USR.mv)userMoved()},{passive:true}));
+addEventListener('scroll',()=>{if(USR.down||Date.now()-USR.t<1000)userMoved()},{passive:true});
 addEventListener('keydown',e=>{if(['ArrowDown','ArrowUp','PageDown','PageUp',' ','Home','End'].includes(e.key))userMoved()});
 function paint(pos){
   const el=pos?document.querySelector(`.line[data-id="${CSS.escape(pos.id)}"]`):null;
@@ -1357,7 +1373,7 @@ function paint(pos){
   document.querySelectorAll('.line.playing').forEach(x=>{if(x!==el)x.classList.remove('playing')});
   if(!el)return;if(!el.classList.contains('playing'))el.classList.add('playing');updKp();drawPCard();
   if(LAND.on){lastLine=pos.id;landShow(el);return}
-  if(pos.id!==lastLine){if(Date.now()-USR.t<3000)return;lastLine=pos.id;const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-160)el.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}}
+  if(pos.id!==lastLine){if(USR.down||Date.now()-USR.t<3000)return;lastLine=pos.id;const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-160)el.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}}
 try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
 addEventListener('pointerdown',()=>{if(AC&&AC.state!=='running')AC.resume();A.el.unlock()},true);
 let AC=null;function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC}
@@ -1377,7 +1393,12 @@ function skipGap(t){if(A.track!=='tune'||A.marking||A.el.paused)return false;for
 // 时间按当前速度换算，2× 时总长就是一半
 function showProgress(){const d=A.el.duration,t=A.el.currentTime||0,r=A.el.playbackRate||+S.rate||1;
   if(!isFinite(d)||!d){$('pbar').style.transform='scaleX(0)';return}
-  $('pbar').style.transform=`scaleX(${Math.min(1,t/d)})`;$('ptime').textContent=fmt(t/r)+' / '+fmt(d/r)}
+  $('pbar').style.transform=`scaleX(${Math.min(1,t/d)})`;$('ptime').textContent=fmt(t/r)+' / '+fmt(d/r);imLine()}
+// 全屏时（上下按钮收起）顶端留一条细进度线：组合里是整个组合的进度，单独念是这一部的（w 2026-11-10）
+function imLine(){const el=$('imline');if(!el||!document.body.classList.contains('imm'))return;const d=A.el.duration,t=A.el.currentTime||0,p=d&&isFinite(d)?Math.min(1,t/d):0;let f=p;
+  const x=typeof qItem==='function'&&qItem(),cb=$('cbar');if(x&&!cb.hidden&&cb.children.length){const ws=[...cb.children].map(i=>parseFloat(i.style.flex)||1),all=ws.reduce((a,b)=>a+b,0),n=itemTotal(x.it),fi=isFinite(n)&&n>0?Math.min(1,((x.q.r-1)+p)/n):p;
+    f=(ws.slice(0,x.q.i).reduce((a,b)=>a+b,0)+(ws[x.q.i]||0)*fi)/all}
+  el.firstChild.style.transform=`scaleX(${Math.max(0,Math.min(1,f))})`}
 function tick(){const t=A.el.currentTime,stop=A.stopAt;if(checkChant(t)||checkSecRep(t)||skipGap(t)||earlyEnd(t)||tuneRep(t))return;scheduleClicks(t);
   if(A.stopAt!=null&&t>=A.stopAt-0.02){A.el.pause();A.stopAt=null;if(E.loop&&!$('edit').hidden){clearTimeout(E.lt);E.lt=setTimeout(()=>{if(E.loop&&!$('edit').hidden)ePlay(E.loop)},450)}}
   if(typeof checkRest==='function')checkRest(t);
@@ -1571,6 +1592,8 @@ $('aexport').onclick=()=>{const R=RITUALS[S.rit]||RITUALS[0],ed=S.align[R.meta.i
 /* ---------- 首页、仪轨库、组合 ---------- */
 const STARI='<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 4l2.4 5 5.6.6-4.2 3.8 1.2 5.6L12 16.2 7 19l1.2-5.6L4 9.6 9.6 9z"/></svg>';
 const PLAYI='<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg>';
+// 正在念：三根跳动的竖条（今天页卡片）
+const NOWI='<span class="nowi" aria-hidden="true"><i></i><i></i><i></i></span>';
 const SPKI='<svg role="img" aria-label="有录音" viewBox="0 0 24 24" width="16" height="16" style="flex:none;color:var(--muted)"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 const PINI='<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6l-1 6 4 4H6l4-4z"/><path d="M12 13v8"/></svg>';
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -1711,14 +1734,16 @@ function drawToday(){const h=new Date().getHours(),wk='日一二三四五六'[ne
     const nr=items.slice(qi).filter(it=>!it.rest).length,sec=items.slice(qi).reduce((a,it)=>a+(stepSec(it)||0),0),first=items.slice(qi).find(it=>!it.rest);
     const fn=first?((ritById(first.rid)||{meta:{}}).meta['title.zh']||''):'',name=c?c.name:m.name,go=c?`data-tgo="${esc(c.id)}"`:'data-tadd="1"';
     return `<div class="tcard${night?' n':''}${m.done?' done':''}" data-k="${esc(m.k)}"><div class="tch"><div class="tct">${m.kick?`<span class="tk">${esc(m.kick)}</span>`:''}<b class="tn">${esc(name)}</b>${m.done?'':`<span class="tmeta"><b>${nr}</b> 部 · 约 <b>${Math.max(1,Math.round(sec/60))}</b> 分钟 · <b>${hm(Date.now()+sec*1000)}</b> 念完</span>`}</div>
-      <button class="tplay" ${go} aria-label="念${esc(name)}"${items.length?'':' disabled'}>${PLAYI}</button></div>
+      <button class="tplay${inq&&!A.el.paused?' on':''}" ${go} aria-label="${inq&&!A.el.paused?'回到正在念的地方':'念'+esc(name)}"${items.length?'':' disabled'}>${inq&&!A.el.paused?NOWI:PLAYI}</button></div>
       ${m.done?`<div class="tdone"><span class="ck" aria-hidden="true">✓</span>${hm(m.done)}</div>`:''}
       <div class="tft"><span class="tfrom">${fn?`<span class="lbl">${inq?'接着':'从'}</span> ${esc(fn)}`:''}</span>${c?`<button class="tadj" data-edit="${esc(c.id)}">${ADJI}调整</button>`:''}</div></div>`};
   let html;
   if(!ord.length)html=`<div class="tbig2 empty"><span class="tk">早课</span><span class="ts">还没有设定早课或晚课。在仪轨库里打开一个组合，点「设为早课」或「设为晚课」，它就会出现在这里。</span><div class="tfoot"><button class="link" data-gotab="lib">去仪轨库 ›</button></div></div>`;
   else html=`<div class="tdk${ord.length>1?'':' one'}" id="tdk">${ord.map(card).join('')}</div>${ord.length>1?`<div class="tdots" aria-hidden="true">${ord.map(m=>`<i class="${m.done?'ok':''}"></i>`).join('')}</div>`:''}`;
   const keepX=$('tdk')?$('tdk').scrollLeft:0;
-  $('tdMain').innerHTML=html;$('tdAdd').innerHTML='';
+  $('tdMain').innerHTML=html;
+  // 下午以后还没有晚课：卡片下面提示一句（w 2026-11-10）
+  $('tdAdd').innerHTML=late&&mo&&!ev?'<p class="tdhint">还没有晚课。在仪轨库里打开一个组合，点「设为晚课」，下午以后就先显示它。<button class="link" data-gotab="lib">去仪轨库 ›</button></p>':'';
   const k=$('tdk');if(!k)return;const sig=ord.map(m=>m.k+(m.done?1:0)).join('|');
   const at=ord.findIndex(m=>m.k===want),i=sig!==TD.sig?(at>=0?at:Math.max(0,ord.findIndex(m=>!m.done))):-1;TD.sig=sig;
   requestAnimationFrame(()=>{const cs=k.children;if(i>=0&&cs[i])k.scrollLeft=cs[i].offsetLeft-(k.clientWidth-cs[i].offsetWidth)/2;else k.scrollLeft=keepX;tdDots()});
@@ -1746,7 +1771,7 @@ function drawCombo(){const c=ED();if(!c)return;CUR_C=c;
     :'<p class="empty">还没有仪轨。点下面的按钮加进来。</p>';
   // 总时长只写「共约 N 分」（w 2026-11-08：不写另有几步不计时，也不写几点念完）
   const L=comboLen(c);$('ctotal').innerHTML=c.items.length?`<b>共约 ${Math.max(1,Math.round(L.s/60))} 分</b>`:'';
-  $('cdel').hidden=!comboById(c.id)||!!comboById(c.id).fresh;
+  $('cdel').hidden=$('csaveas').hidden=!comboById(c.id)||!!comboById(c.id).fresh;
   $('cplay').disabled=!c.items.length}
 let VIEW='';
 
@@ -1807,7 +1832,7 @@ $('pfull').onclick=()=>{LAND.force=!LAND.on;landSync()};
 (LQ.addEventListener?LQ.addEventListener('change',landSync):LQ.addListener(landSync));addEventListener('resize',()=>{if(LAND.on)landSync()});
 // 离开首页、阅读页时记住各自滚到哪里，回来时接着（不然会带着上一页的滚动位置，今天页的卡片被顶出屏幕）
 var HOMEY=0,READY=0;
-function show(v){if(VIEW==='home'&&v!=='home')HOMEY=scrollY;if(VIEW==='reader'&&v!=='reader')READY=scrollY;if(v==='reader'&&VIEW!=='reader')setTimeout(()=>typeof immSet==='function'&&immSet(true));else if(v!=='reader')document.body.classList.remove('imm');if(v!=='reader')document.querySelectorAll('#micover').forEach(e=>e.remove());VIEW=v;setTimeout(()=>typeof landSync==='function'&&landSync());document.body.classList.toggle('v-home',v==='home');document.body.classList.toggle('v-reader',v==='reader');document.body.classList.toggle('v-combo',v==='combo');document.body.classList.toggle('v-calset',v==='calset'||v==='prefs');
+function show(v){if(VIEW==='home'&&v!=='home')HOMEY=scrollY;if(VIEW==='reader'&&v!=='reader')READY=scrollY;if(v==='reader'&&VIEW!=='reader')setTimeout(()=>typeof immSet==='function'&&immSet(!A.el.paused||(typeof REST!=='undefined'&&REST.on)));else if(v!=='reader')document.body.classList.remove('imm');if(v!=='reader')document.querySelectorAll('#micover').forEach(e=>e.remove());VIEW=v;setTimeout(()=>typeof landSync==='function'&&landSync());document.body.classList.toggle('v-home',v==='home');document.body.classList.toggle('v-reader',v==='reader');document.body.classList.toggle('v-combo',v==='combo');document.body.classList.toggle('v-calset',v==='calset'||v==='prefs');
   $('home').hidden=v!=='home';$('combo').hidden=v!=='combo';$('calset').hidden=v!=='calset';$('prefs').hidden=v!=='prefs';
   ['settings','tools','word','mark','edit','align','addsheet','tocombo','speedpop','qsheet','rpick','cxsheet','savesheet','stepsheet','hdsheet','npad'].forEach(id=>$(id).hidden=true);
   if(typeof lpHide==='function')lpHide();if(typeof cvSync==='function')cvSync();
@@ -1858,7 +1883,10 @@ $('home').addEventListener('click',e=>{let b;
   if(b=e.target.closest('[data-edit]'))return go('#/c/'+b.dataset.edit);
   if(b=e.target.closest('[data-tgo]')){const id=b.dataset.tgo;if(S.q&&S.q.cid===id&&qItem()){const x=qItem();
     // 正在念这个组合时点卡片上的播放：只回到阅读页，不从头重念这一部
-    if(!x.it.rest&&ritById(x.it.rid)===RITUALS[S.rit]&&!A.el.paused&&!REST.on)return go('#/r/'+encodeURIComponent(rid()));ac();cancelRest();gotoItem(S.q.i,true)}else playCombo(id);return}
+    if(!x.it.rest&&ritById(x.it.rid)===RITUALS[S.rit]&&!A.el.paused&&!REST.on)return go('#/r/'+encodeURIComponent(rid()));
+    // 暂停着：从暂停的地方接着念，不从这一部开头（w 2026-11-10）
+    if(!x.it.rest&&!x.it.chant&&!timedStep(x.it)&&ritById(x.it.rid)===RITUALS[S.rit]&&!REST.on&&A.has&&(A.el.currentTime||0)>0.5&&!A.el.ended){ac();go('#/r/'+encodeURIComponent(rid()));play();return}
+    ac();cancelRest();gotoItem(S.q.i,true)}else playCombo(id);return}
   if(b=e.target.closest('[data-gotab]')){S.tab=b.dataset.gotab;save();drawHome();scrollTo(0,0);return}
   if(b=e.target.closest('[data-tadd]')){const ti=todayInfo(),nm=ti&&((ti.di.names[0]||'殊胜日')+'加念'),qx=qItem();if(qx&&qx.c.hidden&&qx.c.name===nm){ac();cancelRest();gotoItem(S.q.i,true);return}if(ti&&ti.add)playItems(ti.add.items.filter(it=>ritById(it.rid)),(ti.di.names[0]||'殊胜日')+'加念');return}
   if(b=e.target.closest('[data-pin]')){const c=comboById(b.dataset.pin);c.pin=c.pin?0:Date.now();save();drawHome();toast(c.pin?'已置顶':'已取消置顶');return}
@@ -1891,8 +1919,9 @@ function edCommit(asNew){const d=JSON.parse(JSON.stringify(DRAFT));const morn=d.
   if(morn)S.morning=id;else if(!asNew&&S.morning===id)S.morning=null;
   if(eve)S.evening=id;else if(!asNew&&S.evening===id)S.evening=null;
   DRAFT=null;save();return id}
-function askSave(after){AFTER=after||null;if(!isDirty()){const id=S.ed;DRAFT=null;AFTER?AFTER(id):goBack();return}
-  $('svSave').textContent='保存到「'+(ED().name.trim()||'未命名组合')+'」';const o=comboById(ED().id);$('svNew').hidden=!!(o&&o.fresh);$('savesheet').hidden=false}
+// 「完成」「开始念诵」直接保存，不再多弹一层；另存为新组合放在页面底部（w 2026-11-10）
+function askSave(after){let id=S.ed;if(isDirty()){id=edCommit(false);toast('已保存')}else DRAFT=null;after?after(id):goBack()}
+$('csaveas').onclick=()=>{const id=edCommit(true);toast('已另存为新组合');go('#/c/'+id,true)};
 $('svSave').onclick=()=>{$('savesheet').hidden=true;const id=edCommit(false);toast('已保存');AFTER?AFTER(id):goBack()};
 $('svNew').onclick=()=>{$('savesheet').hidden=true;const id=edCommit(true);toast('已另存为新组合');AFTER?AFTER(id):goBack()};
 $('svBack').onclick=()=>$('savesheet').hidden=true;
@@ -2276,7 +2305,7 @@ document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault
 const isField=e=>e&&e.matches&&e.matches('input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select');
 document.addEventListener('focusin',e=>{if(isField(e.target))document.body.classList.add('kb')});
 document.addEventListener('focusout',e=>{if(isField(e.target))setTimeout(()=>{if(!isField(document.activeElement))document.body.classList.remove('kb')},50)});
-function immSet(on){document.body.classList.toggle('imm',!!on);IMM.y=scrollY}
+function immSet(on){document.body.classList.toggle('imm',!!on);IMM.y=scrollY;if(on)imLine()}
 const sheetOpen=()=>[...document.querySelectorAll('.sheet,.kp,.speedpop,.misheet')].some(x=>!x.hidden&&x.offsetParent!==null);
 document.addEventListener('click',e=>{if(VIEW!=='reader'||!document.body.classList.contains('imm'))return;if(e.target.closest('.top,.player,.sheet,.restv,.chv,.fin,.dlg,.kp,.misheet,.micover,#lpop'))return;
   e.stopPropagation();e.preventDefault();immSet(false);immLater()},true);  // 全屏点一下只显示界面，不暂停（w 2026-11-07 撤回点一下暂停）
@@ -2290,7 +2319,8 @@ document.addEventListener('click',e=>{if(VIEW!=='reader'||document.body.classLis
 addEventListener('scroll',()=>{if(VIEW!=='reader'||document.body.classList.contains('imm')||Date.now()-USR.t>1500)return;  // 只有自己滑才收起，跟读自动滚动不算
   if(Math.abs(scrollY-IMM.y)>40&&!sheetOpen())immSet(true)},{passive:true});
 A.el.addEventListener('play',()=>{if(VIEW==='reader'&&!sheetOpen())setTimeout(()=>{if(!A.el.paused&&!sheetOpen())immSet(true)},800)});
-A.el.addEventListener('play',()=>wake(true));A.el.addEventListener('pause',()=>{if(!REST.on&&!TS.on&&!CH.on&&!S.q)wake(false)});
+A.el.addEventListener('play',()=>wake(true));
+['play','pause'].forEach(ev=>A.el.addEventListener(ev,()=>{if(VIEW==='home'&&(S.tab||'today')==='today')drawToday()}));  // 今天页卡片上的「正在念」跟着变A.el.addEventListener('pause',()=>{if(!REST.on&&!TS.on&&!CH.on&&!S.q)wake(false)});
 let MM='';function mediaMeta(t){if(t===MM||!('mediaSession' in navigator)||typeof MediaMetadata==='undefined')return;MM=t;try{navigator.mediaSession.metadata=new MediaMetadata({title:t,artist:'藏汉课诵'})}catch(e){}}
 function restLastBo(R,secId){if(!R)return '';const ss=secId?R.sections.filter(s=>s.id===secId):R.sections;const s=ss[ss.length-1];const l=s&&s.lines[s.lines.length-1];return l?l.bo||'':''}
 function restPoints(){if(!A.tm)return [];const x=qItem(),R=RITUALS[S.rit];const rs=x?(ritById(x.it.rid)===R?itemRests(x.it):[]):defRests(R);
@@ -2495,13 +2525,16 @@ function drawCal(){const today=jdToday();if(CALN==null)CALN=monthOfJD(today);con
   const focus=sel||days.find(x=>x.jd===today);let h='';
   if(focus){const di=dayInfo(mi,focus.d,focus.jd,focus.dup),g=jdDate(focus.jd),isT=focus.jd===today;
     h=`<div class="dcard${di.refs.length?' rec':''}"><div class="trow"><b class="dt">${isT?'今天 · ':''}${DAYN(focus.d)}</b>${di.names.length?`<span class="spn">${esc(di.names.join('、'))}</span>`:''}<span style="flex:1"></span><span class="lbl">${g.getUTCMonth()+1}月${g.getUTCDate()}日</span></div>`+(di.mult?`<p class="dmul">${esc(di.mult)}</p>`:'')+(di.fh?`<p class="dfh">${esc(di.fh)}</p>`:'')+(di.ecl?`<p class="decl">${esc(di.ecl)}</p>`:'')+
-      (CALREFS=di.refs.filter(r=>refName(r))).map((r,k)=>`<div class="recrow"><div style="flex:1;min-width:0"><span class="lbl">${r.mode==='add'?'这天加念':'这天加一个组合'}</span><div class="rn">${esc(refName(r))}</div><span class="lbl">你设定的</span></div><button class="ibtn play" data-rec="${k}" aria-label="开始念诵">${PLAYI}</button></div>`).join('')+'</div>'}
+      (CALREFS=di.refs.filter(r=>refName(r))).map((r,k)=>`<div class="recrow"><div style="flex:1;min-width:0"><span class="lbl">${r.mode==='add'?'这天加念':'这天加一个组合'}</span><div class="rn">${esc(refName(r))}</div><span class="lbl">你设定的</span></div><button class="ibtn play" data-rec="${k}" aria-label="开始念诵">${PLAYI}</button></div>`).join('')+
+      // 殊胜日、自己加的纪念日：卡片上直接设这天念什么（w 2026-11-10）
+      (()=>{const xi=focus.dup||mi.leap?-1:S.calx.findIndex(x=>x.m===mi.M&&x.d===focus.d),hk=!focus.dup&&SPECIAL[focus.d]?'d'+focus.d:xi>=0?'x'+xi:'';return hk?`<button class="link dset" data-hdk="${hk}">${CALREFS.length?'改这天念什么 ›':'给这天设念诵 ›'}</button>`:''})()+'</div>'}
   // 下一个殊胜日
   let nx=null;for(let k=0;k<3&&!nx&&CALN+k<ZL.length;k++){const m=monthInfo(CALN+k);for(const x of monthDays(CALN+k)){if(x.jd<=today||x.dup)continue;const di=dayInfo(m,x.d,x.jd);if(di.nextName){nx={x,di};break}}}
   if(nx)h+=`<p class="lbl" style="margin:10px 2px 0">接下来：${DAYN(nx.x.d)} ${esc(nx.di.nextName)}（还有 ${nx.x.jd-today} 天）</p>`;
   $('calCard').innerHTML=h}
 $('pane-cal').addEventListener('click',e=>{let b;
   if(b=e.target.closest('[data-jd]')){CALSEL=+b.dataset.jd===CALSEL?null:+b.dataset.jd;drawCal();return}
+  if(b=e.target.closest('[data-hdk]')){openHD(b.dataset.hdk);return}
   if(b=e.target.closest('[data-rec]')){const r=CALREFS[+b.dataset.rec];if(!r)return;if(r.mode==='swap')startCombo(r.id);else if(r.mode==='add')playItems(r.items.filter(it=>ritById(it.rid)),'加念');else if(r.t==='c')startCombo(r.id);else{const R=ritById(r.id);if(R)playOnce(R,1)}return}});
 let CALREFS=[];
 $('calPrev').onclick=()=>{if(CALN<=0)return;CALN--;CALSEL=null;drawCal()};$('calNext').onclick=()=>{if(CALN>=ZL.length-1)return;CALN++;CALSEL=null;drawCal()};
@@ -2515,8 +2548,9 @@ function drawCalSet(){const row=(key,d,label,ref,extra)=>`<button class="setrow"
 let HD=null;
 const hdGet=key=>key[0]==='x'?S.calx[+key.slice(1)].ref:S.cal[key.slice(1)];
 function hdSet(key,ref){if(key[0]==='x')S.calx[+key.slice(1)].ref=ref;else if(ref)S.cal[key.slice(1)]=ref;else delete S.cal[key.slice(1)];save()}
-$('csList').onclick=e=>{const b=e.target.closest('[data-cs]');if(!b)return;const key=b.dataset.cs,x=key[0]==='x'?S.calx[+key.slice(1)]:null;
-  HD={key,ref:JSON.parse(JSON.stringify(hdGet(key)||null))};$('hdT').textContent=x?MON[x.m-1]+'月'+DAYN(x.d)+' '+x.name:DAYN(+key.slice(1))+' '+SPECIAL[key.slice(1)][0];drawHD();$('hdsheet').hidden=false};
+$('csList').onclick=e=>{const b=e.target.closest('[data-cs]');if(b)openHD(b.dataset.cs)};
+function openHD(key){const x=key[0]==='x'?S.calx[+key.slice(1)]:null;
+  HD={key,ref:JSON.parse(JSON.stringify(hdGet(key)||null))};$('hdT').textContent=x?MON[x.m-1]+'月'+DAYN(x.d)+' '+x.name:DAYN(+key.slice(1))+' '+SPECIAL[key.slice(1)][0];drawHD();$('hdsheet').hidden=false}
 function drawHD(){const r=HD.ref,m=r?r.mode:'';document.querySelectorAll('#hdMode [data-hm]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.hm===m)));let h='';
   if(m==='swap')h='<p class="lbl">这一天，今天页上加一张这个组合的卡：</p><div class="plist">'+sortCombos().map(c=>`<button data-hc="${esc(c.id)}" aria-pressed="${r.id===c.id}">${esc(c.name)}<span class="lbl">${r.id===c.id?'✓':''}</span></button>`).join('')+'</div>';
   else if(m==='add')h='<p class="lbl">这一天，今天页上多一张「加念」小卡：</p>'+(r.items||[]).map((it,k)=>{const R=ritById(it.rid);return R?`<div class="hdi"><span>${esc(R.meta['title.zh'])}</span><div class="step"><button data-hn="${k}" data-d="-1" aria-label="少一遍">−</button><span>×${it.n}</span><button data-hn="${k}" data-d="1" aria-label="多一遍">＋</button></div><button class="ibtn" data-hx="${k}" aria-label="移除">✕</button></div>`:''}).join('')+'<button class="link" data-hadd="1">＋ 加仪轨（可多选）</button>';
@@ -2529,7 +2563,7 @@ $('hdBody').onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=
   if(d.hc){r.id=d.hc;drawHD()}else if(d.hn!=null){const it=r.items[+d.hn];it.n=Math.max(1,it.n+(+d.d));drawHD()}else if(d.hx!=null){r.items.splice(+d.hx,1);drawHD()}
   else if(d.hadd)openAdd('加念哪些仪轨',items=>{r.items.push(...items);drawHD()});
   else if(d.hdel){S.calx.splice(+HD.key.slice(1),1);save();$('hdsheet').hidden=true;drawCalSet()}};
-$('hdOk').onclick=()=>{$('hdsheet').hidden=true;let r=HD.ref;if(r&&r.mode==='swap'&&!comboById(r.id))r=null;if(r&&r.mode==='add'&&!(r.items||[]).length)r=null;hdSet(HD.key,r);drawCalSet()};
+$('hdOk').onclick=()=>{$('hdsheet').hidden=true;let r=HD.ref;if(r&&r.mode==='swap'&&!comboById(r.id))r=null;if(r&&r.mode==='add'&&!(r.items||[]).length)r=null;hdSet(HD.key,r);drawCalSet();if(VIEW==='home'){drawCal();if((S.tab||'today')==='today')drawToday()}};
 $('closeRp').onclick=()=>$('rpick').hidden=true;
 $('csBack').onclick=()=>goBack();
 $('csAdd').onclick=()=>{$('cxName').value='';$('cxM').innerHTML=MON.map((m,i)=>`<option value="${i+1}">${m}月</option>`).join('');$('cxD').innerHTML=Array.from({length:30},(_,i)=>`<option value="${i+1}">${DAYN(i+1)}</option>`).join('');$('cxsheet').hidden=false;$('cxName').focus()};
