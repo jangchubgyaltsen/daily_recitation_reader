@@ -60,18 +60,23 @@ ver = hashlib.sha1((t + json.dumps(audio)).encode()).hexdigest()[:10]
 open(f'{out}/sw.js', 'w').write(f"""const C='recite-{ver}',A='recite-audio',FILES=['./','index.html','manifest.webmanifest','icon-180.png','icon-512.png','fonts/NotoSerifTibetan.woff2','fonts/Jomolhari.woff2','fonts/WenKai.woff2','fonts/MaShanZheng.woff2'];
 const AUDIO={json.dumps(audio)};
 const base=f=>f.split('/').pop();
+// 音频缓存里两千多个文件：一次取出全部文件名，不逐个 match；缺的同时下 4 个
 async function fillAudio(){{const c=await caches.open(A),keys=await c.keys(),have=new Set(keys.map(r=>base(new URL(r.url).pathname))),want=new Set(AUDIO.map(base));
   for(const r of keys)if(!want.has(base(new URL(r.url).pathname)))await c.delete(r);
-  for(const f of AUDIO)if(!have.has(base(f)))try{{await c.add(f)}}catch(e){{}}}}
+  const miss=AUDIO.filter(f=>!have.has(base(f)));let q=0;
+  await Promise.all([0,1,2,3].map(async()=>{{while(q<miss.length){{const f=miss[q++];try{{await c.add(f)}}catch(e){{}}}}}}))}}
 const SPLASH={json.dumps(splash)};
 // 法相图片安装时就一次存好（放在长期缓存里，已有的不重下）
-async function fillSplash(){{const c=await caches.open(A);for(const f of SPLASH)if(!(await c.match(f,{{ignoreSearch:true}})))try{{await c.add(f)}}catch(e){{}}}}
+async function fillSplash(){{const c=await caches.open(A),have=new Set((await c.keys()).map(r=>base(new URL(r.url).pathname)));for(const f of SPLASH)if(!have.has(base(f)))try{{await c.add(f)}}catch(e){{}}}}
 self.addEventListener('install',e=>{{self.skipWaiting();e.waitUntil(Promise.all([caches.open(C).then(c=>c.addAll(FILES)),fillSplash()]))}});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!==A).map(k=>caches.delete(k)))).then(()=>self.clients.claim()).then(()=>{{fillAudio()}})));
+// a/ 里的文件名是内容哈希，按去掉 ? 后面的地址精确查（ignoreSearch 在大缓存里每次都要扫一遍全部条目）；
+// 网页本身只在当前版本的小缓存里找
 self.addEventListener('fetch',e=>{{
-  if(e.request.method!=='GET'||new URL(e.request.url).origin!==location.origin)return;
-  if(new URL(e.request.url).pathname.includes('/a/'))return e.respondWith(caches.open(A).then(c=>c.match(e.request,{{ignoreSearch:true}}).then(r=>r||fetch(e.request).then(res=>{{if(res.ok)c.put(e.request,res.clone());return res}}))));
-  e.respondWith(caches.match(e.request,{{ignoreSearch:true}}).then(r=>r||(e.request.mode==='navigate'?caches.match('index.html'):null)).then(r=>r||fetch(e.request)));
+  const u=new URL(e.request.url);
+  if(e.request.method!=='GET'||u.origin!==location.origin)return;
+  if(u.pathname.includes('/a/')){{const key=u.origin+u.pathname;return e.respondWith(caches.open(A).then(c=>c.match(key).then(r=>r||fetch(e.request).then(res=>{{if(res.status===200)c.put(key,res.clone()).catch(()=>{{}});return res}}))))}}
+  e.respondWith(caches.open(C).then(c=>c.match(e.request,{{ignoreSearch:true}}).then(r=>r||(e.request.mode==='navigate'?c.match('index.html'):null))).then(r=>r||fetch(e.request)));
 }});
 """)
 os.remove(f'{out}/audio-files.json')
