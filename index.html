@@ -218,7 +218,9 @@ body.has-audio{padding-bottom:calc(var(--ph,150px) + 60px)}
 .r-bo .w.on{background:linear-gradient(to bottom,transparent 12%,var(--hl) 12% 64%,transparent 64%);-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .r-bo .w.cur{background:linear-gradient(to bottom,transparent 12%,var(--cur) 12% 64%,transparent 64%);-webkit-box-decoration-break:clone;box-decoration-break:clone}
 /* ---------- 首页（仪轨库 / 常用 / 藏历）与组合编辑页 ---------- */
-body:not(.v-reader) .top,body:not(.v-reader) #main,body:not(.v-reader) .player,body:not(.v-reader) .restv{display:none!important}
+body:not(.v-reader) .top,body:not(.v-reader) #main,body:not(.v-reader) .player{display:none!important}
+/* 安住时离开阅读页：安住屏收起，迷你播放条上倒计时；从首页直接开始的安住（组合第一步）照常铺满 */
+body.rest-away .restv{display:none!important}
 .view{max-width:760px;margin:0 auto;padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 .view[hidden],.hpane[hidden]{display:none}
 /* 经文上点按是播放，长按是释义：不要弹出系统的选字菜单 */
@@ -1235,7 +1237,7 @@ class Player extends EventTarget{
     this.iv=setInterval(()=>{if(this.now()>=this.vd){this.vt=this.vd;this.vp=true;clearInterval(this.iv);this.emit('pause');this.emit('ended')}else this.emit('timeupdate')},250);this.emit('play');return Promise.resolve()}
   pause(){if(!this.v){this.stopFade();return this.au.pause()}this.vpause()}
   get currentTime(){return this.v?this.now():this.au.currentTime}
-  set currentTime(t){if(!this.v){const X=this.au.paused||Math.abs(t-this.au.currentTime)<0.3?0:this.xfOn();if(X&&this.fadeTo(this.au.src,t,X))return;this.au.currentTime=t;return}this.vt=Math.max(0,Math.min(this.vd,+t||0));this.t0=performance.now();this.emit('seeking');this.emit('timeupdate')}
+  set currentTime(t){this.sk=(this.sk||0)+1;if(!this.v){const X=this.au.paused||Math.abs(t-this.au.currentTime)<0.3?0:this.xfOn();if(X&&this.fadeTo(this.au.src,t,X))return;this.au.currentTime=t;return}this.vt=Math.max(0,Math.min(this.vd,+t||0));this.t0=performance.now();this.emit('seeking');this.emit('timeupdate')}
   get duration(){return this.v?this.vd:this.au.duration}
   get paused(){return this.v?this.vp:this.au.paused}
   get ended(){return this.v?this.vp&&this.vt>=this.vd:this.au.ended}
@@ -1411,7 +1413,8 @@ const SCHED=new Set();
 function beatList(){const Y=A.track==='tune'?yu(RITUALS[S.rit]||RITUALS[0]):null,fin=!!Y&&finalRep();if(A._bl&&A._blv===A.tm&&A._blf===fin&&A._bly===Y)return A._bl;const out=[],ck=Y?Y.ck:null;
   if(A.tm)A.order.forEach(ln=>((fin&&ln.id===Y.last&&Y.ck3)||(ck&&ck[ln.id])||A.tm[ln.id]||[]).forEach((t,k,a)=>out.push({t,k:ln.id+'/'+k,accent:k===a.length-1})));A._bl=out;A._blv=A.tm;A._blf=fin;A._bly=Y;return out}
 function scheduleClicks(t){if(A.track!=='tune'||A.el.paused||A.marking)return;const c=ac();if(!c)return;const r=A.el.playbackRate||1;
-  for(const b of beatList()){if(b.t<t-0.02||b.t>t+0.2)continue;if(SCHED.has(b.k))continue;SCHED.add(b.k);woodblock(c.currentTime+Math.max(0,(b.t-t)/r),b.accent)}}
+  const ah=document.hidden?1.5*r:0.2;  // 后台计时器约一秒才走一次：提前排好这一秒多的木鱼
+  for(const b of beatList()){if(b.t<t-0.02||b.t>t+ah)continue;if(SCHED.has(b.k))continue;SCHED.add(b.k);woodblock(c.currentTime+Math.max(0,(b.t-t)/r),b.accent)}}
 function gaps(){if(A._gp&&A._gpv===A.tm&&A._gpg===S.tgap)return A._gp;A._gpg=S.tgap;const out=[];if(A.tm)A.order.forEach((ln,i)=>{const st=A.tm[ln.id];if(i+1>=A.order.length||st.length<2)return;
   const Y=A.track==='tune'?yu(RITUALS[S.rit]||RITUALS[0]):null,c=Y&&Y.ck[ln.id]||st;
   const step=Y?Y.T:(st[st.length-1]-st[0])/(st.length-1),from=c[c.length-1]+step*(S.tgap??1.5),to=A.tm[A.order[i+1].id][0];if(to-from>0.15)out.push([from-0.12,to-0.12])});A._gp=out;A._gpv=A.tm;return out}
@@ -1871,7 +1874,7 @@ $('pfull').onclick=()=>{LAND.force=!LAND.on;landSync()};
 (LQ.addEventListener?LQ.addEventListener('change',landSync):LQ.addListener(landSync));addEventListener('resize',()=>{if(LAND.on)landSync()});
 // 离开首页、阅读页时记住各自滚到哪里，回来时接着（不然会带着上一页的滚动位置，今天页的卡片被顶出屏幕）
 var HOMEY=0,READY=0;
-function show(v){if(VIEW==='home'&&v!=='home')HOMEY=scrollY;if(VIEW==='reader'&&v!=='reader')READY=scrollY;if(v==='reader'&&VIEW!=='reader')setTimeout(()=>typeof immSet==='function'&&immSet(!A.el.paused||(typeof REST!=='undefined'&&REST.on)));else if(v!=='reader')document.body.classList.remove('imm');if(v!=='reader')document.querySelectorAll('#micover').forEach(e=>e.remove());VIEW=v;setTimeout(()=>typeof landSync==='function'&&landSync());document.body.classList.toggle('v-home',v==='home');document.body.classList.toggle('v-reader',v==='reader');document.body.classList.toggle('v-combo',v==='combo');document.body.classList.toggle('v-calset',v==='calset'||v==='prefs');
+function show(v){document.body.classList.toggle('rest-away',v!=='reader'&&(VIEW==='reader'||document.body.classList.contains('rest-away')));if(VIEW==='home'&&v!=='home')HOMEY=scrollY;if(VIEW==='reader'&&v!=='reader')READY=scrollY;if(v==='reader'&&VIEW!=='reader')setTimeout(()=>typeof immSet==='function'&&immSet(!A.el.paused||(typeof REST!=='undefined'&&REST.on)));else if(v!=='reader')document.body.classList.remove('imm');if(v!=='reader')document.querySelectorAll('#micover').forEach(e=>e.remove());VIEW=v;setTimeout(()=>typeof landSync==='function'&&landSync());document.body.classList.toggle('v-home',v==='home');document.body.classList.toggle('v-reader',v==='reader');document.body.classList.toggle('v-combo',v==='combo');document.body.classList.toggle('v-calset',v==='calset'||v==='prefs');
   $('home').hidden=v!=='home';$('combo').hidden=v!=='combo';$('calset').hidden=v!=='calset';$('prefs').hidden=v!=='prefs';
   ['settings','tools','word','mark','edit','align','addsheet','tocombo','speedpop','qsheet','rpick','cxsheet','savesheet','stepsheet','hdsheet','npad'].forEach(id=>$(id).hidden=true);
   if(typeof lpHide==='function')lpHide();if(typeof cvSync==='function')cvSync();
@@ -2318,7 +2321,8 @@ const REST={on:false};
 const KEEP=new Audio();KEEP.loop=true;
 function keepAlive(on){try{if(on){if(!KEEP.getAttribute('src'))KEEP.src=silWav();KEEP.play().catch(()=>{})}else KEEP.pause()}catch(e){}}
 KEEP.addEventListener('timeupdate',()=>{if(REST.on)restTick();if(TS.on)tsTick();if(CH.on)chTick()});
-let WL=null;async function wake(on){try{if(on&&!WL&&navigator.wakeLock&&document.visibilityState==='visible'){WL=await navigator.wakeLock.request('screen');WL.addEventListener('release',()=>{WL=null})}else if(!on&&WL){const w=WL;WL=null;w.release()}}catch(e){}}
+// WL：0 = 正在申请；申请回来时已经不要了就马上放掉；只清自己那把锁（旧锁的 release 晚到，不能把新锁也清掉）
+let WL=null,WLW=false;async function wake(on){WLW=on;try{if(on){if(WL||WL===0||!navigator.wakeLock||document.visibilityState!=='visible')return;WL=0;const l=await navigator.wakeLock.request('screen');if(!WLW){WL=null;l.release();return}WL=l;l.addEventListener('release',()=>{if(WL===l)WL=null})}else if(WL){const w=WL;WL=null;w.release()}}catch(e){if(WL===0)WL=null}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&(REST.on||TS.on||CH.on||!A.el.paused))wake(true)});
 
 // 底部上拉（w 2026-11-04）：到页面底再往上拉，出现「下一部」提示；拉够了提示变色，这时松手就进入下一部，没变色松手不跳
@@ -2360,7 +2364,8 @@ addEventListener('scroll',()=>{if(VIEW!=='reader'||document.body.classList.conta
 A.el.addEventListener('play',()=>{if(VIEW==='reader'&&!sheetOpen())setTimeout(()=>{if(!A.el.paused&&!sheetOpen())immSet(true)},800)});
 A.el.addEventListener('play',()=>wake(true));
 ['play','pause'].forEach(ev=>A.el.addEventListener(ev,()=>{if(VIEW==='home'&&(S.tab||'today')==='today')drawToday()}));  // 今天页卡片上的「正在念」跟着变
-A.el.addEventListener('pause',()=>{if(!REST.on&&!TS.on&&!CH.on&&!S.q)wake(false)});
+// 暂停一会儿再放掉常亮：念完一遍马上接下一遍、进安住前也会先暂停一下
+A.el.addEventListener('pause',()=>{setTimeout(()=>{if(A.el.paused&&!REST.on&&!TS.on&&!CH.on&&!S.q)wake(false)},400)});
 let MM='';function mediaMeta(t){if(t===MM||!('mediaSession' in navigator)||typeof MediaMetadata==='undefined')return;MM=t;try{navigator.mediaSession.metadata=new MediaMetadata({title:t,artist:'藏汉课诵'})}catch(e){}}
 function restLastBo(R,secId){if(!R)return '';const ss=secId?R.sections.filter(s=>s.id===secId):R.sections;const s=ss[ss.length-1];const l=s&&s.lines[s.lines.length-1];return l?l.bo||'':''}
 function restPoints(){if(!A.tm)return [];const x=qItem(),R=RITUALS[S.rit];const rs=x?(ritById(x.it.rid)===R?itemRests(x.it):[]):defRests(R);
@@ -2379,9 +2384,10 @@ function checkSecRep(t){const prev=A.prevT;A.prevT=t;if(A.marking||A.stopAt!=nul
   const r=A.el.playbackRate||1,p=secRepPoints().find(p=>{const at=p.t-xfLead(p.t)*r;return !p.end&&prev<at&&t>=at});return !!p&&secRepeat(p)}
 // 只有一段的仪轨（如增长咒念 3 遍）不在组合里单独念时，也按自带遍数重复
 function soloRepeat(){const n=playReps(RITUALS[S.rit]||RITUALS[0]);if((A.solo||1)<n){A.solo=(A.solo||1)+1;A.sr={};A.el.currentTime=repFrom();play();return true}A.solo=1;return false}
-// 只在自然念到段尾时安住；点后面的句子跳过去不算（不然在前行里点后面一句，马上就进 45 分钟的安住）
-function checkRest(t){const prev=A.rPrevT;A.rPrevT=t;if(REST.on||A.el.paused||A.stopAt!=null||A.marking||prev==null||t<prev||t-prev>1.5)return;const d=rDone(),p=restPoints().find(p=>!p.end&&!d.includes(p.r.after)&&prev<p.t-0.05&&t>=p.t-0.05);if(p){d.push(p.r.after);save();startRest(Object.assign({last:restLastBo(RITUALS[S.rit],p.r.after)},p.r),()=>play())}}
-function startRest(r,then){A.el.pause();const sec=r.sec||0;Object.assign(REST,{on:true,left:sec,tot:sec,open:!sec,el:0,paused:false,r,then,last:Date.now()});
+// 只在自然念到段尾时安住；点后面的句子等跳过去的不算（不然在前行里点后面一句，马上就进 45 分钟的安住）。
+// 跳没跳过按 A.el.sk（每次设 currentTime 加一）判断，不按时间差：后台计时器变慢、2× 时一次走一两秒也照常安住
+function checkRest(t){let prev=A.rPrevT;A.rPrevT=t;if(A.el.sk!==A.rSk){A.rSk=A.el.sk;prev=null}if(REST.on||A.el.paused||A.stopAt!=null||A.marking||prev==null||t<prev)return;const d=rDone(),p=restPoints().find(p=>!p.end&&!d.includes(p.r.after)&&prev<p.t-0.05&&t>=p.t-0.05);if(p){d.push(p.r.after);save();startRest(Object.assign({last:restLastBo(RITUALS[S.rit],p.r.after)},p.r),()=>play())}}
+function startRest(r,then){document.body.classList.remove('rest-away');A.el.pause();const sec=r.sec||0;Object.assign(REST,{on:true,left:sec,tot:sec,open:!sec,el:0,paused:false,r,then,last:Date.now()});
   clearInterval(REST.iv);REST.iv=setInterval(restTick,250);keepAlive(true);wake(true);
   const v=$('restv');clearTimeout(REST.ht);v.classList.remove('show','ctl');v.hidden=false;void v.offsetWidth;requestAnimationFrame(()=>v.classList.add('show'));drawRest()}
 function restTick(){if(!REST.on)return;const now=Date.now(),dt=(now-REST.last)/1000;REST.last=now;if(REST.paused){drawRest();return}
@@ -2480,7 +2486,11 @@ function chTick(){if(!CH.on)return;const now=Date.now(),dt=(now-CH.last)/1000;CH
 function drawCH(){if(!CH.on)return;if(CH.how==='self'){$('pplay').textContent=CH.paused?'▶':'❚❚';$('pplay').setAttribute('aria-label',CH.paused?'继续':'暂停')}mediaMeta('持咒 · '+chantName(RITUALS[S.rit],CH.p.ln))}
 function chantClose(){if(!CH.on)return;CH.on=false;clearInterval(CH.iv);cvHide();if(!REST.on&&!(TS.on&&TS.how==='self'))keepAlive(false);syncEnough();syncPlayer()}
 // 持够了，接着念这一句后面的
-function chantResume(){const p=CH.p;chantClose();if(p.end){onEnd();return}A.el.currentTime=p.t;play()}
+function chantResume(){const p=CH.p;chantClose();if(p.end){onEnd();return}A.el.currentTime=p.t;
+  // 持咒这句正好是段尾、后面有安住：跳到句尾后直接安住（「念够了」跳过去的，checkRest 会当成跳句不安住）
+  const d=rDone(),rp=restPoints().find(r=>!r.end&&!d.includes(r.r.after)&&Math.abs(r.t-p.t)<0.06);
+  if(rp){d.push(rp.r.after);save();startRest(Object.assign({last:restLastBo(RITUALS[S.rit],rp.r.after)},rp.r),()=>play());return}
+  play()}
 // 「念够了」：马上停，接着往下念
 function chantEnough(){if(!CH.on)return;chantResume()}
 
