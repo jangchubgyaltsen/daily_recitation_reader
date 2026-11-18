@@ -1409,7 +1409,10 @@ let AC=null;function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkit
 function woodblock(when,accent){const c=ac();if(!c)return;const f=accent?700:760;
   const o=c.createOscillator(),g=c.createGain(),bp=c.createBiquadFilter();o.type='triangle';o.frequency.setValueAtTime(f*1.5,when);o.frequency.exponentialRampToValueAtTime(f,when+0.015);
   bp.type='bandpass';bp.frequency.value=f*1.2;bp.Q.value=4;g.gain.setValueAtTime(0.0001,when);g.gain.exponentialRampToValueAtTime(accent?0.85:0.7,when+0.003);g.gain.exponentialRampToValueAtTime(0.0001,when+0.14);
-  o.connect(bp);bp.connect(g);g.connect(c.destination);o.start(when);o.stop(when+0.16)}
+  o.connect(bp);bp.connect(g);g.connect(wbBus(c));o.start(when);o.stop(when+0.16)}
+// 木鱼都接到一个总线上：跳转、暂停、安住时把总线断开，后台提前排好的拍子就不会再响
+let WB=null;function wbBus(c){if(!WB){WB=c.createGain();WB.connect(c.destination)}return WB}
+function wbCut(){if(!WB||!AC)return;const b=WB;WB=null;try{b.gain.setTargetAtTime(0,AC.currentTime,0.005);setTimeout(()=>{try{b.disconnect()}catch(e){}},60)}catch(e){}}
 const SCHED=new Set();
 function beatList(){const Y=A.track==='tune'?yu(RITUALS[S.rit]||RITUALS[0]):null,fin=!!Y&&finalRep();if(A._bl&&A._blv===A.tm&&A._blf===fin&&A._bly===Y)return A._bl;const out=[],ck=Y?Y.ck:null;
   if(A.tm)A.order.forEach(ln=>((fin&&ln.id===Y.last&&Y.ck3)||(ck&&ck[ln.id])||A.tm[ln.id]||[]).forEach((t,k,a)=>out.push({t,k:ln.id+'/'+k,accent:k===a.length-1})));A._bl=out;A._blv=A.tm;A._blf=fin;A._bly=Y;return out}
@@ -1443,11 +1446,11 @@ function tick(){const t=A.el.currentTime,stop=A.stopAt;if(checkChant(t)||checkSe
 A.el.addEventListener('play',()=>{syncPlayer();if(!A.loop){A.loop=1;requestAnimationFrame(function L(){tick();if(!A.el.paused)requestAnimationFrame(L);else A.loop=0})}});
 // 锁屏、切到后台时 requestAnimationFrame 停了：靠录音的 timeupdate 接着走（段落重复、持咒、安住要按时触发）
 A.el.addEventListener('timeupdate',()=>{if(document.hidden&&!A.el.paused)tick()});
-A.el.addEventListener('seeking',()=>{A.lastT=null;A.prevT=null;SCHED.clear();
+A.el.addEventListener('seeking',()=>{A.lastT=null;A.prevT=null;SCHED.clear();wbCut();
   // 单独念时往回跳：跳过的安住重新算
   if(!Q()&&A.rdone&&A.rdone.length){const t=A.el.currentTime;A.rdone=A.rdone.filter(id=>{const p=restPoints().find(p=>p.r.after===id);return p&&p.t<=t})}});
 A.el.addEventListener('error',()=>{if(A.el.getAttribute('src'))$('ptime').textContent='录音加载失败'});
-A.el.addEventListener('pause',()=>{SCHED.clear();syncPlayer()});
+A.el.addEventListener('pause',()=>{SCHED.clear();wbCut();syncPlayer()});
 A.el.addEventListener('loadedmetadata',()=>syncPlayer());
 $('pplay').onclick=()=>{ac();if(REST.on){REST.paused=!REST.paused;drawRest();return}
   if(TS.on&&TS.how==='self'){TS.paused=!TS.paused;TS.last=Date.now();drawTS();return}if(CH.on&&CH.how==='self'){CH.paused=!CH.paused;CH.last=Date.now();drawCH();return}if(A.el.paused){A.stopAt=null;play()}else A.el.pause()};
@@ -2466,9 +2469,9 @@ function chantList(){const R=RITUALS[S.rit];if(!R)return [];const x=qItem();if(x
 function chantPoints(){if(!A.tm)return [];return chantList().map(c=>{const i=A.order.findIndex(l=>l.id===c.line);if(i<0)return null;const ln=A.order[i],end=i===A.order.length-1;
   return {c,ln,i,from:A.tm[ln.id][0],t:end?Infinity:lineEnd(i),end}}).filter(Boolean)}
 const chKey=p=>'c:'+p.ln.id;
-function checkChant(t){const prev=CH.prevT;CH.prevT=t;if(A.marking||A.stopAt!=null||A.el.paused||REST.on||TS.on)return false;
+function checkChant(t){const prev=CH.prevT,moved=A.el.sk!==CH.sk;CH.prevT=t;CH.sk=A.el.sk;if(A.marking||A.stopAt!=null||A.el.paused||REST.on||TS.on)return false;
   if(CH.on){if(CH.how!=='audio'||CH.p.end)return false;return prev!=null&&prev<CH.p.t-0.05&&t>=CH.p.t-0.05&&chantPass()}
-  if(prev==null||t<prev||t-prev>1.5)return false;  // 只在自然念过去时触发，点后面的句子跳过去不算
+  if(prev==null||moved||t<prev)return false;  // 只在自然念过去时触发，点后面的句子跳过去不算（看跳转次数，不看时间差：后台一次走一秒多也算念过去）
   const d=rDone(),p=chantPoints().find(p=>!p.end&&!d.includes(chKey(p))&&prev<p.t-0.05&&t>=p.t-0.05);if(!p)return false;d.push(chKey(p));save();return chantStart(p)}
 // 录音最后一句是咒：在 ended 里接着处理
 function chantEndHook(){if(CH.on&&CH.p.end&&CH.how==='audio')return chantPass();
