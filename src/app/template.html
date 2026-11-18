@@ -219,7 +219,7 @@ body.has-audio{padding-bottom:calc(var(--ph,150px) + 60px)}
 .r-bo .w.on{background:linear-gradient(to bottom,transparent 12%,var(--hl) 12% 64%,transparent 64%);-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .r-bo .w.cur{background:linear-gradient(to bottom,transparent 12%,var(--cur) 12% 64%,transparent 64%);-webkit-box-decoration-break:clone;box-decoration-break:clone}
 /* ---------- 首页（仪轨库 / 常用 / 藏历）与组合编辑页 ---------- */
-body:not(.v-reader) .top,body:not(.v-reader) #main,body:not(.v-reader) .player{display:none!important}
+body:not(.v-reader) .top,body:not(.v-reader) #main,body:not(.v-reader) .player,body:not(.v-reader) .restv{display:none!important}
 .view{max-width:760px;margin:0 auto;padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 .view[hidden],.hpane[hidden]{display:none}
 /* 经文上点按是播放，长按是释义：不要弹出系统的选字菜单 */
@@ -271,6 +271,7 @@ body.v-reader.imm:not(.land) #imline{opacity:1}
 .tabs button{flex:1;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:13px;color:var(--muted);cursor:pointer;min-height:56px}
 .tabs button svg{width:27px;height:27px}
 .tabs button[aria-selected="true"]{color:var(--lapis);font-weight:600}
+.tabs{justify-content:center}.tabs button{max-width:220px}
 .cname-in{width:100%;box-sizing:border-box;font:600 20px var(--f-zh);border:0;border-bottom:1px solid var(--rule);background:transparent;padding:8px 0;color:var(--ink);outline:none}
 .citem{display:flex;align-items:center;gap:8px;padding:6px 10px 6px 4px;margin-bottom:8px;background:var(--sheet);border:1px solid var(--rule);border-radius:12px;touch-action:pan-y}
 .citem.drag{box-shadow:var(--shadow);border-color:var(--lapis);position:relative;z-index:2}
@@ -1437,6 +1438,8 @@ function tick(){const t=A.el.currentTime,stop=A.stopAt;if(checkChant(t)||checkSe
     if(A.lastT!=null&&tt<A.lastT&&A.lastT-tt<0.25){}else{A.lastT=tt;const pos=locate(repMap(tt));const key=pos?pos.id+'/'+pos.b:'';if(key!==lastKey){lastKey=key;paint(pos)}}}
   showProgress()}
 A.el.addEventListener('play',()=>{syncPlayer();if(!A.loop){A.loop=1;requestAnimationFrame(function L(){tick();if(!A.el.paused)requestAnimationFrame(L);else A.loop=0})}});
+// 锁屏、切到后台时 requestAnimationFrame 停了：靠录音的 timeupdate 接着走（段落重复、持咒、安住要按时触发）
+A.el.addEventListener('timeupdate',()=>{if(document.hidden&&!A.el.paused)tick()});
 A.el.addEventListener('seeking',()=>{A.lastT=null;A.prevT=null;SCHED.clear();
   // 单独念时往回跳：跳过的安住重新算
   if(!Q()&&A.rdone&&A.rdone.length){const t=A.el.currentTime;A.rdone=A.rdone.filter(id=>{const p=restPoints().find(p=>p.r.after===id);return p&&p.t<=t})}});
@@ -2236,7 +2239,7 @@ function updQBar(){if(LAND.on)landRep();const x=qItem();if(!x||$('cbar').hidden)
   const d=A.el.duration,t=A.el.currentTime||0,tot=itemTotal(x.it);const f=d&&isFinite(d)?((x.q.r-1)+t/d)/tot:(x.q.r-1)/tot;b.style.transform=`scaleX(${Math.min(1,f)})`}
 $('cnext').onclick=()=>{const x=qItem();if(x)gotoItem(x.q.i+1,!A.el.paused)};
 $('ctitle').onclick=()=>{const x=qItem();if(!x)return;$('qTitle').textContent=x.c.name;
-  $('qlist').innerHTML=x.c.items.map((it,k)=>{const R=ritById(it.rid);if(!R)return'';const t=itemTotal(it);return `<button data-qi="${k}" aria-current="${k===x.q.i}">${k+1}. ${it.chant?'持咒 · ':''}${esc(R.meta['title.zh'])}<span class="lbl">${it.chant?esc(stepLabel(it)):isFinite(t)?(t>1?t+' 遍':''):esc(stepLabel(it))}</span></button>`}).join('')+(x.c.hidden?'':`<button data-qedit="1" style="color:var(--lapis)">编辑这个组合 ›</button>`);
+  $('qlist').innerHTML=x.c.items.map((it,k)=>{if(it.rest)return `<button data-qi="${k}" aria-current="${k===x.q.i}">${k+1}. 安住<span class="lbl">${esc(stepLabel(it))}</span></button>`;const R=ritById(it.rid);if(!R)return'';const t=itemTotal(it);return `<button data-qi="${k}" aria-current="${k===x.q.i}">${k+1}. ${it.chant?'持咒 · ':''}${esc(R.meta['title.zh'])}<span class="lbl">${it.chant?esc(stepLabel(it)):isFinite(t)?(t>1?t+' 遍':''):esc(stepLabel(it))}</span></button>`}).join('')+(x.c.hidden?'':`<button data-qedit="1" style="color:var(--lapis)">编辑这个组合 ›</button>`);
   $('qsheet').hidden=false};
 $('closeQ').onclick=()=>$('qsheet').hidden=true;
 $('qlist').onclick=e=>{const b=e.target.closest('button');if(!b)return;$('qsheet').hidden=true;
@@ -2344,20 +2347,21 @@ document.addEventListener('focusin',e=>{if(isField(e.target))document.body.class
 document.addEventListener('focusout',e=>{if(isField(e.target))setTimeout(()=>{if(!isField(document.activeElement))document.body.classList.remove('kb')},50)});
 function immSet(on){document.body.classList.toggle('imm',!!on);IMM.y=scrollY;if(on)imLine()}
 const sheetOpen=()=>[...document.querySelectorAll('.sheet,.kp,.speedpop,.misheet')].some(x=>!x.hidden&&x.offsetParent!==null);
-document.addEventListener('click',e=>{if(VIEW!=='reader'||!document.body.classList.contains('imm'))return;if(e.target.closest('.top,.player,.sheet,.restv,.chv,.fin,.dlg,.kp,.misheet,.micover,#lpop'))return;
+document.addEventListener('click',e=>{if(VIEW!=='reader'||!document.body.classList.contains('imm'))return;if(e.target.closest('.top,.player,.sheet,.restv,.chv,.fin,.dlg,.kp,.misheet,.micover,#lpop,.toc-d,.toc'))return;
   e.stopPropagation();e.preventDefault();immSet(false);immLater()},true);  // 全屏点一下只显示界面，不暂停（w 2026-11-07 撤回点一下暂停）
 // 播放中界面出来后 3 秒没操作自动收起（w 2026-11-07）；点到界面上的东西就重新计时
 function immLater(){clearTimeout(IMM.t);IMM.t=setTimeout(()=>{const playing=!A.el.paused||(REST.on&&!REST.paused);if(VIEW==='reader'&&!document.body.classList.contains('imm')&&playing&&!sheetOpen()&&$('word').hidden)immSet(true)},3000)}
 // 界面显示着的时候，点空白处（不是字、不是按钮）再收起（w 2026-11-07：点一下出来，再点一下缩回去）
 document.addEventListener('pointerdown',()=>{IMM.busy=!$('word').hidden||sheetOpen();if(VIEW==='reader'&&!document.body.classList.contains('imm'))immLater()},true);
 document.addEventListener('click',e=>{if(VIEW!=='reader'||document.body.classList.contains('imm')||IMM.busy)return;
-  if(e.target.closest('button,a,input,select,label,textarea,.top,.player,.sheet,.restv,.chv,.fin,.dlg,.kp,.speedpop,#word,#pullnext,.w,.col'))return;
+  if(e.target.closest('button,a,input,select,label,textarea,summary,details,.top,.player,.sheet,.restv,.chv,.fin,.dlg,.kp,.speedpop,#word,#pullnext,.w,.col'))return;
   immSet(true)});
 addEventListener('scroll',()=>{if(VIEW!=='reader'||document.body.classList.contains('imm')||Date.now()-USR.t>1500)return;  // 只有自己滑才收起，跟读自动滚动不算
   if(Math.abs(scrollY-IMM.y)>40&&!sheetOpen())immSet(true)},{passive:true});
 A.el.addEventListener('play',()=>{if(VIEW==='reader'&&!sheetOpen())setTimeout(()=>{if(!A.el.paused&&!sheetOpen())immSet(true)},800)});
 A.el.addEventListener('play',()=>wake(true));
-['play','pause'].forEach(ev=>A.el.addEventListener(ev,()=>{if(VIEW==='home'&&(S.tab||'today')==='today')drawToday()}));  // 今天页卡片上的「正在念」跟着变A.el.addEventListener('pause',()=>{if(!REST.on&&!TS.on&&!CH.on&&!S.q)wake(false)});
+['play','pause'].forEach(ev=>A.el.addEventListener(ev,()=>{if(VIEW==='home'&&(S.tab||'today')==='today')drawToday()}));  // 今天页卡片上的「正在念」跟着变
+A.el.addEventListener('pause',()=>{if(!REST.on&&!TS.on&&!CH.on&&!S.q)wake(false)});
 let MM='';function mediaMeta(t){if(t===MM||!('mediaSession' in navigator)||typeof MediaMetadata==='undefined')return;MM=t;try{navigator.mediaSession.metadata=new MediaMetadata({title:t,artist:'藏汉课诵'})}catch(e){}}
 function restLastBo(R,secId){if(!R)return '';const ss=secId?R.sections.filter(s=>s.id===secId):R.sections;const s=ss[ss.length-1];const l=s&&s.lines[s.lines.length-1];return l?l.bo||'':''}
 function restPoints(){if(!A.tm)return [];const x=qItem(),R=RITUALS[S.rit];const rs=x?(ritById(x.it.rid)===R?itemRests(x.it):[]):defRests(R);
@@ -2376,7 +2380,8 @@ function checkSecRep(t){const prev=A.prevT;A.prevT=t;if(A.marking||A.stopAt!=nul
   const r=A.el.playbackRate||1,p=secRepPoints().find(p=>{const at=p.t-xfLead(p.t)*r;return !p.end&&prev<at&&t>=at});return !!p&&secRepeat(p)}
 // 只有一段的仪轨（如增长咒念 3 遍）不在组合里单独念时，也按自带遍数重复
 function soloRepeat(){const n=playReps(RITUALS[S.rit]||RITUALS[0]);if((A.solo||1)<n){A.solo=(A.solo||1)+1;A.sr={};A.el.currentTime=repFrom();play();return true}A.solo=1;return false}
-function checkRest(t){if(REST.on||A.el.paused||A.stopAt!=null||A.marking)return;const d=rDone(),p=restPoints().find(p=>!p.end&&!d.includes(p.r.after)&&t>=p.t-0.05);if(p){d.push(p.r.after);save();startRest(Object.assign({last:restLastBo(RITUALS[S.rit],p.r.after)},p.r),()=>play())}}
+// 只在自然念到段尾时安住；点后面的句子跳过去不算（不然在前行里点后面一句，马上就进 45 分钟的安住）
+function checkRest(t){const prev=A.rPrevT;A.rPrevT=t;if(REST.on||A.el.paused||A.stopAt!=null||A.marking||prev==null||t<prev||t-prev>1.5)return;const d=rDone(),p=restPoints().find(p=>!p.end&&!d.includes(p.r.after)&&prev<p.t-0.05&&t>=p.t-0.05);if(p){d.push(p.r.after);save();startRest(Object.assign({last:restLastBo(RITUALS[S.rit],p.r.after)},p.r),()=>play())}}
 function startRest(r,then){A.el.pause();const sec=r.sec||0;Object.assign(REST,{on:true,left:sec,tot:sec,open:!sec,el:0,paused:false,r,then,last:Date.now()});
   clearInterval(REST.iv);REST.iv=setInterval(restTick,250);keepAlive(true);wake(true);
   const v=$('restv');clearTimeout(REST.ht);v.classList.remove('show','ctl');v.hidden=false;void v.offsetWidth;requestAnimationFrame(()=>v.classList.add('show'));drawRest()}
